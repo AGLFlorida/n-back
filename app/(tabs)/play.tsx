@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { useFocusEffect } from "expo-router";
+import { Audio } from "expo-av";
 
 import Square from "@/components/Square";
 import Button from "@/components/Button";
@@ -14,6 +15,7 @@ export default function Play() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const timerRef = useRef<number | NodeJS.Timeout | null>(null);
   const intervalRef = useRef<number | NodeJS.Timeout | null>(null);
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
   
   const clickRef = useRef(0);
   const setClickRef = (f: (p: number) => number) => {
@@ -43,10 +45,24 @@ export default function Play() {
     setGrid(newGrid);
   };
 
+  const stepGame = async () => {
+    try {
+      placeRandomSquare();
+
+      const { sound } = await Audio.Sound.createAsync(
+        require("../../assets/sounds/swords.m4a")
+      );
+      setSound(sound);
+      await sound.playAsync();
+    } catch (error) {
+      console.log("Error playing sound:", error);
+    }
+  }
+
   const startIntervalTimer = () => {
     if (!intervalRef.current) {
       intervalRef.current = setInterval(() => {
-        placeRandomSquare();
+        stepGame();
       }, 2000);
     }
   }
