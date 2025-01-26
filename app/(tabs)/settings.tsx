@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-import { Text, View, StyleSheet, TextInput, KeyboardAvoidingView, TouchableWithoutFeedback, Platform, Keyboard } from "react-native";
+import { View, StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback, Platform, Keyboard, Text } from "react-native";
 
 import Button from "@/components/Button";
+import Toggle from "@/components/Toggle";
+import NumberInput from "@/components/NumberInput";
 
 export default function Settings() {
-  const [value, setValue] = useState("");
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
@@ -14,15 +13,15 @@ export default function Settings() {
       >
         <View style={styles.grid}>
           <View style={styles.row}>
-            <TextInput
-              style={styles.input}
-              keyboardType="numeric" // Show numeric keypad
-              value={value}
-              onChangeText={(text) => setValue(text)}
-              placeholder="Enter a number"
-              placeholderTextColor="#bbb"
-            />
-            <Text style={styles.label}>You entered: {value}</Text>
+            <View style={styles.cell}>
+              <Text style={{color: '#fff'}}>Default N:</Text>
+            </View>
+            <View style={styles.cell}>
+              <NumberInput n={42} />
+            </View>
+          </View>
+          <View style={styles.row}>
+            <Toggle />
           </View>
           <View style={styles.row}>
             <Button label="Save" onPress={() => alert("saved")} />
@@ -39,25 +38,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#25292e",
     color: "#fff",
   },
-  input: {
-    height: 40,
-    borderColor: '#fff',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    marginVertical: 10,
-    borderRadius: 5,
-    color: "#fff",
-  },
-  label: {
-    color: "#fff",
-  },
   grid: {
-    alignItems: "center",
+    alignItems: "flex-start",
     width: "100%",
     backgroundColor: "#000",
   },
   row: {
     flexDirection: "row",
     justifyContent: "center",
-  }
+    margin: 5,
+  },
+  cell: {
+    borderWidth: 1,
+    borderColor: '#000',
+    padding: 3,
+    justifyContent: 'center',
+  },
 });
