@@ -26,7 +26,7 @@ export default function Settings() {
   const { toggleTheme, theme } = useTheme();
 
   const [defaultN, setDefaultN] = useState<N>(2);
-  const [dualMode, toggleDualMode] = useState<boolean>(false);
+  const [dualMode, toggleDualMode] = useState<boolean>(true);
   const [darkMode, toggleDarkMode] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const originalN = useRef<number>();
