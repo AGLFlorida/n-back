@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import {
   View,
-  StyleSheet,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Platform,
@@ -9,16 +8,15 @@ import {
   Text,
   TextInput,
   Switch,
-  Alert
+  Alert,
+  Appearance,
 } from "react-native";
 
 import Button from "@/components/Button";
-import Security from "@/util/Security";
+import security from "@/util/security";
+import { getGlobalStyles } from "@/styles/globalStyles";
+import { useTheme } from "@/contexts/ThemeContext"
 
-type Settings = {
-  defaultN: number;
-  toggleValue: boolean;
-}
 
 const MAXN = 10;
 const MINN = 2;
@@ -26,33 +24,43 @@ const MINN = 2;
 const showCustomAlert = (title: string, message: string) => {
   Alert.alert(
     title,
-    message, 
+    message,
     [
-      { text: "OK", onPress: () => {} },
+      { text: "OK", onPress: () => { } },
     ],
     { cancelable: true } // Allows dismissing the alert by tapping outside
   );
 };
 
 export default function Settings() {
+  const styles = getGlobalStyles();
+  const { toggleTheme, theme } = useTheme();
+
   const [defaultN, setDefaultN] = useState<number | undefined>(2);
-  const [toggleValue, toggleSwitch] = useState<boolean>(false);
+  const [dualMode, toggleDualMode] = useState<boolean>(false);
+  const [darkMode, toggleDarkMode] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const originalN = useRef<number>();
-  const originalToggle = useRef<boolean>();
+  const originalDual = useRef<boolean>();
+  const originalDark = useRef<boolean>();
 
   const fetchSettings = async () => {
     await Promise.all([
-      Security.get("defaultN"),
-      Security.get("toggleValue")
-    ]).then(([N, T]) => {
+      security.get("defaultN"),
+      security.get("dualMode"),
+      security.get("darkMode")
+    ]).then(([N, T, D]) => {
       if (N) {
         setDefaultN(N as number);
         originalN.current = defaultN as number;
       }
       if (T) {
-        toggleSwitch(T as boolean);
-        originalToggle.current = toggleValue;
+        toggleDualMode(T as boolean);
+        originalDual.current = dualMode;
+      }
+      if (D) {
+        toggleDarkMode(D as boolean);
+        originalDark.current = darkMode;
       }
     }).catch(e => e
     );
@@ -75,17 +83,20 @@ export default function Settings() {
 
   const handleSaved = async () => {
     if (error) {
-      alert("Please correct all errors before saving."); 
+      alert("Please correct all errors before saving.");
       return;
     }
 
-    await Promise.all([ 
-      Security.set("defaultN", defaultN),
-      Security.set("toggleValue", toggleValue)
-    ]).then(([x, y]) => {
-      if (x === true && y === true) showCustomAlert("Success!", "Settings saved.");
+    await Promise.all([
+      security.set("defaultN", defaultN),
+      security.set("dualMode", dualMode),
+      security.set("darkMode", darkMode),
+    ]).then(([x, y, z]) => {
+      if (x === true && y === true && z === true) showCustomAlert("Success!", "Settings saved.");
     }).catch(e => e
-    ).finally(() => {});
+    ).finally(() => {
+      toggleTheme(darkMode);
+    });
   }
 
   return (
@@ -94,14 +105,11 @@ export default function Settings() {
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={styles.grid}>
-          <View style={styles.row}>
-            <View style={styles.cell}>
-              <Text style={{ color: '#fff' }}>Default N:</Text>
-            </View>
-            <View style={styles.cell}>
+        <View style={[styles.grid, { alignItems: "flex-start" }]}>
+          <View style={[styles.row, { margin: 5 }]}>
+            <View style={styles.settingsCell}>
               <TextInput
-                style={styles.numberInput}
+                style={[styles.numberInput, { borderColor: theme.textColor }]}
                 keyboardType="numeric"
                 value={JSON.stringify(defaultN)}
                 onChangeText={(n) => handleSetDefaultN(n)}
@@ -109,21 +117,42 @@ export default function Settings() {
                 placeholderTextColor="#fff"
               />
             </View>
+            <View style={styles.settingsCell}>
+              <Text style={styles.label}>Default N</Text>
+            </View>
           </View>
-          {/* <View style={styles.row}>
-            <Switch
-              trackColor={{ false: '#767577', true: '#81b0ff' }}
-              thumbColor={toggleValue ? '#f5dd4b' : '#f4f3f4'}
-              onValueChange={toggleSwitch}
-              value={toggleValue}
-            />
-          </View> */}
-          <View style={styles.row}>
+          <View style={[styles.row, { margin: 5 }]}>
+            <View style={styles.settingsCell}>
+              <Switch
+                trackColor={theme.toggle.trackColor}
+                thumbColor={theme.toggle.thumbColor(dualMode)}
+                onValueChange={toggleDualMode}
+                value={dualMode}
+              />
+            </View>
+            <View style={styles.settingsCell}>
+              <Text style={styles.label}>Dual N-back</Text>
+            </View>
+          </View>
+          <View style={[styles.row, { margin: 5 }]}>
+            <View style={styles.settingsCell}>
+              <Switch
+                trackColor={theme.toggle.trackColor}
+                thumbColor={theme.toggle.thumbColor(darkMode)}
+                onValueChange={toggleDarkMode}
+                value={darkMode}
+              />
+            </View>
+            <View style={styles.settingsCell}>
+              <Text style={styles.label}>Dark Mode (Defaults to system)</Text>
+            </View>
+          </View>
+          <View style={[styles.row, { margin: 5 }]}>
             <Button label="Save" onPress={() => handleSaved()} />
           </View>
-          { error && (
-            <View style={styles.row}>
-              <Text style={[styles.cell, { color: 'red' }]}>{error}</Text>
+          {error && (
+            <View style={[styles.row, { margin: 5 }]}>
+              <Text style={[styles.settingsCell, { color: 'red' }]}>{error}</Text>
             </View>
           )}
         </View>
@@ -131,36 +160,3 @@ export default function Settings() {
     </TouchableWithoutFeedback>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#25292e",
-    color: "#fff",
-  },
-  grid: {
-    alignItems: "flex-start",
-    width: "100%",
-    backgroundColor: "#000",
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "center",
-    margin: 5,
-  },
-  cell: {
-    borderWidth: 1,
-    borderColor: '#000',
-    padding: 3,
-    justifyContent: 'center',
-  },
-  numberInput: {
-    height: 40,
-    borderColor: '#fff',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    marginVertical: 10,
-    borderRadius: 5,
-    color: "#fff",
-  },
-});

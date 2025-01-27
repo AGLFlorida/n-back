@@ -5,7 +5,8 @@ import { Audio } from "expo-av";
 
 import Square from "@/components/Square";
 import Button from "@/components/Button";
-import Security from "@/util/Security";
+import security from "@/util/security";
+import { getGlobalStyles } from "@/styles/globalStyles";
 
 const soundFiles: SoundFile[] = [
   { key: "C", file: require("../../assets/sounds/C.m4a") as AVPlaybackSource },
@@ -45,6 +46,8 @@ export default function Play() {
   const setClickRef = (fn: (p: number) => number) => {
     clickRef.current = fn(clickRef.current);
   }
+
+  const styles = getGlobalStyles();
 
   const resetGame = (run: boolean = true) => {
     setGrid(Array.from({ length: 3 }, () => Array(3).fill(false)));
@@ -141,10 +144,17 @@ export default function Play() {
   }, [elapsedTime]);
 
   useEffect(() => {
+    const unloadSounds = () => {
+      Object.values(sounds).forEach((sound) => {
+        if (sound) sound.unloadAsync();
+      });
+    }
+
     return () => { // Cleanup timers on unmount
       stopEngineTimer();
       stopIntervalTimer();
       resetGame(false);
+      unloadSounds();
     };
   }, []);
 
@@ -152,7 +162,7 @@ export default function Play() {
     React.useCallback(() => {
       const getN = async () => {
         try {
-          const n = await Security.get("defaultN");
+          const n = await security.get("defaultN");
           setDefaultN(n as number);
 
           navigation.setOptions({
@@ -217,8 +227,8 @@ export default function Play() {
         </View>
       </View>
       <View style={[styles.row, { marginTop: 40 }]}>
-        <View style={[styles.cell, { borderColor: 'gold', padding: 4 }]}>
-          <Text style={{ color: 'gold' }}>
+        <View style={[styles.cell, styles.play]}>
+          <Text style={styles.playLabel}>
             {!loading && `playing: ${timerRunning ? "yes" : "no"}`}
             {loading && ("loading...")}
           </Text>
@@ -227,27 +237,3 @@ export default function Play() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#25292e",
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  cell: {
-    borderWidth: 1,
-    borderColor: '#000',
-    padding: 1,
-  },
-  placeHolder: {
-    width: 120,
-    height: 120,
-    backgroundColor: "#25292e",
-  },
-  clearBorder: {
-    borderWidth: 0,
-  }
-});
