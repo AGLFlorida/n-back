@@ -9,14 +9,14 @@ import security from "@/util/security";
 import { getGlobalStyles } from "@/styles/globalStyles";
 
 const soundFiles: SoundFile[] = [
-  { key: "C", file: require("../../assets/sounds/C.m4a") as AVPlaybackSource },
-  { key: "G", file: require("../../assets/sounds/G.m4a") as AVPlaybackSource },
-  { key: "H", file: require("../../assets/sounds/H.m4a") as AVPlaybackSource },
-  { key: "K", file: require("../../assets/sounds/K.m4a") as AVPlaybackSource },
-  { key: "P", file: require("../../assets/sounds/P.m4a") as AVPlaybackSource },
-  { key: "Q", file: require("../../assets/sounds/Q.m4a") as AVPlaybackSource },
-  { key: "T", file: require("../../assets/sounds/T.m4a") as AVPlaybackSource },
-  { key: "W", file: require("../../assets/sounds/W.m4a") as AVPlaybackSource },
+  { key: "C", file: require("../../assets/audio/C.m4a") as AVPlaybackSource },
+  { key: "G", file: require("../../assets/audio/G.m4a") as AVPlaybackSource },
+  { key: "H", file: require("../../assets/audio/H.m4a") as AVPlaybackSource },
+  { key: "K", file: require("../../assets/audio/K.m4a") as AVPlaybackSource },
+  { key: "P", file: require("../../assets/audio/P.m4a") as AVPlaybackSource },
+  { key: "Q", file: require("../../assets/audio/Q.m4a") as AVPlaybackSource },
+  { key: "T", file: require("../../assets/audio/T.m4a") as AVPlaybackSource },
+  { key: "W", file: require("../../assets/audio/W.m4a") as AVPlaybackSource },
 ];
 
 type AVPlaybackSource = Parameters<typeof Audio.Sound.createAsync>[0];
