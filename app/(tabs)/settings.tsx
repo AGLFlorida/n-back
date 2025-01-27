@@ -110,14 +110,14 @@ export default function Settings() {
               />
             </View>
           </View>
-          <View style={styles.row}>
+          {/* <View style={styles.row}>
             <Switch
               trackColor={{ false: '#767577', true: '#81b0ff' }}
               thumbColor={toggleValue ? '#f5dd4b' : '#f4f3f4'}
               onValueChange={toggleSwitch}
               value={toggleValue}
             />
-          </View>
+          </View> */}
           <View style={styles.row}>
             <Button label="Save" onPress={() => handleSaved()} />
           </View>
