@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View } from "react-native";
 import { useFocusEffect, useNavigation } from "expo-router";
 import { Audio } from "expo-av";
 
@@ -9,38 +9,17 @@ import StatusButton from "@/components/StatusButton";
 
 import security from "@/util/security";
 
+import Engine, { FillBoard, SoundState, CustomTimer } from "@/util/engine";
+
 
 import { getGlobalStyles } from "@/styles/globalStyles";
 
-const soundFiles: SoundFile[] = [
-  { key: "C", file: require("../../assets/audio/C.m4a") as AVPlaybackSource },
-  { key: "G", file: require("../../assets/audio/G.m4a") as AVPlaybackSource },
-  { key: "H", file: require("../../assets/audio/H.m4a") as AVPlaybackSource },
-  { key: "K", file: require("../../assets/audio/K.m4a") as AVPlaybackSource },
-  { key: "P", file: require("../../assets/audio/P.m4a") as AVPlaybackSource },
-  { key: "Q", file: require("../../assets/audio/Q.m4a") as AVPlaybackSource },
-  { key: "T", file: require("../../assets/audio/T.m4a") as AVPlaybackSource },
-  { key: "W", file: require("../../assets/audio/W.m4a") as AVPlaybackSource },
-];
-
-type AVPlaybackSource = Parameters<typeof Audio.Sound.createAsync>[0];
-
-type SoundFile = {
-  key: string;
-  file: AVPlaybackSource;
-};
-
-type SoundState = Record<string, Audio.Sound | null>;
-
-
 export default function Play() {
-  const [grid, setGrid] = useState(() =>
-    Array.from({ length: 3 }, () => Array(3).fill(false))
-  );
+  const [grid, setGrid] = useState(FillBoard());
   const [timerRunning, setTimerRunning] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const timerRef = useRef<number | NodeJS.Timeout | null>(null);
-  const intervalRef = useRef<number | NodeJS.Timeout | null>(null);
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const timerRef = useRef<CustomTimer>(null);
+  const intervalRef = useRef<CustomTimer>(null);
   const [defaultN, setDefaultN] = useState<number>();
   const navigation = useNavigation();
   const [loading, setLoading] = useState<boolean>(true);
@@ -48,91 +27,38 @@ export default function Play() {
   const [sound, setSound] = useState<Audio.Sound | null>(null); // when isDual == false;
   const [isDualMode, setDualMode] = useState<boolean>(false);
 
+  const {
+    resetGame,
+    endGame,
+    startEnginerTimer,
+    stopEngineTimer,
+    startIntervalTimer,
+    stopIntervalTimer,
+    loadSounds,
+    getN,
+    getDualMode,
+  } = Engine({
+    setGrid,
+    setTimerRunning,
+    setElapsedTime,
+    setSound,
+    setSounds,
+    setDefaultN,
+    setDualMode,
+    grid,
+    isDualMode,
+    timerRef,
+    intervalRef,
+    navigation
+  })
+
   const clickRef = useRef(0);
+
   const setClickRef = (fn: (p: number) => number) => {
     clickRef.current = fn(clickRef.current);
   }
 
   const styles = getGlobalStyles();
-
-  const resetGame = (run: boolean = true) => {
-    setGrid(Array.from({ length: 3 }, () => Array(3).fill(false)));
-    setTimerRunning(run);
-    setElapsedTime(0);
-  };
-
-  const placeRandomSquare = () => {
-    const allCells: Array<[number, number]> = [];
-    grid.forEach((row, rowIndex) => {
-      row.forEach((_: any, colIndex: number) => {
-        allCells.push([rowIndex, colIndex]);
-      });
-    });
-
-    const randomIndex = Math.floor(Math.random() * allCells.length);
-    const [newRow, newCol] = allCells[randomIndex];
-
-    const newGrid = Array.from({ length: 3 }, () => Array(3).fill(false));
-    newGrid[newRow][newCol] = true;
-
-    setGrid(newGrid);
-  };
-
-  const chooseRandomSound = (): AVPlaybackSource => {
-    const randomIndex = Math.floor(Math.random() * soundFiles.length);
-    return soundFiles[randomIndex].file;
-  }
-
-  const stepGame = async () => {
-    try {
-      placeRandomSquare();
-
-      if (isDualMode) {
-        const { sound } = await Audio.Sound.createAsync(
-          chooseRandomSound()
-        );
-        await sound.playAsync();
-      } else {
-        const { sound } = await Audio.Sound.createAsync(
-          require("../../assets/audio/swords.m4a")
-        );
-        setSound(sound);
-        await sound.playAsync();
-      }
-    } catch (error) {
-      console.log("Error playing sound:", error);
-    }
-  }
-
-  const startIntervalTimer = () => {
-    if (!intervalRef.current) {
-      intervalRef.current = setInterval(() => {
-        stepGame();
-      }, 2000);
-    }
-  }
-
-  const startEnginerTimer = () => {
-    if (!timerRef.current) {
-      timerRef.current = setInterval(() => {
-        setElapsedTime((prevTime) => prevTime + 1);
-      }, 1000);
-    }
-  }
-
-  const stopIntervalTimer = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  }
-
-  const stopEngineTimer = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  }
 
   useEffect(() => {
     if (timerRunning) {
@@ -146,16 +72,7 @@ export default function Play() {
     };
   }, [timerRunning]);
 
-  useEffect(() => {
-    if (elapsedTime >= 20) {
-      setTimerRunning(false);
-      const timeout = setTimeout(() => {
-        setGrid(Array.from({ length: 3 }, () => Array(3).fill(false)));
-      }, 2000);
-
-      return () => clearTimeout(timeout);
-    }
-  }, [elapsedTime]);
+  useEffect(endGame(elapsedTime), [elapsedTime]);
 
   useEffect(() => {
     const unloadSounds = () => {
@@ -174,36 +91,12 @@ export default function Play() {
 
   useFocusEffect(
     React.useCallback(() => {
-      const getN = async () => {
-        try {
-          const n = await security.get("defaultN");
-          setDefaultN(n as number);
 
-          navigation.setOptions({
-            title: `Play (${n}-back)`,
-          });
-        } catch (e) { }
-      };
-      getN();
-
-      const loadSounds = async () => {
-        const loadedSounds: SoundState = {};
-
-        for (const { key, file } of soundFiles) {
-          const { sound } = await Audio.Sound.createAsync(file);
-          loadedSounds[key] = sound;
-        }
-
-        setSounds(loadedSounds);
-      };
-      loadSounds();
-
-      (async () => {
-        try {
-          const dual = await security.get("dualMode");
-          setDualMode(dual as boolean);
-        } catch (e) { }
-      })();
+      Promise.all([
+        getN(),
+        loadSounds(),
+        getDualMode()
+      ]).catch(e => e);
 
       const loading = setTimeout(() => {
         setLoading(false);
