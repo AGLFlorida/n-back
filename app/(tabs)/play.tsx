@@ -41,6 +41,8 @@ export default function Play() {
   const navigation = useNavigation();
   const [loading, setLoading] = useState<boolean>(true);
   const [sounds, setSounds] = useState<SoundState>({});
+  const [sound, setSound] = useState<Audio.Sound | null>(null); // when isDual == false;
+  const [isDualMode, setDualMode] = useState<boolean>(false);
 
   const clickRef = useRef(0);
   const setClickRef = (fn: (p: number) => number) => {
@@ -81,10 +83,18 @@ export default function Play() {
     try {
       placeRandomSquare();
 
-      const { sound } = await Audio.Sound.createAsync(
-        chooseRandomSound()
-      );
-      await sound.playAsync();
+      if (isDualMode) {
+        const { sound } = await Audio.Sound.createAsync(
+          chooseRandomSound()
+        );
+        await sound.playAsync();
+      } else {
+        const { sound } = await Audio.Sound.createAsync(
+          require("../../assets/audio/swords.m4a")
+        );
+        setSound(sound);
+        await sound.playAsync();
+      }
     } catch (error) {
       console.log("Error playing sound:", error);
     }
@@ -184,10 +194,18 @@ export default function Play() {
       };
       loadSounds();
 
+      (async () => {
+        try {
+          const dual = await security.get("dualMode");
+          setDualMode(dual as boolean);
+        } catch (e) { }
+      })();
+
       const loading = setTimeout(() => {
         setLoading(false);
         resetGame();
       }, 2000);
+
       return () => { // Cleanup timers on lost focus
         stopEngineTimer();
         stopIntervalTimer();
@@ -229,7 +247,7 @@ export default function Play() {
       <View style={[styles.row, { marginTop: 40 }]}>
         <View style={[styles.cell, styles.play]}>
           <Text style={styles.playLabel}>
-            {(loading) ? "loading..." : (timerRunning) ? "playing": "stopped"}
+            {(loading) ? "loading..." : (timerRunning) ? "playing" : "stopped"}
           </Text>
         </View>
       </View>
