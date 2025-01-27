@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, Text } from "react-native";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useNavigation } from "expo-router";
 import { Audio } from "expo-av";
 
 import Square from "@/components/Square";
 import Button from "@/components/Button";
+import Security from "@/util/Security";
 
 
 export default function Play() {
@@ -16,6 +17,8 @@ export default function Play() {
   const timerRef = useRef<number | NodeJS.Timeout | null>(null);
   const intervalRef = useRef<number | NodeJS.Timeout | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [defaultN, setDefaultN] = useState<number>();
+  const navigation = useNavigation();
   
   const clickRef = useRef(0);
   const setClickRef = (f: (p: number) => number) => {
@@ -124,6 +127,21 @@ export default function Play() {
       };
     }, [])
   );
+
+  useFocusEffect(() => {
+    const getN = async () => {
+      try {
+        const n = await Security.get("defaultN");
+        setDefaultN(n as number);
+
+        navigation.setOptions({
+          title: `Play (${n}-back)`,
+        });
+      } catch (e) {}
+    };
+
+    getN();
+  });
 
   return (
     <View style={styles.container}>

@@ -13,7 +13,7 @@ import {
 } from "react-native";
 
 import Button from "@/components/Button";
-import Security from "@/util/security";
+import Security from "@/util/Security";
 
 type Settings = {
   defaultN: number;
