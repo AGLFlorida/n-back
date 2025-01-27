@@ -7,6 +7,26 @@ import Square from "@/components/Square";
 import Button from "@/components/Button";
 import Security from "@/util/Security";
 
+const soundFiles: SoundFile[] = [
+  { key: "C", file: require("../../assets/sounds/C.m4a") as AVPlaybackSource },
+  { key: "G", file: require("../../assets/sounds/G.m4a") as AVPlaybackSource },
+  { key: "H", file: require("../../assets/sounds/H.m4a") as AVPlaybackSource },
+  { key: "K", file: require("../../assets/sounds/K.m4a") as AVPlaybackSource },
+  { key: "P", file: require("../../assets/sounds/P.m4a") as AVPlaybackSource },
+  { key: "Q", file: require("../../assets/sounds/Q.m4a") as AVPlaybackSource },
+  { key: "T", file: require("../../assets/sounds/T.m4a") as AVPlaybackSource },
+  { key: "W", file: require("../../assets/sounds/W.m4a") as AVPlaybackSource },
+];
+
+type AVPlaybackSource = Parameters<typeof Audio.Sound.createAsync>[0];
+
+type SoundFile = {
+  key: string;
+  file: AVPlaybackSource;
+};
+
+type SoundState = Record<string, Audio.Sound | null>;
+
 
 export default function Play() {
   const [grid, setGrid] = useState(() =>
@@ -16,13 +36,14 @@ export default function Play() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const timerRef = useRef<number | NodeJS.Timeout | null>(null);
   const intervalRef = useRef<number | NodeJS.Timeout | null>(null);
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [defaultN, setDefaultN] = useState<number>();
   const navigation = useNavigation();
-  
+  const [loading, setLoading] = useState<boolean>(true);
+  const [sounds, setSounds] = useState<SoundState>({});
+
   const clickRef = useRef(0);
-  const setClickRef = (f: (p: number) => number) => {
-    clickRef.current = f(clickRef.current);
+  const setClickRef = (fn: (p: number) => number) => {
+    clickRef.current = fn(clickRef.current);
   }
 
   const resetGame = (run: boolean = true) => {
@@ -48,14 +69,18 @@ export default function Play() {
     setGrid(newGrid);
   };
 
+  const chooseRandomSound = (): AVPlaybackSource => {
+    const randomIndex = Math.floor(Math.random() * soundFiles.length);
+    return soundFiles[randomIndex].file;
+  }
+
   const stepGame = async () => {
     try {
       placeRandomSquare();
 
       const { sound } = await Audio.Sound.createAsync(
-        require("../../assets/sounds/swords.m4a")
+        chooseRandomSound()
       );
-      setSound(sound);
       await sound.playAsync();
     } catch (error) {
       console.log("Error playing sound:", error);
@@ -115,41 +140,52 @@ export default function Play() {
     }
   }, [elapsedTime]);
 
-  // Cleanup timers on unmount
   useEffect(() => {
-    return () => {
+    return () => { // Cleanup timers on unmount
       stopEngineTimer();
       stopIntervalTimer();
       resetGame(false);
     };
   }, []);
 
-  // Cleanup timers on lost focus
   useFocusEffect(
     React.useCallback(() => {
-      resetGame();
-      return () => {
+      const getN = async () => {
+        try {
+          const n = await Security.get("defaultN");
+          setDefaultN(n as number);
+
+          navigation.setOptions({
+            title: `Play (${n}-back)`,
+          });
+        } catch (e) { }
+      };
+      getN();
+
+      const loadSounds = async () => {
+        const loadedSounds: SoundState = {};
+
+        for (const { key, file } of soundFiles) {
+          const { sound } = await Audio.Sound.createAsync(file);
+          loadedSounds[key] = sound;
+        }
+
+        setSounds(loadedSounds);
+      };
+      loadSounds();
+
+      const loading = setTimeout(() => {
+        setLoading(false);
+        resetGame();
+      }, 2000);
+      return () => { // Cleanup timers on lost focus
         stopEngineTimer();
         stopIntervalTimer();
         resetGame(false);
+        clearTimeout(loading);
       };
     }, [])
   );
-
-  useFocusEffect(() => {
-    const getN = async () => {
-      try {
-        const n = await Security.get("defaultN");
-        setDefaultN(n as number);
-
-        navigation.setOptions({
-          title: `Play (${n}-back)`,
-        });
-      } catch (e) {}
-    };
-
-    getN();
-  });
 
   return (
     <View style={styles.container}>
@@ -181,8 +217,11 @@ export default function Play() {
         </View>
       </View>
       <View style={[styles.row, { marginTop: 40 }]}>
-        <View style={[styles.cell, {borderColor: 'gold', padding: 4}]}>
-          <Text style={{color: 'gold'}}>playing: {timerRunning && ("yes")} {!timerRunning && ("no")}</Text>
+        <View style={[styles.cell, { borderColor: 'gold', padding: 4 }]}>
+          <Text style={{ color: 'gold' }}>
+            {!loading && `playing: ${timerRunning ? "yes" : "no"}`}
+            {loading && ("loading...")}
+          </Text>
         </View>
       </View>
     </View>
