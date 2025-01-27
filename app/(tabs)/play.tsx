@@ -107,6 +107,11 @@ export default function Play() {
   useEffect(() => {
     if (elapsedTime >= 20) {
       setTimerRunning(false);
+      const timeout = setTimeout(() => {
+        setGrid(Array.from({ length: 3 }, () => Array(3).fill(false)));
+      }, 2000);
+
+      return () => clearTimeout(timeout);
     }
   }, [elapsedTime]);
 
@@ -173,8 +178,8 @@ export default function Play() {
         </View>
       </View>
       <View style={[styles.row, { marginTop: 40 }]}>
-        <View style={styles.cell}>
-          <Text>timerRunning: {timerRunning && ("yes")} {!timerRunning && ("no")}</Text>
+        <View style={[styles.cell, {borderColor: 'gold', padding: 4}]}>
+          <Text style={{color: 'gold'}}>playing: {timerRunning && ("yes")} {!timerRunning && ("no")}</Text>
         </View>
       </View>
     </View>
