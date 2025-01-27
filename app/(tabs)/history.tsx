@@ -1,7 +1,6 @@
 import { View } from "react-native";
 import { LineChart } from "react-native-gifted-charts"
 
-
 export default function History() {
   const lineData = [
       {value: 0, dataPointText: '0'},

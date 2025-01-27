@@ -1,4 +1,4 @@
-import { StyleSheet, Platform, Pressable, Text } from 'react-native';
+import { StyleSheet, Pressable, Text } from 'react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 
 import { getButtonStyles } from '@/styles/buttonStyles';
@@ -44,29 +44,3 @@ export default function Button({ label, onPress, onLongPress }: Props) {
     </Pressable>
   );
 }
-
-
-// const styles = StyleSheet.create({
-//   buttonContainer: {
-//     borderRadius: 14,
-//     overflow: 'hidden',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     ...Platform.select({
-//       ios: {
-//         shadowColor: '#000',
-//         shadowOffset: { width: 0, height: 4 },
-//         shadowOpacity: 0.2,
-//         shadowRadius: 4,
-//       },
-//       android: {
-//         elevation: 4,
-//       },
-//     }),
-//   },
-//   buttonLabel: {
-//     color: '#fff',
-//     fontSize: 24,
-//     margin: 20,
-//   },
-// });

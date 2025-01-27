@@ -7,34 +7,25 @@ import {
   Keyboard,
   Text,
   Switch,
-  Alert,
 } from "react-native";
 
 import Button from "@/components/Button";
 import security from "@/util/security";
 import { getGlobalStyles } from "@/styles/globalStyles";
 import { useTheme } from "@/contexts/ThemeContext"
+import { showCustomAlert } from "@/util/alert";
 
 
 const MAXN = 9;
 const MINN = 2;
 
-const showCustomAlert = (title: string, message: string) => {
-  Alert.alert(
-    title,
-    message,
-    [
-      { text: "OK", onPress: () => { } },
-    ],
-    { cancelable: true } // Allows dismissing the alert by tapping outside
-  );
-};
+type N = number | undefined
 
 export default function Settings() {
   const styles = getGlobalStyles();
   const { toggleTheme, theme } = useTheme();
 
-  const [defaultN, setDefaultN] = useState<number | undefined>(2);
+  const [defaultN, setDefaultN] = useState<N>(2);
   const [dualMode, toggleDualMode] = useState<boolean>(false);
   const [darkMode, toggleDarkMode] = useState<boolean>(false);
   const [error, setError] = useState<string>();

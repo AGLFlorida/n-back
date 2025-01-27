@@ -56,5 +56,10 @@ export const getGlobalStyles = () => {
       borderWidth: 0,
       borderColor: theme.borderColor,
     },
+    button: {
+      fontSize: 20,
+      textDecorationLine: 'underline',
+      color: '#fff',
+    },
   });
 };
