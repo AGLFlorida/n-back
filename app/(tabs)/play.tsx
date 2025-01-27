@@ -12,7 +12,7 @@ export default function Play() {
   const [grid, setGrid] = useState(() =>
     Array.from({ length: 3 }, () => Array(3).fill(false))
   );
-  const [timerRunning, setTimerRunning] = useState(true);
+  const [timerRunning, setTimerRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const timerRef = useRef<number | NodeJS.Timeout | null>(null);
   const intervalRef = useRef<number | NodeJS.Timeout | null>(null);
@@ -127,6 +127,7 @@ export default function Play() {
   // Cleanup timers on lost focus
   useFocusEffect(
     React.useCallback(() => {
+      resetGame();
       return () => {
         stopEngineTimer();
         stopIntervalTimer();
