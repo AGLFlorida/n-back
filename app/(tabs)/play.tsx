@@ -229,8 +229,7 @@ export default function Play() {
       <View style={[styles.row, { marginTop: 40 }]}>
         <View style={[styles.cell, styles.play]}>
           <Text style={styles.playLabel}>
-            {!loading && `playing: ${timerRunning ? "yes" : "no"}`}
-            {loading && ("loading...")}
+            {(loading) ? "loading..." : (timerRunning) ? "playing": "stopped"}
           </Text>
         </View>
       </View>
