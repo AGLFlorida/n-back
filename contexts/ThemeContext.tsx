@@ -21,6 +21,8 @@ const lightMode = {
   backgroundColor: "#dad6d1",
   accentColor: "#fff",
   borderColor: "#bbb",
+  primaryColor: "#E0C3B5",
+  secondaryColor: "#C99782",
   toggle: {
     trackColor: { 
       false: '#898A88', 
@@ -46,6 +48,8 @@ const darkMode = {
   backgroundColor: "#25292e",
   accentColor: "#000",
   borderColor: "#000",
+  primaryColor: "#1f3c4a",
+  secondaryColor: "#36687d",
   toggle: {
     trackColor: { 
       false: '#767577', 

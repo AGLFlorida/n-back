@@ -6,10 +6,8 @@ import {
   Platform,
   Keyboard,
   Text,
-  TextInput,
   Switch,
   Alert,
-  Appearance,
 } from "react-native";
 
 import Button from "@/components/Button";
@@ -18,7 +16,7 @@ import { getGlobalStyles } from "@/styles/globalStyles";
 import { useTheme } from "@/contexts/ThemeContext"
 
 
-const MAXN = 10;
+const MAXN = 9;
 const MINN = 2;
 
 const showCustomAlert = (title: string, message: string) => {
@@ -43,6 +41,14 @@ export default function Settings() {
   const originalN = useRef<number>();
   const originalDual = useRef<boolean>();
   const originalDark = useRef<boolean>();
+
+  const handleTapN = () => {
+    setDefaultN((prev) => ((prev || MINN) < MAXN ? (prev || MINN) + 1 : MINN)); 
+  };
+
+  const handleLongPressN = () => {
+    setDefaultN(MINN);
+  };
 
   const fetchSettings = async () => {
     await Promise.all([
@@ -108,14 +114,7 @@ export default function Settings() {
         <View style={[styles.grid, { alignItems: "flex-start" }]}>
           <View style={[styles.row, { margin: 5 }]}>
             <View style={styles.settingsCell}>
-              <TextInput
-                style={[styles.numberInput, { borderColor: theme.textColor }]}
-                keyboardType="numeric"
-                value={JSON.stringify(defaultN)}
-                onChangeText={(n) => handleSetDefaultN(n)}
-                placeholder=""
-                placeholderTextColor="#fff"
-              />
+              <Button label={JSON.stringify(defaultN)} onPress={handleTapN} onLongPress={handleLongPressN} />
             </View>
             <View style={styles.settingsCell}>
               <Text style={styles.label}>Default N</Text>
