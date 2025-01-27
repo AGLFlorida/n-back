@@ -3,6 +3,12 @@ import { Appearance } from "react-native";
 
 import security from "@/util/security";
 
+const PRIMARY_DARK = "#102632"; // #102632
+const SECONDARY_DARK = "#39728B"; // #39728B
+
+const PRIMARY_LIGHT = "#E0C3B5"; // #E0C3B5
+const SECONDARY_LIGHT = "#8A5745"; // #8A5745
+
 export type ThemeContextType = {
   theme: typeof lightMode; 
   themeMode: "light" | "dark"; 
@@ -11,7 +17,7 @@ export type ThemeContextType = {
 
 type Toggle = (arg0: boolean) => string;
 const lightThumbColor: Toggle = (on: boolean) => {
-  const c1: string = '#C99782';
+  const c1: string = '#A45D4E';
   const c2: string = '#f4f3f4';
   return on ? c1 : c2
 }
@@ -21,12 +27,12 @@ const lightMode = {
   backgroundColor: "#dad6d1",
   accentColor: "#fff",
   borderColor: "#bbb",
-  primaryColor: "#E0C3B5",
-  secondaryColor: "#C99782",
+  primaryColor: PRIMARY_LIGHT, // #E0C3B5
+  secondaryColor: SECONDARY_LIGHT, // #8A5745
   toggle: {
     trackColor: { 
-      false: '#898A88', 
-      true: '#E0C3B5' 
+      false: '#707070', 
+      true: PRIMARY_LIGHT
     },
     thumbColor: lightThumbColor, // work around for type errors
   },
@@ -48,14 +54,14 @@ const darkMode = {
   backgroundColor: "#25292e",
   accentColor: "#000",
   borderColor: "#000",
-  primaryColor: "#1f3c4a",
-  secondaryColor: "#36687d",
+  primaryColor: PRIMARY_DARK, // #1f3c4a
+  secondaryColor: SECONDARY_DARK, // #244759",
   toggle: {
     trackColor: { 
       false: '#767577', 
-      true: '#1f3c4a' 
+      true: PRIMARY_DARK
     },
-    thumbColor: (on: boolean) => on ? '#36687d' : '#f4f3f4',
+    thumbColor: (on: boolean) => on ? SECONDARY_DARK : '#f4f3f4',
   },
   screenOptions: {
     tabBarActiveTintColor: '#ffd33d',
