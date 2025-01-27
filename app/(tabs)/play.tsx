@@ -25,9 +25,9 @@ export default function Play() {
     clickRef.current = f(clickRef.current);
   }
 
-  const resetGame = () => {
+  const resetGame = (run: boolean = true) => {
     setGrid(Array.from({ length: 3 }, () => Array(3).fill(false)));
-    setTimerRunning(true);
+    setTimerRunning(run);
     setElapsedTime(0);
   };
 
@@ -120,6 +120,7 @@ export default function Play() {
     return () => {
       stopEngineTimer();
       stopIntervalTimer();
+      resetGame(false);
     };
   }, []);
 
@@ -129,6 +130,7 @@ export default function Play() {
       return () => {
         stopEngineTimer();
         stopIntervalTimer();
+        resetGame(false);
       };
     }, [])
   );
