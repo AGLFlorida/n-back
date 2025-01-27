@@ -11,3 +11,5 @@ const showCustomAlert = (title: string, message: string) => {
     { cancelable: true } // Allows dismissing the alert by tapping outside
   );
 };
+
+export { showCustomAlert };
