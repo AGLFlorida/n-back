@@ -5,7 +5,11 @@ import { Audio } from "expo-av";
 
 import Square from "@/components/Square";
 import Button from "@/components/Button";
+import StatusButton from "@/components/StatusButton";
+
 import security from "@/util/security";
+
+
 import { getGlobalStyles } from "@/styles/globalStyles";
 
 const soundFiles: SoundFile[] = [
@@ -239,18 +243,7 @@ export default function Play() {
           <Button label=" Position " onPress={() => setClickRef((prev) => prev + 1)} />
         </View>
       </View>
-      <View style={[styles.row, { marginTop: 40 }]}>
-        <View style={[styles.cell, styles.clearBorder]}>
-          <Button label=" Play Again " onPress={() => resetGame()} />
-        </View>
-      </View>
-      <View style={[styles.row, { marginTop: 40 }]}>
-        <View style={[styles.cell, styles.play]}>
-          <Text style={styles.playLabel}>
-            {(loading) ? "loading..." : (timerRunning) ? "playing" : "stopped"}
-          </Text>
-        </View>
-      </View>
+      <StatusButton onPress={resetGame} loading={loading} timerRunning={timerRunning} />
     </View>
   );
 }

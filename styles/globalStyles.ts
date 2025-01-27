@@ -46,13 +46,19 @@ export const getGlobalStyles = () => {
     play: {
       padding: 4,
       borderColor: theme.screenOptions.tabBarActiveTintColor,
+      borderRadius: 14,
+      overflow: 'hidden',
+      width: '50%',
+      alignItems: 'center',
     },
     playLabel: {
       color: theme.screenOptions.tabBarActiveTintColor,
+      fontSize: 24,
+      margin: 20,
     },
     settingsCell: {
-      padding: 3, 
-      justifyContent: 'center', 
+      padding: 3,
+      justifyContent: 'center',
       borderWidth: 0,
       borderColor: theme.borderColor,
     },
