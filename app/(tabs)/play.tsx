@@ -229,7 +229,7 @@ export default function Play() {
           <Button label=" Position " onPress={() => setClickRef((prev) => prev + 1)} />
         </View>
       </View>
-      <StatusButton onPress={resetGame} isLoading={isLoading} playing={shouldStartGame} />
+      <StatusButton onPress={() => {resetGame(); startGame(true)}} isLoading={isLoading} playing={shouldStartGame} />
     </View>
   );
 }
