@@ -9,34 +9,37 @@ import StatusButton from "@/components/StatusButton";
 
 import security from "@/util/security";
 
-import engine, { getDualMode, fillBoard, SoundState, CustomTimer, loadSounds, RunningEngine, loadSound, Grid } from "@/util/engine";
+import engine, { MAXTIME, getDualMode, fillBoard, SoundState, CustomTimer, loadSounds, RunningEngine, loadSound, Grid } from "@/util/engine";
 
 import { getGlobalStyles } from "@/styles/globalStyles";
 
 export default function Play() {
-  console.debug("RENDERED PLAY");
+  // console.debug("RENDERED PLAY");
 
   const styles = getGlobalStyles();
   const navigation = useNavigation();
 
   const [grid, setGrid] = useState<Grid>(fillBoard());
-  useEffect(() => { console.log("because of Play hook 1: grid") }, [grid]);
+  // useEffect(() => { console.log("because of Play hook 1: grid") }, [grid]);
 
   const [shouldStartGame, startGame] = useState<boolean>(false);
-  useEffect(() => { console.log("because of Play hook 2: shouldStartGame") }, [shouldStartGame]);
+  // useEffect(() => { console.log("because of Play hook 2: shouldStartGame") }, [shouldStartGame]);
 
   const [elapsedTime, setElapsedTime] = useState<number>(-1);
-  useEffect(() => { console.log("because of Play hook 3: elapsedTime") }, [elapsedTime]);
+  // useEffect(() => { console.log("because of Play hook 3: elapsedTime") }, [elapsedTime]);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  useEffect(() => { console.log("because of Play hook 4: isLoading") }, [isLoading]);
+  // useEffect(() => { console.log("because of Play hook 4: isLoading") }, [isLoading]);
 
   const [defaultN, setDefaultN] = useState<number>();
-  useEffect(() => { console.log("because of Play hook 5: defaultN") }, [defaultN]);
+  // useEffect(() => { console.log("because of Play hook 5: defaultN") }, [defaultN]);
 
   const gameLoopRef = useRef<CustomTimer>(null);
   const engineRef = useRef<RunningEngine>();
 
+  // TODO these should be variable per game
+  const gameLen = 30
+  const matchRate = 0.3
 
   // Is Dual N-Back Mode
   const isDualMode = useRef<boolean>(false);
@@ -98,10 +101,6 @@ export default function Play() {
   useFocusEffect(
     React.useCallback(() => {
       const initGame = async () => {
-        // TODO these should be variable per game
-        const len = 30
-        const matchRate = 0.3
-
         try {
           const n: number = await getN();
 
@@ -125,7 +124,7 @@ export default function Play() {
 
           engineRef.current = engine({
             n,
-            gameLen: len,
+            gameLen,
             matchRate,
             isDualMode
           });
@@ -158,9 +157,21 @@ export default function Play() {
 
   useEffect(() => {
     if (elapsedTime >= 0) {
+      if (elapsedTime > MAXTIME) { // exit condition 1: game went too long.
+        console.log("Game ended, timer: ", elapsedTime);
+        resetGame();
+        return;
+      }
+      
       if (elapsedTime % 2 === 0) {
+        const turn = Math.floor(elapsedTime / 2);
+        if (turn >= gameLen) { // exit condition 2: game is actually over.
+          console.info("Game ended, turn: ", turn);
+          resetGame();
+          return;
+        }
         try {
-          const round = engineRef.current?.nextRound(elapsedTime);
+          const round = engineRef.current?.nextRound(turn);
           setGrid(round?.next as Grid);
           round?.playSound()
         } catch (e) {

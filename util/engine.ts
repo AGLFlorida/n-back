@@ -2,8 +2,8 @@ import { Audio } from "expo-av";
 
 import security from './security';
 
-//const MAXTIME = (5 * 60);
-const MAXTIME = 20; // DEBUG TODO FIXME
+const MAXTIME = (5 * 60);
+// const MAXTIME = 20; // DEBUG TODO FIXME
 
 const soundFiles: SoundFile[] = [
   { key: "C", file: require("../assets/audio/C.m4a") as AVPlaybackSource },
@@ -175,15 +175,13 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
 
     const nextGrid = (): Grid => {
       try {
-        const nextIndex = (gridPositions[turn] - 1); // 1
+        const nextIndex = (gridPositions[turn] - 1);
         const [newRow, newCol] = gridIndexes[nextIndex];
-  
         const newGrid = fillBoard();
         newGrid[newRow][newCol] = true;
-  
         return newGrid
       } catch (error) {
-        console.error("Error in place next square.");
+        console.error("Error in placing next square.");
         throw error;
       }
     }
@@ -202,5 +200,5 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
 
 
 
-export { fillBoard, getDualMode, loadSounds, loadSound };
+export { fillBoard, getDualMode, loadSounds, loadSound, MAXTIME };
 export default engine;

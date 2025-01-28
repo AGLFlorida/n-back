@@ -4,7 +4,6 @@ import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
 export default function RootLayout() {
-  console.log("ROOT LAYOUT RENDER");
   return (
     <ThemeProvider>
       <Stack>
