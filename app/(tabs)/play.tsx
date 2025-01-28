@@ -112,7 +112,6 @@ export default function Play() {
           const isDualMode: boolean = await getDualMode();
           setDualMode(isDualMode);
 
-          // TODO prob move this to the engine?
           if (isDualMode) {
             const sounds = await loadSounds();
             setSounds(sounds);
