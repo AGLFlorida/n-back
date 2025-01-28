@@ -33,7 +33,7 @@ export type CustomTimer = number | NodeJS.Timeout | null
 
 interface Engine {
   setGrid: (arg0: any[][]) => void
-  setTimerRunning: (arg0: boolean) => void;
+  startGame: (arg0: boolean) => void;
   setElapsedTime: (arg0: MultiType) => void;
   setSound: (arg0: Audio.Sound | null) => void;
   //setDefaultN: (arg0: number) => void;
@@ -54,11 +54,12 @@ interface Engine {
 let gridPositions: number[];
 let letterSounds: string[];
 
-const FillBoard = () => Array.from({ length: 3 }, () => Array(3).fill(false))
+const AN_EMPTY_BOARD = Array.from({ length: 3 }, () => Array(3).fill(false))
+const FillBoard = () => AN_EMPTY_BOARD;
 
 const Engine = ({
   setGrid,
-  setTimerRunning,
+  startGame,
   setElapsedTime,
   setSound,
   setSounds,
@@ -138,7 +139,7 @@ const Engine = ({
       setGrid(FillBoard());
       createNewGame();
     } 
-    setTimerRunning(run);
+    startGame(run);
     setElapsedTime(-1);
     //setTurn(0);
   };

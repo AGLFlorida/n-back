@@ -5,6 +5,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 
 export default function TabLayout() {
   const { theme } = useTheme();
+  console.log("TAB LAYOUT RENDER");
 
   return (
     <Tabs

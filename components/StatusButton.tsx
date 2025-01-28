@@ -6,19 +6,19 @@ import Button from './Button';
 
 type Props = {
   isLoading?: boolean;
-  timerRunning?: boolean;
+  playing?: boolean;
   onPress?: () => void;
 }
 
-export default function PlayButton({ onPress, isLoading = false, timerRunning = false }: Props) {
+export default function PlayButton({ onPress, isLoading = false, playing = false }: Props) {
   const styles = getGlobalStyles();
-  const [shouldShowButton, setShowButton] = useState<boolean>((!isLoading && !timerRunning));
+  const [shouldShowButton, setShowButton] = useState<boolean>((!isLoading && !playing));
 
   useEffect(()=>{
-    setShowButton((!isLoading && !timerRunning));
+    setShowButton((!isLoading && !playing));
 
     return () => {};
-  }, [isLoading, timerRunning]);
+  }, [isLoading, playing]);
 
   return (
     <View style={[styles.row, { marginTop: 40 }]}>

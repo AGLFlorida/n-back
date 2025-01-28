@@ -16,12 +16,20 @@ import { getGlobalStyles } from "@/styles/globalStyles";
 
 export default function Play() {
   console.debug("RENDERED PLAY");
+
   const styles = getGlobalStyles();
 
   const [grid, setGrid] = useState(FillBoard());
-  const [timerRunning, setTimerRunning] = useState<boolean>(false);
+  useEffect(() => { console.log("because of Play hook 1: grid")}, [grid]);
+
+  const [shouldStartGame, startGame] = useState<boolean>(false);
+  useEffect(() => { console.log("because of Play hook 2: shouldStartGame")}, [shouldStartGame]);
+
   const [elapsedTime, setElapsedTime] = useState<number>(-1);
+  useEffect(() => { console.log("because of Play hook 3: elapsedTime")}, [elapsedTime]);
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  useEffect(() => { console.log("because of Play hook 4: isLoading")}, [isLoading]);
 
   const timerRef = useRef<CustomTimer>(null);
   // const intervalRef = useRef<CustomTimer>(null);
@@ -64,6 +72,7 @@ export default function Play() {
     clickRef.current = fn(clickRef.current);
   }
 
+
   // Main Gameplay
   // TODO these should be variable
   const len = 30
@@ -82,7 +91,7 @@ export default function Play() {
     getDualMode,
   } = Engine({
     setGrid,
-    setTimerRunning,
+    startGame,
     setElapsedTime,
     setSound,
     setSounds,
@@ -112,14 +121,14 @@ export default function Play() {
   };
 
   useEffect(() => {
-    if (timerRunning) {
+    if (shouldStartGame) {
       startEngineTimer();
     }
 
     return () => {
       stopEngineTimer();
     };
-  }, [timerRunning]);
+  }, [shouldStartGame]);
 
   useEffect(() => {
     if (elapsedTime === 0) setIsLoading(false);
@@ -193,7 +202,7 @@ export default function Play() {
           <Button label=" Position " onPress={() => setClickRef((prev) => prev + 1)} />
         </View>
       </View>
-      <StatusButton onPress={resetGame} isLoading={isLoading} timerRunning={timerRunning} />
+      <StatusButton onPress={resetGame} isLoading={isLoading} playing={shouldStartGame} />
     </View>
   );
 }
