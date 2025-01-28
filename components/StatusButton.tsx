@@ -5,12 +5,12 @@ import { getGlobalStyles } from '@/styles/globalStyles';
 import Button from './Button';
 
 type Props = {
-  isLoading?: boolean;
-  playing?: boolean;
+  isLoading: boolean;
+  playing: boolean;
   onPress?: () => void;
 }
 
-export default function PlayButton({ onPress, isLoading = false, playing = false }: Props) {
+export default function PlayButton({ onPress, isLoading, playing }: Props) {
   const styles = getGlobalStyles();
   const [shouldShowButton, setShowButton] = useState<boolean>((!isLoading && !playing));
 
