@@ -130,7 +130,8 @@ export default function Play() {
           });
 
           engineRef.current.createNewGame();
-          startGame(true);
+          // startGame(true);
+          setIsLoading(false);
         } catch (e) {
           console.error("Error initializing game.", e);
         }
@@ -147,7 +148,7 @@ export default function Play() {
   useEffect(() => {
     if (shouldStartGame) {
       startGameLoop();
-      setIsLoading(false);
+      // setIsLoading(false);
 
       return () => {
         stopGameLoop();
@@ -201,8 +202,6 @@ export default function Play() {
       resetGame();
     };
   }, []);
-
-  // TODO game has no end condition
 
   return (
     <View style={styles.container}>
