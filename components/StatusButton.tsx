@@ -5,26 +5,26 @@ import { getGlobalStyles } from '@/styles/globalStyles';
 import Button from './Button';
 
 type Props = {
-  isLoading?: boolean;
-  timerRunning?: boolean;
+  isLoading: boolean;
+  playing: boolean;
   onPress?: () => void;
 }
 
-export default function PlayButton({ onPress, isLoading = false, timerRunning = false }: Props) {
+export default function PlayButton({ onPress, isLoading, playing }: Props) {
   const styles = getGlobalStyles();
-  const [shouldShowButton, setShowButton] = useState<boolean>((!isLoading && !timerRunning));
+  const [shouldShowButton, setShowButton] = useState<boolean>((!isLoading && !playing));
 
   useEffect(()=>{
-    setShowButton((!isLoading && !timerRunning));
+    setShowButton((!isLoading && !playing));
 
     return () => {};
-  }, [isLoading, timerRunning]);
+  }, [isLoading, playing]);
 
   return (
     <View style={[styles.row, { marginTop: 40 }]}>
       {shouldShowButton &&
         <View style={[styles.cell, styles.clearBorder]}>
-          <Button label=" Play Again " onPress={onPress} />
+          <Button label=" Begin " onPress={onPress} />
         </View>
       }{!shouldShowButton &&
         <View style={[styles.cell, styles.play]}>

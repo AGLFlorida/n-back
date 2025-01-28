@@ -1,18 +1,9 @@
-import React from 'react';
 import { Audio } from "expo-av";
 
 import security from './security';
 
-// export default function generate(n: number): Array<string> {
-
-//   return [];
-// }
-
-// generate pattern
-
-// verify pattern
-
-// calculate final score
+const MAXTIME = (5 * 60);
+// const MAXTIME = 20; // DEBUG TODO FIXME
 
 const soundFiles: SoundFile[] = [
   { key: "C", file: require("../assets/audio/C.m4a") as AVPlaybackSource },
@@ -25,6 +16,11 @@ const soundFiles: SoundFile[] = [
   { key: "W", file: require("../assets/audio/W.m4a") as AVPlaybackSource },
 ];
 
+const soloSound: SoundFile = {
+  key: "NOISE",
+  file: require("../assets/audio/swords.m4a")
+}
+
 type AVPlaybackSource = Parameters<typeof Audio.Sound.createAsync>[0];
 
 type SoundFile = {
@@ -32,166 +28,177 @@ type SoundFile = {
   file: AVPlaybackSource;
 };
 
-type Grid = any[][];
-type MultiType = number | ((arg0: number) => number)
+export type Grid = any[][];
+export type MultiType = number | ((arg0: number) => number);
 
 export type SoundState = Record<string, Audio.Sound | null>;
-export type CustomTimer = number | NodeJS.Timeout | null
+export type CustomTimer = number | NodeJS.Timeout | null;
+
+let gridPositions: number[];
+let letterSounds: string[];
+
+const fillBoard: () => Grid = () => Array.from({ length: 3 }, () => Array(3).fill(false));
 
 interface Engine {
-  setGrid: (arg0: any[][]) => void
-  setTimerRunning: (arg0: boolean) => void;
-  setElapsedTime: (arg0: MultiType) => void;
-  setSound: (arg0: Audio.Sound | null) => void;
-  setDefaultN: (arg0: number) => void;
-  setSounds: (arg0: SoundState) => void;
-  setDualMode: (arg0: boolean) => void;
-  grid: Grid;
-  isDualMode: boolean;
-  intervalRef: React.MutableRefObject<CustomTimer>;
-  timerRef: React.MutableRefObject<CustomTimer>;
-  navigation: any; // will fix later :P 
+  n: number;
+  gameLen: number;
+  matchRate: number;
+  isDualMode?: boolean
 }
 
-const FillBoard = () => Array.from({ length: 3 }, () => Array(3).fill(false))
+type Round = {
+  next: Grid;
+  playSound: () => Promise<void>
+}
 
-const Engine = ({ setGrid, setTimerRunning, setElapsedTime, setSound, setSounds, setDefaultN, setDualMode, grid, isDualMode, intervalRef, timerRef, navigation }: Engine) => {
+export type RunningEngine = {
+  createNewGame: () => void,
+  nextRound: (arg0: number) => Round,
+}
 
-  const resetGame = (run: boolean = true) => {
-    setGrid(FillBoard());
-    setTimerRunning(run);
-    setElapsedTime(0);
-  };
+const getDualMode = async (): Promise<boolean> => {
+  try {
+    const dual = await security.get("dualMode");
+    return dual as boolean;
+  } catch (e) {
+    console.error("Error in [getDualMode]", e);
+    throw e;
+  }
+};
 
-  const placeRandomSquare = () => {
-    const allCells: Array<[number, number]> = [];
-    grid.forEach((row, rowIndex) => {
-      row.forEach((_: any, colIndex: number) => {
-        allCells.push([rowIndex, colIndex]);
-      });
+const loadSounds = async (): Promise<SoundState> => {
+  const loadedSounds: SoundState = {};
+
+  for (const { key, file } of soundFiles) {
+    const { sound } = await Audio.Sound.createAsync(file);
+    loadedSounds[key] = sound;
+  }
+
+  return loadedSounds;
+}
+
+const loadSound = async (): Promise<Audio.Sound> => {
+  const { sound } = await Audio.Sound.createAsync(soloSound.file);
+
+  return sound;
+}
+
+const gridIndexes: Array<[number, number]> = (() => {
+  const allCells: Array<[number, number]> = [];
+  fillBoard().forEach((row, rowIndex) => {
+    row.forEach((_: any, colIndex: number) => {
+      allCells.push([rowIndex, colIndex]);
     });
+  });
 
-    const randomIndex = Math.floor(Math.random() * allCells.length);
-    const [newRow, newCol] = allCells[randomIndex];
+  return allCells;
+})();
 
-    const newGrid = FillBoard();
-    newGrid[newRow][newCol] = true;
+const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningEngine => {
 
-    setGrid(newGrid);
-  };
+  const generatePattern = (): { gridPositions: number[]; letterSounds: string[] } => {
+    const gridPositions: number[] = [];
+    const letterSounds: string[] = [];
+    const possibleGridPositions = [1, 2, 3, 4, 5, 6, 7, 8, 9]; // 9 grid positions
+    const possibleLetterSounds = ["C", "G", "H", "K", "P", "Q", "T", "W"]; // 8 sounds
 
-  const chooseRandomSound = (): AVPlaybackSource => {
-    const randomIndex = Math.floor(Math.random() * soundFiles.length);
-    return soundFiles[randomIndex].file;
-  }
-
-  const stepGame = async () => {
-    try {
-      placeRandomSquare();
-
-      if (isDualMode) {
-        const { sound } = await Audio.Sound.createAsync(
-          chooseRandomSound()
-        );
-        await sound.playAsync();
+    for (let i = 0; i < gameLen; i++) {
+      // Grid Positions Logic
+      if (i < n || Math.random() > matchRate) {
+        // No match or not enough history
+        let newGridPos;
+        do {
+          newGridPos =
+            possibleGridPositions[
+            Math.floor(Math.random() * possibleGridPositions.length)
+            ];
+        } while (i >= n && newGridPos === gridPositions[i - n]); // Avoid accidental match
+        gridPositions.push(newGridPos); // Ensure newGridPos is valid before pushing
       } else {
-        const { sound } = await Audio.Sound.createAsync(
-          require("../assets/audio/swords.m4a")
-        );
-        setSound(sound);
-        await sound.playAsync();
+        // Match from `n` steps back
+        gridPositions.push(gridPositions[i - n]);
       }
+
+      // Letter Sounds Logic
+      if ((i < n || Math.random() > matchRate) && isDualMode) {
+        // No match or not enough history
+        let newLetter;
+        do {
+          newLetter =
+            possibleLetterSounds[
+            Math.floor(Math.random() * possibleLetterSounds.length)
+            ];
+        } while (i >= n && newLetter === letterSounds[i - n]); // Avoid accidental match
+        letterSounds.push(newLetter); // Ensure newLetter is valid before pushing
+      } else {
+        // Match from `n` steps back
+        letterSounds.push(letterSounds[i - n]);
+      }
+    }
+
+    return { gridPositions, letterSounds };
+  }
+
+  const createNewGame = () => {
+    try {
+      const patterns = generatePattern();
+      gridPositions = patterns.gridPositions;
+      letterSounds = patterns.letterSounds;
+    } catch (e) {
+      console.error("Error in [createNewGame]", e);
+      throw e;
+    }
+  }
+
+  const chooseNextSound = (turn: number) => {
+    try {
+      const patternIndex = letterSounds[turn];
+      const nextIndex = soundFiles.findIndex((item) => item.key == patternIndex);
+      return soundFiles[nextIndex].file;
     } catch (error) {
-      console.log("Error playing sound:", error);
+      console.error("Error in chooseNextSound.");
+      throw error;
     }
   }
 
-  const startIntervalTimer = () => {
-    if (!intervalRef.current) {
-      intervalRef.current = setInterval(() => {
-        stepGame();
-      }, 2000);
-    }
-  }
-
-  const startEnginerTimer = () => {
-    if (!timerRef.current) {
-      timerRef.current = setInterval(() => {
-        setElapsedTime((prevTime: number) => prevTime + 1);
-      }, 1000);
-    }
-  }
-
-  const stopIntervalTimer = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  }
-
-  const stopEngineTimer = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  }
-
-  const loadSounds = async () => {
-    const loadedSounds: SoundState = {};
-
-    for (const { key, file } of soundFiles) {
-      const { sound } = await Audio.Sound.createAsync(file);
-      loadedSounds[key] = sound;
+  const nextRound = (turn: number): Round => {
+    const playSound = async () => {
+      try {
+        const nextSound = chooseNextSound(turn);
+        const { sound } = await Audio.Sound.createAsync(nextSound);
+        await sound.playAsync();
+      } catch (e) {
+        console.error("Error playing sound.", e);
+        throw e;
+      }
     }
 
-    setSounds(loadedSounds);
-  };
-
-  const endGame = (elapsedTime: number) => () => {
-    if (elapsedTime >= 20) {
-      setTimerRunning(false);
-      const timeout = setTimeout(() => {
-        setGrid(Array.from({ length: 3 }, () => Array(3).fill(false)));
-      }, 2000);
-
-      return () => clearTimeout(timeout);
+    const nextGrid = (): Grid => {
+      try {
+        const nextIndex = (gridPositions[turn] - 1);
+        const [newRow, newCol] = gridIndexes[nextIndex];
+        const newGrid = fillBoard();
+        newGrid[newRow][newCol] = true;
+        return newGrid
+      } catch (error) {
+        console.error("Error in placing next square.");
+        throw error;
+      }
     }
 
-    return () => { }
+    return {
+      next: nextGrid(),
+      playSound
+    }
   }
-
-  const getN = async () => {
-    try {
-      const n = await security.get("defaultN");
-      setDefaultN(n as number);
-
-      navigation.setOptions({
-        title: `Play (${n}-back)`,
-      });
-    } catch (e) { }
-  };
-
-  const getDualMode = async () => {
-    try {
-      const dual = await security.get("dualMode");
-      setDualMode(dual as boolean);
-    } catch (e) { }
-  }
-
+  
   return {
-    resetGame,
-    endGame,
-    startIntervalTimer,
-    startEnginerTimer,
-    stopEngineTimer,
-    stopIntervalTimer,
-    loadSounds,
-    getN,
-    getDualMode,
+    createNewGame,
+    nextRound,
   }
 }
 
 
 
-export { FillBoard, soundFiles };
-export default Engine;
+export { fillBoard, getDualMode, loadSounds, loadSound, MAXTIME };
+export default engine;

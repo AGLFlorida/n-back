@@ -9,108 +9,198 @@ import StatusButton from "@/components/StatusButton";
 
 import security from "@/util/security";
 
-import Engine, { FillBoard, SoundState, CustomTimer } from "@/util/engine";
-
+import engine, { MAXTIME, getDualMode, fillBoard, SoundState, CustomTimer, loadSounds, RunningEngine, loadSound, Grid } from "@/util/engine";
 
 import { getGlobalStyles } from "@/styles/globalStyles";
 
 export default function Play() {
-  const [grid, setGrid] = useState(FillBoard());
-  const [timerRunning, setTimerRunning] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
-  const timerRef = useRef<CustomTimer>(null);
-  const intervalRef = useRef<CustomTimer>(null);
-  const [defaultN, setDefaultN] = useState<number>();
+  // console.debug("RENDERED PLAY");
+
+  const styles = getGlobalStyles();
   const navigation = useNavigation();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [sounds, setSounds] = useState<SoundState>({});
-  const [sound, setSound] = useState<Audio.Sound | null>(null); // when isDual == false;
-  const [isDualMode, setDualMode] = useState<boolean>(false);
 
-  const {
-    resetGame,
-    endGame,
-    startEnginerTimer,
-    stopEngineTimer,
-    startIntervalTimer,
-    stopIntervalTimer,
-    loadSounds,
-    getN,
-    getDualMode,
-  } = Engine({
-    setGrid,
-    setTimerRunning,
-    setElapsedTime,
-    setSound,
-    setSounds,
-    setDefaultN,
-    setDualMode,
-    grid,
-    isDualMode,
-    timerRef,
-    intervalRef,
-    navigation
-  })
+  const [grid, setGrid] = useState<Grid>(fillBoard());
+  // useEffect(() => { console.log("because of Play hook 1: grid") }, [grid]);
 
+  const [shouldStartGame, startGame] = useState<boolean>(false);
+  // useEffect(() => { console.log("because of Play hook 2: shouldStartGame") }, [shouldStartGame]);
+
+  const [elapsedTime, setElapsedTime] = useState<number>(-1);
+  // useEffect(() => { console.log("because of Play hook 3: elapsedTime") }, [elapsedTime]);
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  // useEffect(() => { console.log("because of Play hook 4: isLoading") }, [isLoading]);
+
+  const [defaultN, setDefaultN] = useState<number>();
+  // useEffect(() => { console.log("because of Play hook 5: defaultN") }, [defaultN]);
+
+  const gameLoopRef = useRef<CustomTimer>(null);
+  const engineRef = useRef<RunningEngine>();
+
+  // TODO these should be variable per game
+  const gameLen = 30
+  const matchRate = 0.3
+
+  // Is Dual N-Back Mode
+  const isDualMode = useRef<boolean>(false);
+  const setDualMode = (p: boolean) => {
+    isDualMode.current = p;
+  }
+
+  // All Sounds
+  const sounds = useRef<SoundState>({});
+  const setSounds = (p: SoundState) => {
+    sounds.current = p;
+  }
+  type sound = Audio.Sound | null;
+  const sound = useRef<sound>(null);
+  const setSound = (p: sound) => {
+    sound.current = p;
+  }
+
+  // TODO Tracking Score
   const clickRef = useRef(0);
-
   const setClickRef = (fn: (p: number) => number) => {
     clickRef.current = fn(clickRef.current);
   }
 
-  const styles = getGlobalStyles();
-
-  useEffect(() => {
-    if (timerRunning) {
-      startEnginerTimer()
-      startIntervalTimer();
+  // Current N
+  const getN = async (): Promise<number> => {
+    try {
+      const n = await security.get("defaultN");
+      return n as number
+    } catch (e) {
+      console.error("Error in [getN]", e);
+      throw e;
     }
+  };
 
-    return () => {
-      stopIntervalTimer();
-      stopEngineTimer();
-    };
-  }, [timerRunning]);
+  const resetGame = () => {
+    stopGameLoop();
+    startGame(false);
+    setElapsedTime(-1);
+    setGrid(fillBoard());
+  }
 
-  useEffect(endGame(elapsedTime), [elapsedTime]);
-
-  useEffect(() => {
-    const unloadSounds = () => {
-      Object.values(sounds).forEach((sound) => {
-        if (sound) sound.unloadAsync();
-      });
+  const startGameLoop = () => {
+    if (!gameLoopRef.current) {
+      gameLoopRef.current = setInterval(() => {
+        setElapsedTime((p) => p + 1);
+      }, 1000);
     }
+  }
 
-    return () => { // Cleanup timers on unmount
-      stopEngineTimer();
-      stopIntervalTimer();
-      resetGame(false);
-      unloadSounds();
-    };
-  }, []);
+  const stopGameLoop = () => {
+    if (gameLoopRef.current) {
+      clearInterval(gameLoopRef.current);
+      gameLoopRef.current = null;
+    }
+  }
 
+  // Main Gameplay Loop
   useFocusEffect(
     React.useCallback(() => {
+      const initGame = async () => {
+        try {
+          const n: number = await getN();
 
-      Promise.all([
-        getN(),
-        loadSounds(),
-        getDualMode()
-      ]).catch(e => e);
+          navigation.setOptions({
+            title: `Play (${n}-back)`,
+          });
+          setDefaultN(n);
 
-      const loading = setTimeout(() => {
-        setLoading(false);
-        resetGame();
-      }, 2000);
+          const isDualMode: boolean = await getDualMode();
+          setDualMode(isDualMode);
 
-      return () => { // Cleanup timers on lost focus
-        stopEngineTimer();
-        stopIntervalTimer();
-        resetGame(false);
-        clearTimeout(loading);
-      };
-    }, [])
+          if (isDualMode) {
+            const sounds = await loadSounds();
+            setSounds(sounds);
+
+          } else {
+            const sound = await loadSound();
+            setSound(sound);
+          }
+
+          engineRef.current = engine({
+            n,
+            gameLen,
+            matchRate,
+            isDualMode
+          });
+
+          engineRef.current.createNewGame();
+          // startGame(true);
+          setIsLoading(false);
+        } catch (e) {
+          console.error("Error initializing game.", e);
+        }
+      }
+
+      initGame();
+
+      return () => {
+        resetGame()
+      } // Cleanup on unmount
+    }, [/* first run: initialize game */])
   );
+
+  useEffect(() => {
+    if (shouldStartGame) {
+      startGameLoop();
+      // setIsLoading(false);
+
+      return () => {
+        stopGameLoop();
+      }
+    }
+  }, [shouldStartGame]);
+
+  useEffect(() => {
+    if (elapsedTime >= 0) {
+      if (elapsedTime > MAXTIME) { // exit condition 1: game went too long.
+        console.log("Game ended, timer: ", elapsedTime);
+        resetGame();
+        return;
+      }
+      
+      if (elapsedTime % 2 === 0) {
+        const turn = Math.floor(elapsedTime / 2);
+        if (turn >= gameLen) { // exit condition 2: game is actually over.
+          console.info("Game ended, turn: ", turn);
+          resetGame();
+          return;
+        }
+        try {
+          const round = engineRef.current?.nextRound(turn);
+          setGrid(round?.next as Grid);
+          round?.playSound()
+        } catch (e) {
+          console.log("Error in game. Ejecting.", e);
+          resetGame();
+        }
+      }
+    }
+  }, [elapsedTime])
+
+  // Cleanup
+  useEffect(() => {
+    const unloadSounds = () => {
+      if (sounds.current !== null) {
+        Object.values(sounds).forEach(({ current }) => {
+          if (current) current.unloadAsync();
+        });
+      }
+
+      if (sound.current !== null) {
+        sound.current.unloadAsync();
+      }
+    }
+
+    return () => { // Cleanup on unmount
+      unloadSounds();
+      resetGame();
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -128,6 +218,7 @@ export default function Play() {
           ))}
         </View>
       ))}
+      { /* TODO: buttons need visual feedback. */ }
       <View style={[styles.row, { marginTop: 20 }]}>
         <View style={[styles.cell, styles.clearBorder]}>
           <Button label=" Sound " onPress={() => alert(clickRef.current)} />
@@ -136,7 +227,7 @@ export default function Play() {
           <Button label=" Position " onPress={() => setClickRef((prev) => prev + 1)} />
         </View>
       </View>
-      <StatusButton onPress={resetGame} loading={loading} timerRunning={timerRunning} />
+      <StatusButton onPress={() => {resetGame(); startGame(true)}} isLoading={isLoading} playing={shouldStartGame} />
     </View>
   );
 }

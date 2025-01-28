@@ -18,9 +18,12 @@ const systemTheme = Appearance.getColorScheme();
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // console.log("THEME PROVIDER RENDER");
   const [theme, setTheme] = useState((systemTheme === "dark") ? darkMode : lightMode); // default to system theme on first load.
-  
+  // useEffect(() => {console.log("because of Theme hook 1: theme")}, [theme]);
+
   const [themeMode, setThemeMode] = useState<"light" | "dark">(systemTheme || "light"); // default to system theme.
+  // useEffect(() => {console.log("because of Theme hook 2: themeMode")}, [theme]);
 
   const toggleTheme = (dark: boolean) => {
     setThemeMode((dark) ? "dark" : "light"); // trigger a re-render
