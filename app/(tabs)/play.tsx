@@ -15,27 +15,70 @@ import Engine, { FillBoard, SoundState, CustomTimer } from "@/util/engine";
 import { getGlobalStyles } from "@/styles/globalStyles";
 
 export default function Play() {
-  const [grid, setGrid] = useState(FillBoard());
-  const [timerRunning, setTimerRunning] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
-  const timerRef = useRef<CustomTimer>(null);
-  const intervalRef = useRef<CustomTimer>(null);
-  const [defaultN, setDefaultN] = useState<number>();
-  const navigation = useNavigation();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [sounds, setSounds] = useState<SoundState>({});
-  const [sound, setSound] = useState<Audio.Sound | null>(null); // when isDual == false;
-  const [isDualMode, setDualMode] = useState<boolean>(false);
+  console.debug("RENDERED PLAY");
+  const styles = getGlobalStyles();
 
+  const [grid, setGrid] = useState(FillBoard());
+  const [timerRunning, setTimerRunning] = useState<boolean>(false);
+  const [elapsedTime, setElapsedTime] = useState<number>(-1);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const timerRef = useRef<CustomTimer>(null);
+  // const intervalRef = useRef<CustomTimer>(null);
+  // const [defaultN, setDefaultN] = useState<number>();
+  const navigation = useNavigation();
+
+  // const [sounds, setSounds] = useState<SoundState>({});
+  // const [sound, setSound] = useState<Audio.Sound | null>(null); // when isDual == false;
+
+  // const [isDualMode, setDualMode] = useState<boolean>(false);
+  //const [turn, setTurn] = useState<number>(0);
+
+  // Current N-Back
+  const defaultN = useRef<number>();
+  const setDefaultN = (p: number) => {
+    defaultN.current = p;
+  }
+
+  // Dual N-Back Mode
+  const isDualMode = useRef<boolean>(false);
+  const setDualMode = (p: boolean) => {
+    isDualMode.current = p;
+  }
+
+  // Loaded Sounds
+  const sounds = useRef<SoundState>({});
+  const setSounds = (p: SoundState) => {
+    sounds.current = p;
+  }
+  type sound = Audio.Sound | null;
+  const sound = useRef<sound>(null);
+  const setSound = (p: sound) => {
+    sound.current = p;
+  }
+
+
+  // Tracking Score
+  const clickRef = useRef(0);
+  const setClickRef = (fn: (p: number) => number) => {
+    clickRef.current = fn(clickRef.current);
+  }
+
+  // Main Gameplay
+  // TODO these should be variable
+  const len = 30
+  const matchRate = 0.3
+
+  // Start the engine. In hindsight, this could be much better...
   const {
     resetGame,
-    endGame,
-    startEnginerTimer,
+    shouldEndGame,
+    startEngineTimer,
     stopEngineTimer,
-    startIntervalTimer,
-    stopIntervalTimer,
+    // startIntervalTimer,
+    // stopIntervalTimer,
     loadSounds,
-    getN,
+    //getN,
     getDualMode,
   } = Engine({
     setGrid,
@@ -43,71 +86,85 @@ export default function Play() {
     setElapsedTime,
     setSound,
     setSounds,
-    setDefaultN,
+    //setDefaultN,
     setDualMode,
+    //setTurn,
     grid,
-    isDualMode,
+    isDualMode: isDualMode.current,
     timerRef,
-    intervalRef,
-    navigation
-  })
+    // intervalRef,
+    // navigation,
+    len,
+    matchRate,
+    //turn,
+    defaultN: defaultN.current as number
+  });
 
-  const clickRef = useRef(0);
+  const getN = async () => {
+    try {
+      const n = await security.get("defaultN");
+      setDefaultN(n as number);
 
-  const setClickRef = (fn: (p: number) => number) => {
-    clickRef.current = fn(clickRef.current);
-  }
-
-  const styles = getGlobalStyles();
+      navigation.setOptions({
+        title: `Play (${n}-back)`,
+      });
+    } catch (e) { }
+  };
 
   useEffect(() => {
     if (timerRunning) {
-      startEnginerTimer()
-      startIntervalTimer();
+      startEngineTimer();
     }
 
     return () => {
-      stopIntervalTimer();
       stopEngineTimer();
     };
   }, [timerRunning]);
 
-  useEffect(endGame(elapsedTime), [elapsedTime]);
+  useEffect(() => {
+    if (elapsedTime === 0) setIsLoading(false);
+    if (!isLoading || elapsedTime === 0) {
+      shouldEndGame(elapsedTime);
+    };
+  }, [elapsedTime, isLoading]);
 
+  // Cleanup
   useEffect(() => {
     const unloadSounds = () => {
-      Object.values(sounds).forEach((sound) => {
-        if (sound) sound.unloadAsync();
-      });
+      if (sounds.current !== null) {
+        Object.values(sounds).forEach(({ current }) => {
+          if (current) current.unloadAsync();
+        });
+      }
+
+      if (sound.current !== null) {
+        sound.current.unloadAsync();
+      }
     }
 
     return () => { // Cleanup timers on unmount
       stopEngineTimer();
-      stopIntervalTimer();
       resetGame(false);
       unloadSounds();
     };
   }, []);
 
+  // Loading
   useFocusEffect(
     React.useCallback(() => {
-
       Promise.all([
         getN(),
         loadSounds(),
         getDualMode()
-      ]).catch(e => e);
-
-      const loading = setTimeout(() => {
-        setLoading(false);
+      ]).catch(e => e).then(_ => {
+        // setIsLoading(false);
         resetGame();
-      }, 2000);
+      });
+
 
       return () => { // Cleanup timers on lost focus
         stopEngineTimer();
-        stopIntervalTimer();
         resetGame(false);
-        clearTimeout(loading);
       };
     }, [])
   );
@@ -136,7 +193,7 @@ export default function Play() {
           <Button label=" Position " onPress={() => setClickRef((prev) => prev + 1)} />
         </View>
       </View>
-      <StatusButton onPress={resetGame} loading={loading} timerRunning={timerRunning} />
+      <StatusButton onPress={resetGame} isLoading={isLoading} timerRunning={timerRunning} />
     </View>
   );
 }
