@@ -1,18 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 
 import { getGlobalStyles } from '@/styles/globalStyles';
 import Button from './Button';
 
 type Props = {
-  loading?: boolean;
+  isLoading?: boolean;
   timerRunning?: boolean;
   onPress?: () => void;
 }
 
-export default function PlayButton({ onPress, loading = false, timerRunning = false }: Props) {
+export default function PlayButton({ onPress, isLoading = false, timerRunning = false }: Props) {
   const styles = getGlobalStyles();
-  const shouldShowButton: boolean = (!loading && !timerRunning);
+  const [shouldShowButton, setShowButton] = useState<boolean>((!isLoading && !timerRunning));
+
+  useEffect(()=>{
+    setShowButton((!isLoading && !timerRunning));
+
+    return () => {};
+  }, [isLoading, timerRunning]);
 
   return (
     <View style={[styles.row, { marginTop: 40 }]}>
@@ -23,7 +29,7 @@ export default function PlayButton({ onPress, loading = false, timerRunning = fa
       }{!shouldShowButton &&
         <View style={[styles.cell, styles.play]}>
           <Text style={styles.playLabel}>
-            {(loading) ? "loading..." : "playing"}
+            {(isLoading) ? "loading..." : "playing"}
           </Text>
         </View>
       }
