@@ -17,25 +17,25 @@ import { getGlobalStyles } from "@/styles/globalStyles";
 const fillGuessCard = (len: number): boolean[] => Array(len).fill(false)
 
 export default function Play() {
-  // console.debug("RENDERED PLAY");
+  console.debug("RENDERED PLAY");
 
   const styles = getGlobalStyles();
   const navigation = useNavigation();
 
   const [grid, setGrid] = useState<Grid>(fillBoard());
-  // useEffect(() => { console.log("because of Play hook 1: grid") }, [grid]);
+  useEffect(() => { console.log("because of Play hook 1: grid") }, [grid]);
 
   const [shouldStartGame, startGame] = useState<boolean>(false);
-  // useEffect(() => { console.log("because of Play hook 2: shouldStartGame") }, [shouldStartGame]);
+  useEffect(() => { console.log("because of Play hook 2: shouldStartGame") }, [shouldStartGame]);
 
   const [elapsedTime, setElapsedTime] = useState<number>(-1);
-  // useEffect(() => { console.log("because of Play hook 3: elapsedTime") }, [elapsedTime]);
+  useEffect(() => { console.log("because of Play hook 3: elapsedTime") }, [elapsedTime]);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  // useEffect(() => { console.log("because of Play hook 4: isLoading") }, [isLoading]);
+  useEffect(() => { console.log("because of Play hook 4: isLoading") }, [isLoading]);
 
   const [defaultN, setDefaultN] = useState<number>();
-  // useEffect(() => { console.log("because of Play hook 5: defaultN") }, [defaultN]);
+  useEffect(() => { console.log("because of Play hook 5: defaultN") }, [defaultN]);
 
   const gameLoopRef = useRef<CustomTimer>(null);
   const engineRef = useRef<RunningEngine>();
@@ -127,14 +127,12 @@ export default function Play() {
     posGuesses?: boolean[];
     buzzGuesses?: boolean[];
   }
-
+  // TODO move this to the engine util
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
-    // TODO: calculate actual scores
-    // console.debug(soundGuesses, posGuesses, buzzGuesses);
     const answers = engineRef.current?.answers();
 
-    const soundScore = calculateScore(answers?.sounds as boolean[], soundGuesses as boolean[]);
-    const posScore = calculateScore(answers?.pos as boolean[], posGuesses as boolean[]);
+    const soundScore = calculateScore({answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[]});
+    const posScore = calculateScore({answers: answers?.pos as boolean[], guesses: posGuesses as boolean[]});
 
     showCustomAlert("Score", JSON.stringify({
       sounds: soundScore,

@@ -3,7 +3,6 @@ import { Audio } from "expo-av";
 import security from './security';
 
 const MAXTIME = (5 * 60);
-// const MAXTIME = 20; // DEBUG TODO FIXME
 
 const soundFiles: SoundFile[] = [
   { key: "C", file: require("../assets/audio/C.m4a") as AVPlaybackSource },
@@ -102,17 +101,26 @@ const gridIndexes: Array<[number, number]> = (() => {
   return allCells;
 })();
 
-const calculateScore = (arr1: boolean[], arr2: boolean[]): number => {
-  if (arr1.length !== arr2.length) {
-    console.log(arr1.length, arr2.length)
+interface Score {
+  answers: boolean[]; 
+  guesses: boolean[];
+}
+const calculateScore = ({ answers, guesses}: Score): number => {
+  //TODO add error rate.
+  if (answers.length !== guesses.length) {
+    console.log(answers.length, guesses.length)
     console.error("Error in [calculateScore], array lengths do not match.");
   }
 
-  const matches = arr1.reduce((count, value, index) => {
-    return count + (value === arr2[index] ? 1 : 0);
+  const correct = answers.reduce((count, value, index) => {
+    return count + ((value === guesses[index] && value === true) ? 1 : 0);
   }, 0);
 
-  const percentage = (matches / arr1.length) * 100;
+  const possible = answers.reduce((count, value) => {
+    return count + (value === true ? 1 : 0);
+  }, 0);
+
+  const percentage = (correct / possible) * 100;
   return percentage;
 }
 
@@ -240,8 +248,6 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
     answers,
   }
 }
-
-
 
 export { calculateScore, fillBoard, getDualMode, loadSounds, loadSound, MAXTIME };
 export default engine;
