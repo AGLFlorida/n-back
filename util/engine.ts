@@ -35,7 +35,9 @@ export type SoundState = Record<string, Audio.Sound | null>;
 export type CustomTimer = number | NodeJS.Timeout | null;
 
 let gridPositions: number[];
+let gridMatches: boolean[];
 let letterSounds: string[];
+let soundMatches: boolean[];
 
 const fillBoard: () => Grid = () => Array.from({ length: 3 }, () => Array(3).fill(false));
 
@@ -51,9 +53,15 @@ type Round = {
   playSound: () => Promise<void>
 }
 
+type Answers = {
+  sounds: boolean[];
+  pos: boolean[];
+}
+
 export type RunningEngine = {
   createNewGame: () => void,
   nextRound: (arg0: number) => Round,
+  answers: () => Answers;
 }
 
 const getDualMode = async (): Promise<boolean> => {
@@ -94,11 +102,33 @@ const gridIndexes: Array<[number, number]> = (() => {
   return allCells;
 })();
 
+const calculateScore = (arr1: boolean[], arr2: boolean[]): number => {
+  if (arr1.length !== arr2.length) {
+    console.log(arr1.length, arr2.length)
+    console.error("Error in [calculateScore], array lengths do not match.");
+  }
+
+  const matches = arr1.reduce((count, value, index) => {
+    return count + (value === arr2[index] ? 1 : 0);
+  }, 0);
+
+  const percentage = (matches / arr1.length) * 100;
+  return percentage;
+}
+
 const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningEngine => {
 
-  const generatePattern = (): { gridPositions: number[]; letterSounds: string[] } => {
+  interface Patterns {
+    gridPositions: number[]; 
+    letterSounds: string[];
+    gridMatches: boolean[];
+    soundMatches: boolean[];
+  }
+  const generatePattern = (): Patterns => {
     const gridPositions: number[] = [];
     const letterSounds: string[] = [];
+    const gridMatches: boolean[] = [];
+    const soundMatches: boolean[] = [];
     const possibleGridPositions = [1, 2, 3, 4, 5, 6, 7, 8, 9]; // 9 grid positions
     const possibleLetterSounds = ["C", "G", "H", "K", "P", "Q", "T", "W"]; // 8 sounds
 
@@ -108,19 +138,20 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
         // No match or not enough history
         let newGridPos;
         do {
-          newGridPos =
-            possibleGridPositions[
+          newGridPos = possibleGridPositions[
             Math.floor(Math.random() * possibleGridPositions.length)
-            ];
+          ];
         } while (i >= n && newGridPos === gridPositions[i - n]); // Avoid accidental match
         gridPositions.push(newGridPos); // Ensure newGridPos is valid before pushing
+        gridMatches.push(false);
       } else {
         // Match from `n` steps back
         gridPositions.push(gridPositions[i - n]);
+        gridMatches.push(true)
       }
 
       // Letter Sounds Logic
-      if ((i < n || Math.random() > matchRate) && isDualMode) {
+      if ((i < n || Math.random() > matchRate)) {
         // No match or not enough history
         let newLetter;
         do {
@@ -130,13 +161,15 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
             ];
         } while (i >= n && newLetter === letterSounds[i - n]); // Avoid accidental match
         letterSounds.push(newLetter); // Ensure newLetter is valid before pushing
+        soundMatches.push(false)
       } else {
         // Match from `n` steps back
         letterSounds.push(letterSounds[i - n]);
+        soundMatches.push(true);
       }
     }
 
-    return { gridPositions, letterSounds };
+    return { gridPositions, letterSounds, gridMatches, soundMatches };
   }
 
   const createNewGame = () => {
@@ -144,6 +177,8 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
       const patterns = generatePattern();
       gridPositions = patterns.gridPositions;
       letterSounds = patterns.letterSounds;
+      gridMatches = patterns.gridMatches;
+      soundMatches = patterns.soundMatches;
     } catch (e) {
       console.error("Error in [createNewGame]", e);
       throw e;
@@ -191,14 +226,22 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
       playSound
     }
   }
-  
+
+  const answers = () => {
+    return {
+      sounds: gridMatches,
+      pos: soundMatches,
+    }
+  }
+
   return {
     createNewGame,
     nextRound,
+    answers,
   }
 }
 
 
 
-export { fillBoard, getDualMode, loadSounds, loadSound, MAXTIME };
+export { calculateScore, fillBoard, getDualMode, loadSounds, loadSound, MAXTIME };
 export default engine;

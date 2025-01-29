@@ -6,12 +6,15 @@ import { Audio } from "expo-av";
 import Square from "@/components/Square";
 import Button from "@/components/Button";
 import StatusButton from "@/components/StatusButton";
+import { showCustomAlert } from "@/util/alert";
 
 import security from "@/util/security";
 
-import engine, { MAXTIME, getDualMode, fillBoard, SoundState, CustomTimer, loadSounds, RunningEngine, loadSound, Grid } from "@/util/engine";
+import engine, { MAXTIME, getDualMode, fillBoard, SoundState, CustomTimer, loadSounds, RunningEngine, loadSound, Grid, calculateScore } from "@/util/engine";
 
 import { getGlobalStyles } from "@/styles/globalStyles";
+
+const fillGuessCard = (len: number): boolean[] => Array(len).fill(false)
 
 export default function Play() {
   // console.debug("RENDERED PLAY");
@@ -64,6 +67,21 @@ export default function Play() {
     clickRef.current = fn(clickRef.current);
   }
 
+  const soundClickRef = useRef<boolean[]>([]);
+  const soundGuess = () => {
+    soundClickRef.current[turnRef.current] = true;
+  };
+
+  const posClickRef = useRef<boolean[]>([]);
+  const posGuess = () => {
+    posClickRef.current[turnRef.current] = true;
+  };
+
+  const turnRef = useRef<number>(0);
+  const setTurnRef = (t: number) => {
+    turnRef.current = t;
+  }
+
   // Current N
   const getN = async (): Promise<number> => {
     try {
@@ -80,6 +98,8 @@ export default function Play() {
     startGame(false);
     setElapsedTime(-1);
     setGrid(fillBoard());
+    setTurnRef(0);
+    emptyGuessCards();
   }
 
   const startGameLoop = () => {
@@ -97,12 +117,44 @@ export default function Play() {
     }
   }
 
+  const emptyGuessCards = () => {
+    posClickRef.current = fillGuessCard(gameLen);
+    soundClickRef.current = fillGuessCard(gameLen);
+  }
+
+  interface ScoreCard {
+    soundGuesses?: boolean[];
+    posGuesses?: boolean[];
+    buzzGuesses?: boolean[];
+  }
+
+  const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
+    // TODO: calculate actual scores
+    // console.debug(soundGuesses, posGuesses, buzzGuesses);
+    const answers = engineRef.current?.answers();
+
+    const soundScore = calculateScore(answers?.sounds as boolean[], soundGuesses as boolean[]);
+    const posScore = calculateScore(answers?.pos as boolean[], posGuesses as boolean[]);
+
+    showCustomAlert("Score", JSON.stringify({
+      sounds: soundScore,
+      positions: posScore
+    }))
+
+    return {
+      soundScoreCard: soundScore,
+      posScoreCard: posScore,
+      // buzzGuesses: calculateMatchPercentage(answers?.sounds as boolean[], []),
+    }
+  }
+
   // Main Gameplay Loop
   useFocusEffect(
     React.useCallback(() => {
       const initGame = async () => {
         try {
           const n: number = await getN();
+          emptyGuessCards();
 
           navigation.setOptions({
             title: `Play (${n}-back)`,
@@ -158,15 +210,24 @@ export default function Play() {
   useEffect(() => {
     if (elapsedTime >= 0) {
       if (elapsedTime > MAXTIME) { // exit condition 1: game went too long.
-        console.log("Game ended, timer: ", elapsedTime);
+        console.warn("Game ended, timer: ", elapsedTime);
+        scoreGame({
+          posGuesses: posClickRef.current,
+          soundGuesses: soundClickRef.current,
+        });
         resetGame();
         return;
       }
-      
+
       if (elapsedTime % 2 === 0) {
         const turn = Math.floor(elapsedTime / 2);
+        setTurnRef(turn);
         if (turn >= gameLen) { // exit condition 2: game is actually over.
           console.info("Game ended, turn: ", turn);
+          scoreGame({
+            posGuesses: posClickRef.current,
+            soundGuesses: soundClickRef.current,
+          });
           resetGame();
           return;
         }
@@ -218,16 +279,16 @@ export default function Play() {
           ))}
         </View>
       ))}
-      { /* TODO: buttons need visual feedback. */ }
+      { /* TODO: buttons need visual feedback. */}
       <View style={[styles.row, { marginTop: 20 }]}>
         <View style={[styles.cell, styles.clearBorder]}>
-          <Button label=" Sound " onPress={() => alert(clickRef.current)} />
+          <Button label=" Sound " onPress={soundGuess} />
         </View>
         <View style={[styles.cell, styles.clearBorder]}>
-          <Button label=" Position " onPress={() => setClickRef((prev) => prev + 1)} />
+          <Button label=" Position " onPress={posGuess/*() => setClickRef((prev) => prev + 1)*/} />
         </View>
       </View>
-      <StatusButton onPress={() => {resetGame(); startGame(true)}} isLoading={isLoading} playing={shouldStartGame} />
+      <StatusButton onPress={() => { resetGame(); startGame(true) }} isLoading={isLoading} playing={shouldStartGame} />
     </View>
   );
 }
