@@ -17,25 +17,16 @@ import { getGlobalStyles } from "@/styles/globalStyles";
 const fillGuessCard = (len: number): boolean[] => Array(len).fill(false)
 
 export default function Play() {
-  console.debug("RENDERED PLAY");
+  // console.debug("RENDERED PLAY");
 
   const styles = getGlobalStyles();
   const navigation = useNavigation();
 
   const [grid, setGrid] = useState<Grid>(fillBoard());
-  useEffect(() => { console.log("because of Play hook 1: grid") }, [grid]);
-
   const [shouldStartGame, startGame] = useState<boolean>(false);
-  useEffect(() => { console.log("because of Play hook 2: shouldStartGame") }, [shouldStartGame]);
-
   const [elapsedTime, setElapsedTime] = useState<number>(-1);
-  useEffect(() => { console.log("because of Play hook 3: elapsedTime") }, [elapsedTime]);
-
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  useEffect(() => { console.log("because of Play hook 4: isLoading") }, [isLoading]);
-
   const [defaultN, setDefaultN] = useState<number>();
-  useEffect(() => { console.log("because of Play hook 5: defaultN") }, [defaultN]);
 
   const gameLoopRef = useRef<CustomTimer>(null);
   const engineRef = useRef<RunningEngine>();
