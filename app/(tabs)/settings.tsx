@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   KeyboardAvoidingView,
@@ -7,7 +7,8 @@ import {
   Keyboard,
   Text,
   Switch,
-  Pressable
+  Pressable,
+  Appearance
 } from "react-native";
 import { useRouter } from "expo-router";
 
@@ -24,6 +25,8 @@ const MAXN = 9;
 const MINN = 2;
 
 type N = number | undefined
+
+const systemTheme = Appearance.getColorScheme();
 
 export default function Settings() {
   const styles = getGlobalStyles();
@@ -45,6 +48,19 @@ export default function Settings() {
   const handleLongPressN = () => {
     setDefaultN(MINN);
   };
+
+  const clearSettings = async () => {
+    const isSystemDark = (systemTheme === "dark") ? true : false;
+    await security.set("defaultN", 2),
+    await security.set("dualMode", true),
+    await security.set("darkMode", isSystemDark);
+    await security.set("termsAccepted", false);
+    setDefaultN(2);
+    toggleDualMode(true);
+    toggleDarkMode(isSystemDark);
+
+    showCustomAlert("Data Cleared!", "All data has been reset to defaults!");
+  }
 
   const fetchSettings = async () => {
     await Promise.all([
@@ -72,16 +88,16 @@ export default function Settings() {
     fetchSettings();
   }, []);
 
-  const handleSetDefaultN = (n: string) => {
-    const local = JSON.parse(n || "0");
-    if (local > MAXN || local < MINN) {
-      setError(`Please choose an N value from ${MINN} to ${MAXN}.`);
-      setDefaultN(undefined);
-    } else {
-      setDefaultN(local);
-      setError("");
-    }
-  }
+  // const handleSetDefaultN = (n: string) => {
+  //   const local = JSON.parse(n || "0");
+  //   if (local > MAXN || local < MINN) {
+  //     setError(`Please choose an N value from ${MINN} to ${MAXN}.`);
+  //     setDefaultN(undefined);
+  //   } else {
+  //     setDefaultN(local);
+  //     setError("");
+  //   }
+  // }
 
   const handleSaved = async () => {
     if (error) {
@@ -153,7 +169,10 @@ export default function Settings() {
             </View>
           )}
         </View>
-        <Pressable style={{ marginTop: 'auto', alignSelf: 'flex-end', marginBottom: 20, marginRight: 10 }} onPress={() => router.push('/terms')}>
+        <Pressable style={{ marginTop: 'auto', alignSelf: 'flex-end', marginBottom: 20, marginRight: 10 }} onPress={clearSettings}>
+          <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>Reset Data</Text>
+        </Pressable>
+        <Pressable style={{ alignSelf: 'flex-end', marginBottom: 20, marginRight: 10 }} onPress={() => router.push('/terms')}>
           <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>Terms of Use and Privacy Notices</Text>
         </Pressable>
       </KeyboardAvoidingView>

@@ -1,5 +1,6 @@
-import { View, Text, Pressable } from "react-native";
-import { useRouter } from "expo-router";
+import React from 'react';
+import { View, Text, Alert } from "react-native";
+import { useRouter, useFocusEffect } from "expo-router";
 
 import Button from "@/components/Button";
 import { getGlobalStyles } from "@/styles/globalStyles";
@@ -9,6 +10,25 @@ import security from "@/util/security";
 export default function Index() {
   const router = useRouter();
   const styles = getGlobalStyles();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const getTerms = async () => {
+        const terms = await security.get("termsAccepted");
+        if (!terms) {
+          Alert.alert(
+            "Terms & Conditions",
+            "You must accept the terms and conditions before continuing.",
+            [
+              { text: "See Terms", onPress: () => router.push('/terms') },
+            ],
+            { cancelable: false }
+          );
+        }
+      }
+      getTerms();
+    }, [])
+  );
 
   return (
     <View style={[styles.container, { alignItems: 'center', paddingHorizontal: 30, paddingVertical: 10, }]}>
