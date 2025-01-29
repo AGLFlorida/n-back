@@ -67,5 +67,31 @@ export const getGlobalStyles = () => {
       textDecorationLine: 'underline',
       color: '#fff',
     },
+    text: {
+      color: theme.textColor,
+      fontSize: 18,
+      lineHeight: 26,
+      flex: 1,
+    },
+    heading: {
+      color: theme.textColor,
+      fontSize: 22,
+      fontWeight:'bold',
+      textDecorationLine: 'underline',
+      marginBottom: 20,
+      textAlign: 'center'
+    },
+    listItem: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      marginBottom: 12,
+    },
+    number: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: theme.textColor,
+      marginRight: 10, 
+      lineHeight: 26,
+    },
   });
 };

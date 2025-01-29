@@ -7,7 +7,9 @@ import {
   Keyboard,
   Text,
   Switch,
+  Pressable
 } from "react-native";
+import { useRouter } from "expo-router";
 
 import Button from "@/components/Button";
 import security from "@/util/security";
@@ -15,6 +17,8 @@ import { getGlobalStyles } from "@/styles/globalStyles";
 import { useTheme } from "@/contexts/ThemeContext"
 import { showCustomAlert } from "@/util/alert";
 
+
+//@TODO add expo-haptics
 
 const MAXN = 9;
 const MINN = 2;
@@ -24,6 +28,7 @@ type N = number | undefined
 export default function Settings() {
   const styles = getGlobalStyles();
   const { toggleTheme, theme } = useTheme();
+  const router = useRouter();
 
   const [defaultN, setDefaultN] = useState<N>(2);
   const [dualMode, toggleDualMode] = useState<boolean>(true);
@@ -34,7 +39,7 @@ export default function Settings() {
   const originalDark = useRef<boolean>();
 
   const handleTapN = () => {
-    setDefaultN((prev) => ((prev || MINN) < MAXN ? (prev || MINN) + 1 : MINN)); 
+    setDefaultN((prev) => ((prev || MINN) < MAXN ? (prev || MINN) + 1 : MINN));
   };
 
   const handleLongPressN = () => {
@@ -148,6 +153,9 @@ export default function Settings() {
             </View>
           )}
         </View>
+        <Pressable style={{ marginTop: 'auto', alignSelf: 'flex-end', marginBottom: 20, marginRight: 10 }} onPress={() => router.push('/terms')}>
+          <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>Terms of Use and Privacy Notices</Text>
+        </Pressable>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );

@@ -7,7 +7,8 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "Back" }} />
+        <Stack.Screen name="terms" />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />

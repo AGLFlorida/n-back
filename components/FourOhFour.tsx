@@ -1,19 +1,19 @@
 import { View } from 'react-native';
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 import { getGlobalStyles } from '@/styles/globalStyles';
+import  Button from '@/components/Button';
 
 export default function FourOhFour() {
   const styles = getGlobalStyles();
+  const router = useRouter();
 
   return (
     <View style={[styles.container, {
       justifyContent: 'center',
       alignItems: 'center',
     }]}>
-      <Link href="/" style={styles.button}>
-        Go back to Home screen!
-      </Link>
+      <Button label="Go Home " onPress={() => router.push('/')} />
     </View>
   );
 }
