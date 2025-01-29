@@ -1,3 +1,4 @@
+import '@/wdyr';
 import React, { useState, useEffect, useRef } from "react";
 import { View } from "react-native";
 import { useFocusEffect, useNavigation } from "expo-router";
@@ -16,26 +17,27 @@ import { getGlobalStyles } from "@/styles/globalStyles";
 
 const fillGuessCard = (len: number): boolean[] => Array(len).fill(false)
 
-export default function Play() {
+// export default function Play() {
+const Play = () => {
   console.debug("RENDERED PLAY");
 
   const styles = getGlobalStyles();
   const navigation = useNavigation();
 
-  const [grid, setGrid] = useState<Grid>(fillBoard());
-  useEffect(() => { console.log("because of Play hook 1: grid") }, [grid]);
+  const [grid, setGrid] = useState<Grid>(() => fillBoard());
+  useEffect(() => { console.log("because of Play hook 2: grid") }, [grid]);
 
   const [shouldStartGame, startGame] = useState<boolean>(false);
-  useEffect(() => { console.log("because of Play hook 2: shouldStartGame") }, [shouldStartGame]);
+  useEffect(() => { console.log("because of Play hook 3: shouldStartGame") }, [shouldStartGame]);
 
   const [elapsedTime, setElapsedTime] = useState<number>(-1);
-  useEffect(() => { console.log("because of Play hook 3: elapsedTime") }, [elapsedTime]);
+  useEffect(() => { console.log("because of Play hook 4: elapsedTime") }, [elapsedTime]);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  useEffect(() => { console.log("because of Play hook 4: isLoading") }, [isLoading]);
+  useEffect(() => { console.log("because of Play hook 5: isLoading") }, [isLoading]);
 
   const [defaultN, setDefaultN] = useState<number>();
-  useEffect(() => { console.log("because of Play hook 5: defaultN") }, [defaultN]);
+  useEffect(() => { console.log("because of Play hook 6: defaultN") }, [defaultN]);
 
   const gameLoopRef = useRef<CustomTimer>(null);
   const engineRef = useRef<RunningEngine>();
@@ -290,3 +292,6 @@ export default function Play() {
     </View>
   );
 }
+
+Play.whyDidYouRender = true;
+export default Play;
