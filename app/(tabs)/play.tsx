@@ -122,9 +122,13 @@ export default function Play() {
     posGuesses?: boolean[];
     buzzGuesses?: boolean[];
   }
-  // TODO move this to the engine util
+  // TODO move this to the engine util?
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
     const answers = engineRef.current?.answers();
+
+    console.debug("answers: ", answers);
+    console.debug("sound guess: ", soundGuesses);
+    console.debug("pos guess:", posGuesses);
 
     const soundScore = calculateScore({answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[]});
     const posScore = calculateScore({answers: answers?.pos as boolean[], guesses: posGuesses as boolean[]});

@@ -198,6 +198,7 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
       }
     }
 
+    console.debug(gridPositions, letterSounds);
     return { gridPositions, letterSounds, gridMatches, soundMatches };
   }
 
