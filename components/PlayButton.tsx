@@ -18,14 +18,13 @@ export default function PlayButton({
 
   return (
     <View style={[styles.row, { marginTop: 20 }]}>
-      <View style={[styles.cell, styles.clearBorder]}>
-        <Button label=" Sound " onPress={soundGuess} />
-      </View>
       {dualMode && (
         <View style={[styles.cell, styles.clearBorder]}>
-          <Button label=" Position " onPress={posGuess} />
-        </View>
-      )}
+          <Button label=" Sound " onPress={soundGuess} />
+        </View>)}
+      <View style={[styles.cell, styles.clearBorder]}>
+        <Button label=" Position " onPress={posGuess} />
+      </View>
     </View>
   );
 }

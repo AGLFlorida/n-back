@@ -104,10 +104,10 @@ const gridIndexes: Array<[number, number]> = (() => {
 })();
 
 interface Score {
-  answers: boolean[]; 
+  answers: boolean[];
   guesses: boolean[];
 }
-const calculateScore = ({ answers, guesses}: Score): number => {
+const calculateScore = ({ answers, guesses }: Score): number => {
   //TODO add error rate.
   if (answers.length !== guesses.length) {
     console.log(answers.length, guesses.length)
@@ -148,7 +148,7 @@ const defaults = (prevScore: number): Defaults => {
 const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningEngine => {
 
   interface Patterns {
-    gridPositions: number[]; 
+    gridPositions: number[];
     letterSounds: string[];
     gridMatches: boolean[];
     soundMatches: boolean[];
@@ -229,9 +229,14 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
   const nextRound = (turn: number): Round => {
     const playSound = async () => {
       try {
-        const nextSound = chooseNextSound(turn);
-        const { sound } = await Audio.Sound.createAsync(nextSound);
-        await sound.playAsync();
+        if (isDualMode) {
+          const nextSound = chooseNextSound(turn);
+          const { sound } = await Audio.Sound.createAsync(nextSound);
+          await sound.playAsync();
+        } else {
+          const { sound } = await Audio.Sound.createAsync(soloSound.file);
+          await sound.playAsync();
+        }
       } catch (e) {
         console.error("Error playing sound.", e);
         throw e;
