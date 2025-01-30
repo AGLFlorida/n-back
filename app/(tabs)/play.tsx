@@ -90,9 +90,8 @@ export default function Play() {
       let rec: ScoresType = await security.get("records");
       if (rec == null) {
         const key = scoreKey();
-        rec = {
-          key: [0,0]
-        }
+        rec = {};
+        rec[key] = [0,0];
       }
       playHistory.scores = rec;
     } catch (e) {
@@ -154,22 +153,27 @@ export default function Play() {
     // console.debug("sound guess: ", soundGuesses);
     // console.debug("pos guess:", posGuesses);
 
-    const soundScore = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
-    const posScore = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
+    // const soundScore = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
+    // const posScore = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
+    const soundScore = 5;
+    const posScore = 6;
 
     // TODO this is super ugly...
     // TODO track error rate.
     const key = scoreKey();
     const saveScores = async () => {
+      console.log("saveScores");
       if (playHistory.scores == null) {
         const initialScore: SingleScoreType = [0,0];
-        playHistory.setValue(key, initialScore); // initialize today;
+        playHistory.setValue(key, initialScore);
       } 
      
       const newScores: SingleScoreType = [
         posScore,
         (posScore + soundScore) / 2
       ]
+
+      console.log("new scores: ", newScores);
 
       const prevScores = playHistory.getValue(key);
       if (prevScores && !playHistory.compareCards(prevScores, newScores)) {
@@ -180,6 +184,7 @@ export default function Play() {
           newScores[1] = prevScores[1];
         } 
 
+        console.log(newScores);
         playHistory.setValue(key, newScores);        
         try {
           await security.set("records", playHistory.scores);

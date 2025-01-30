@@ -1,71 +1,96 @@
+import { useCallback, useRef, useState, useEffect } from 'react';
+import { useFocusEffect } from "expo-router";
 import { View, Text } from "react-native";
-import { LineChart } from "react-native-gifted-charts"
 
 import { getGlobalStyles } from "@/styles/globalStyles";
 import { useTheme } from "@/contexts/ThemeContext";
+
+import { ScoreCard, ScoresType } from '@/util/ScoreCard';
+import { scoreKey } from '@/util/engine';
+
+import security from "@/util/security";
+
+import Chart, { DataPointType } from '@/components/Chart';
+
+const newCard = new ScoreCard({});
+
 
 export default function History() {
   const styles = getGlobalStyles();
   const { theme } = useTheme();
 
-  // single
-  const lineData = [
-    { value: 0, dataPointText: '0' },
-    { value: 10, dataPointText: '10' },
-    { value: 8, dataPointText: '8' },
-    { value: 58, dataPointText: '58' },
-    { value: 56, dataPointText: '56' },
-    { value: 78, dataPointText: '78' },
-    { value: 74, dataPointText: '74' },
-    { value: 98, dataPointText: '98' },
-  ];
+  const [lineData, setLineData] = useState<DataPointType[]>([]);
+  const [lineData2, setLineData2] = useState<DataPointType[]>([]);
+  const [playHistory, setPlayHistory] = useState<ScoresType>();
+  // const [showChart, setShowChart] = useState<boolean>(false);
 
-  // dual
-  const lineData2 = [
-    { value: 0, dataPointText: '0' },
-    { value: 20, dataPointText: '20' },
-    { value: 18, dataPointText: '18' },
-    { value: 40, dataPointText: '40' },
-    { value: 36, dataPointText: '36' },
-    { value: 60, dataPointText: '60' },
-    { value: 54, dataPointText: '54' },
-    { value: 85, dataPointText: '85' },
-  ];
+  const showChart = useRef<boolean>(false);
+  const setShowChart = (p: boolean) => showChart.current = p;
 
-  const xAxisLabelTexts: string[] = [
-    "one", "two", "three", "four", "five", "six", "seven", "eight",
-  ]
+  const dataLabels = useRef<string[]>([]);
+
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadRecords = async () => {
+        const key = scoreKey();
+        try {
+          let rec: ScoresType = await security.get("records");
+          setPlayHistory(rec);
+        } catch (e) {
+          console.error("Error retrieving past scores.", e);
+        }
+      }
+
+      loadRecords();
+      setShowChart(true);
+
+      return () => {
+        setShowChart(false);
+      }
+    }, [])
+  );
+
+  useEffect(() => {
+    if (playHistory) {
+      const labels = Object.keys(playHistory);
+      const dataSet1: DataPointType[] = [];
+      const dataSet2: DataPointType[] = [];
+
+      for (const [key, value] of Object.entries(playHistory)) {
+        const idx = labels.indexOf(key);
+
+        const data1: DataPointType = {
+          x: idx,
+          y: value[0]
+        }
+
+        const data2: DataPointType = {
+          x: idx,
+          y: value[1]
+        }
+
+        dataSet1.push(data1);
+        dataSet2.push(data2);
+      }
+
+      setLineData(dataSet1);
+      setLineData2(dataSet2);
+      dataLabels.current = labels;
+    }
+
+
+
+  }, [playHistory])
 
   return (
     <View style={styles.container}>
-      <View>
-        <LineChart
-          data={lineData}
-          data2={lineData2}
-          height={250}
-          showVerticalLines
-          spacing={44}
-          initialSpacing={0}
-          color1="skyblue"
-          color2="orange"
-          textColor1={theme.textColor}
-          textColor2={theme.textColor}
-          xAxisLabelTextStyle={{ color: theme.textColor, marginLeft: 8 }}
-          yAxisTextStyle={{ color: theme.textColor }}
-          yAxisColor={theme.textColor}
-          xAxisColor={theme.textColor}
-          dataPointsHeight={8}
-          dataPointsWidth={6}
-          dataPointsColor1="blue"
-          dataPointsColor2="red"
-          textShiftY={-2}
-          textShiftX={-5}
-          textFontSize={13}
-          rotateLabel
-          xAxisLabelTexts={xAxisLabelTexts}
-        />
-      </View>
-      <View style={{margin: 10}}>
+      {showChart.current &&
+        <View>
+          <Chart data={lineData} xLabels={dataLabels.current} />
+        </View>
+      }
+      <View style={{ margin: 10 }}>
         <Text style={styles.text}>Highscores: </Text>
         <Text style={styles.text}>Single: 6</Text>
         <Text style={styles.text}>Dual: 3</Text>
