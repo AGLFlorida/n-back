@@ -50,9 +50,9 @@ export default function Settings() {
 
   const clearSettings = async () => {
     const isSystemDark = (systemTheme === "dark") ? true : false;
-    await security.set("defaultN", 2),
-      await security.set("dualMode", true),
-      await security.set("darkMode", isSystemDark);
+    await security.set("defaultN", 2);
+    await security.set("dualMode", true);
+    await security.set("darkMode", isSystemDark);
     await security.set("silentMode", false);
     await security.set("termsAccepted", false);
     setDefaultN(2);
@@ -112,7 +112,7 @@ export default function Settings() {
       security.set("defaultN", defaultN),
       security.set("dualMode", dualMode),
       security.set("darkMode", darkMode),
-      security.set("silentMode", darkMode),
+      security.set("silentMode", silentMode),
     ]).then(([x, y, z, shh]) => {
       if (x === true && y === true && z === true && shh === true) showCustomAlert("Success!", "Settings saved.");
     }).catch(e => e
