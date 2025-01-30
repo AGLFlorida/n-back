@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Pressable, Text, Animated } from 'react-native';
+import { StyleSheet, Pressable, Text, Animated, TextStyle } from 'react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 
 import { getButtonStyles } from '@/styles/buttonStyles';
@@ -9,9 +9,10 @@ type Props = {
   label: string;
   onPress?: () => void;
   onLongPress?: () => void;
+  style?: TextStyle;
 };
 
-export default function Button({ label, onPress, onLongPress }: Props) {
+export default function Button({ label, onPress, onLongPress, style }: Props) {
   const styles = getButtonStyles();
   const { theme } = useTheme();
 
@@ -81,7 +82,7 @@ export default function Button({ label, onPress, onLongPress }: Props) {
             ry="14"
           />
         </Svg>
-        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.buttonLabel}>{label}</Text>
+        <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.buttonLabel, style]}>{label}</Text>
       </Animated.View>
     </Pressable>
   );

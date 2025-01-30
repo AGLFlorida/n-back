@@ -3,6 +3,8 @@ import { Audio } from "expo-av";
 import security from './security';
 
 const MAXTIME = (5 * 60);
+export const MAXN = 9;
+export const MINN = 2;
 
 const soundFiles: SoundFile[] = [
   { key: "C", file: require("../assets/audio/C.m4a") as AVPlaybackSource },

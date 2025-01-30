@@ -31,7 +31,7 @@ export default function Terms() {
       <View style={[styles.container, { alignItems: 'center', marginHorizontal: 30, marginVertical: 10, }]}>
         <Text style={styles.heading}>Terms of Use & Privacy Disclaimer</Text>
         <View style={{ alignSelf: 'flex-start', marginBottom: 5 }}>
-          <Text style={{ color: theme.textColor }}>Last Updated: [ 29-January-2025 ]</Text>
+          <Text style={{ color: theme.textColor, fontStyle: 'italic' }}>Last Updated: [ 29-January-2025 ]</Text>
         </View>
         <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
           <Text style={{ color: theme.textColor }}>By downloading, installing, and/or using this app (“App”), you agree to the following terms:</Text>
@@ -103,7 +103,7 @@ export default function Terms() {
           <Text style={{ color: theme.textColor }}>If you do not agree to these terms, uninstall and/or do not use the App.</Text>
         </View>
         <View style={{ marginBottom: 20 }}>
-          <Button label=" I agree " onPress={acceptTerms} />
+          <Button label=" Accept Terms " onPress={acceptTerms} />
         </View>
       </View>
     </ScrollView>
