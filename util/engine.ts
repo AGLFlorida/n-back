@@ -229,6 +229,14 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
   const nextRound = (turn: number): Round => {
     const playSound = async () => {
       try {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          staysActiveInBackground: false,
+          playsInSilentModeIOS: false, 
+          shouldDuckAndroid: false,
+          playThroughEarpieceAndroid: false,
+        });
+        
         if (isDualMode) {
           const nextSound = chooseNextSound(turn);
           const { sound } = await Audio.Sound.createAsync(nextSound);

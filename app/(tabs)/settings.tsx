@@ -31,7 +31,7 @@ export default function Settings() {
   const router = useRouter();
 
   const [defaultN, setDefaultN] = useState<N>(2);
-  const [dualMode, toggleDualMode] = useState<boolean>(true);
+  const [dualMode, toggleDualMode] = useState<boolean>(false);
   const [darkMode, toggleDarkMode] = useState<boolean>(false);
   const [silentMode, toggleSilentMode] = useState<boolean>(false);
   const [error, setError] = useState<string>();

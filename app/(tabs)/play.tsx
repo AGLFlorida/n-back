@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View } from "react-native";
+import { View, Animated } from "react-native";
 import { useFocusEffect, useNavigation } from "expo-router";
 import { Audio } from "expo-av";
 
@@ -10,18 +10,18 @@ import { showCustomAlert } from "@/util/alert";
 
 import security from "@/util/security";
 
-import engine, { 
-  MAXTIME, 
-  getDualMode, 
-  fillBoard, 
-  SoundState, 
-  CustomTimer, 
-  loadSounds, 
-  RunningEngine, 
-  loadSound, 
-  Grid, 
-  calculateScore, 
-  defaults 
+import engine, {
+  MAXTIME,
+  getDualMode,
+  fillBoard,
+  SoundState,
+  CustomTimer,
+  loadSounds,
+  RunningEngine,
+  loadSound,
+  Grid,
+  calculateScore,
+  defaults
 } from "@/util/engine";
 
 import { getGlobalStyles } from "@/styles/globalStyles";
@@ -46,6 +46,12 @@ export default function Play() {
 
   const { gameLen, matchRate } = defaults(1);
 
+  // Make button transitions less abrupt
+  const playButtonFadeAnim = useRef(new Animated.Value(0)).current;
+
+  const hideButtons = () => {
+    playButtonFadeAnim.setValue(0);
+  }
 
   // All Sounds
   const sounds = useRef<SoundState>({});
@@ -126,8 +132,8 @@ export default function Play() {
     // console.debug("sound guess: ", soundGuesses);
     // console.debug("pos guess:", posGuesses);
 
-    const soundScore = calculateScore({answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[]});
-    const posScore = calculateScore({answers: answers?.pos as boolean[], guesses: posGuesses as boolean[]});
+    const soundScore = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
+    const posScore = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
 
     showCustomAlert("Score", JSON.stringify({
       sounds: soundScore,
@@ -183,8 +189,15 @@ export default function Play() {
 
       initGame();
 
+      Animated.timing(playButtonFadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+
       return () => {
         resetGame()
+        hideButtons()
       } // Cleanup on unmount
     }, [/* first run: initialize game */])
   );
@@ -216,7 +229,7 @@ export default function Play() {
         const turn = Math.floor(elapsedTime / 2);
         setTurnRef(turn);
         if (turn >= gameLen) { // exit condition 2: game is actually over.
-          console.info("Game ended, turn: ", turn);
+          // console.info("Game ended, turn: ", turn);
           scoreGame({
             posGuesses: posClickRef.current,
             soundGuesses: soundClickRef.current,
@@ -272,7 +285,9 @@ export default function Play() {
           ))}
         </View>
       ))}
-      <PlayButton soundGuess={soundGuess} posGuess={posGuess} dualMode={isDualMode} />
+      <Animated.View style={{ opacity: playButtonFadeAnim }}>
+        <PlayButton soundGuess={soundGuess} posGuess={posGuess} dualMode={isDualMode} />
+      </Animated.View>
       <StatusButton onPress={() => { resetGame(); startGame(true) }} isLoading={isLoading} playing={shouldStartGame} />
     </View>
   );

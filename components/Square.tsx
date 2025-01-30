@@ -1,17 +1,30 @@
-import { StyleSheet, View } from "react-native";
+import { useEffect, useRef } from 'react';
+import { StyleSheet, Text, Animated } from "react-native";
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 
 import { useTheme } from '@/contexts/ThemeContext'
 
 
-type Props = {};
+type Props = {
+  indicator?: number
+};
 
 
-export default function Square({ }: Props) {
+export default function Square({ indicator }: Props) {
   const { theme } = useTheme();
+  
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
     <Svg style={StyleSheet.absoluteFill} height="100%" width="100%">
       <Defs>
         <RadialGradient
@@ -36,7 +49,8 @@ export default function Square({ }: Props) {
         ry="25"
       />
     </Svg>
-    </View>
+    {indicator !== undefined && <Text style={{textAlign: 'center', margin: 'auto', alignSelf: 'center', fontSize: 20, color: "#fff"}}>{indicator}</Text>}
+    </Animated.View>
   );
 };
 
