@@ -107,23 +107,32 @@ interface Score {
   answers: boolean[];
   guesses: boolean[];
 }
-const calculateScore = ({ answers, guesses }: Score): number => {
+const calculateScore = ({ answers, guesses }: Score): {accuracy: number, errorRate: number} => {
   //TODO add error rate.
   if (answers.length !== guesses.length) {
     console.error("Error in [calculateScore], array lengths do not match.");
   }
 
-  const correct = answers.reduce((count, value, index) => {
-    return count + ((value === guesses[index] && value === true) ? 1 : 0);
-  }, 0);
+  const correct = answers.reduce((count, value, index) => 
+    count + ((value === guesses[index] && value === true) ? 1 : 0),
+  0);
 
-  const possible = answers.reduce((count, value) => {
-    return count + (value === true ? 1 : 0);
-  }, 0);
+  const possible = answers.reduce((count, value) => 
+    count + (value === true ? 1 : 0), 
+  0);
 
-  const percentage = (correct / possible) * 100;
-  return percentage;
-}
+  const incorrect = answers.reduce((count, value, index) => 
+    count + (value !== guesses[index] && guesses[index] === true ? 1 : 0), 
+  0);
+
+  const accuracy = possible > 0 ? (correct / possible) * 100 : 0;
+  const errorRate = possible > 0 ? (incorrect / possible) * 100 : 0;
+
+  return {
+    accuracy: Math.round(accuracy), // Round to 2 decimal places
+    errorRate: Math.round(errorRate) // Round to 2 decimal places
+  }
+};
 
 const DEFFAULT_GAMELEN = 30;
 const DEFAULT_MATCHRATE = 0.3;

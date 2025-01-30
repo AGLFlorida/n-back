@@ -43,7 +43,7 @@ export default function Play() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [defaultN, setDefaultN] = useState<number>();
   const [isDualMode, setDualMode] = useState<boolean>(true);
-  
+
   const playHistory = useRef(newCard).current;
   const gameLoopRef = useRef<CustomTimer>(null);
   const engineRef = useRef<RunningEngine>();
@@ -91,7 +91,7 @@ export default function Play() {
       if (rec == null) {
         const key = scoreKey();
         rec = {};
-        rec[key] = [0,0];
+        rec[key] = [0, 0];
       }
       playHistory.scores = rec as ScoresType;
     } catch (e) {
@@ -153,41 +153,40 @@ export default function Play() {
     // console.debug("sound guess: ", soundGuesses);
     // console.debug("pos guess:", posGuesses);
 
-    const soundScore = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
-    const posScore = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
-    // const soundScore = 5;
-    // const posScore = 6;
+    const { accuracy: soundScore } = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
+    const { accuracy: posScore } = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
 
     // TODO this is super ugly...
     // TODO track error rate.
     const key = scoreKey();
     const saveScores = async () => {
       if (playHistory.scores == null) {
-        const initialScore: SingleScoreType = [0,0];
+        const initialScore: SingleScoreType = [0, 0];
         playHistory.setValue(key, initialScore);
-      } 
-     
+      }
+
       const newScores: SingleScoreType = [
         posScore,
         (posScore + soundScore) / 2
       ]
 
-      const prevScores = playHistory.getValue(key);
+      let prevScores = playHistory.getValue(key);
       if (prevScores && !playHistory.compareCards(prevScores, newScores)) {
         if (prevScores[0] > newScores[0]) {
           newScores[0] = prevScores[0];
-        } 
+        }
         if (prevScores[1] > newScores[1]) {
           newScores[1] = prevScores[1];
-        } 
-
-        playHistory.setValue(key, newScores);        
-        try {
-          await security.set("records", playHistory.scores);
-        } catch (e) {
-          console.error("Error saving scores", e);
         }
       }
+      
+      playHistory.setValue(key, newScores);
+      try {
+        await security.set("records", playHistory.scores);
+      } catch (e) {
+        console.error("Error saving scores", e);
+      }
+
     }
     saveScores();
 
