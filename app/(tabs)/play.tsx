@@ -87,13 +87,13 @@ export default function Play() {
   const loadRecords = async () => {
     const key = scoreKey();
     try {
-      let rec: ScoresType = await security.get("records");
+      let rec = await security.get("records");
       if (rec == null) {
         const key = scoreKey();
         rec = {};
         rec[key] = [0,0];
       }
-      playHistory.scores = rec;
+      playHistory.scores = rec as ScoresType;
     } catch (e) {
       console.error("Error retrieving past scores.", e);
     }
@@ -162,7 +162,6 @@ export default function Play() {
     // TODO track error rate.
     const key = scoreKey();
     const saveScores = async () => {
-      console.log("saveScores");
       if (playHistory.scores == null) {
         const initialScore: SingleScoreType = [0,0];
         playHistory.setValue(key, initialScore);
@@ -173,8 +172,6 @@ export default function Play() {
         (posScore + soundScore) / 2
       ]
 
-      console.log("new scores: ", newScores);
-
       const prevScores = playHistory.getValue(key);
       if (prevScores && !playHistory.compareCards(prevScores, newScores)) {
         if (prevScores[0] > newScores[0]) {
@@ -184,7 +181,6 @@ export default function Play() {
           newScores[1] = prevScores[1];
         } 
 
-        console.log(newScores);
         playHistory.setValue(key, newScores);        
         try {
           await security.set("records", playHistory.scores);

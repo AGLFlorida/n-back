@@ -1,14 +1,13 @@
 import * as SecureStore from 'expo-secure-store';
 
-import { ScoresType } from './Records';
+import { ScoresType } from './ScoreCard';
 
 
 async function set(key: string, value: any): Promise<boolean> {
   try {
     await SecureStore.setItemAsync(key, JSON.stringify(value));
   } catch (e) {
-    console.log(e);
-    console.log(`Error saving setting: ${key}`);
+    console.error(`Error saving setting: ${key}`);
     return false;
   }
 
@@ -20,8 +19,7 @@ async function get(key: string): Promise<number | boolean | ScoresType | null> {
   try {
     ret = await SecureStore.getItemAsync(key);
   } catch (e) {
-    console.log(e);
-    console.log(`Error saving setting: ${key}`);
+    console.error(`Error saving setting: ${key}`);
   }
 
   return ret ? JSON.parse(ret) : null; 

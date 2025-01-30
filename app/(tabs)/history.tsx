@@ -35,8 +35,8 @@ export default function History() {
       const loadRecords = async () => {
         const key = scoreKey();
         try {
-          let rec: ScoresType = await security.get("records");
-          setPlayHistory(rec);
+          let rec = await security.get("records");
+          setPlayHistory(rec as ScoresType);
         } catch (e) {
           console.error("Error retrieving past scores.", e);
         }

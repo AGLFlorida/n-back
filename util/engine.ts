@@ -110,7 +110,6 @@ interface Score {
 const calculateScore = ({ answers, guesses }: Score): number => {
   //TODO add error rate.
   if (answers.length !== guesses.length) {
-    console.log(answers.length, guesses.length)
     console.error("Error in [calculateScore], array lengths do not match.");
   }
 
