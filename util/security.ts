@@ -1,5 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 
+import { ScoresType } from './Records';
+
 
 async function set(key: string, value: any): Promise<boolean> {
   try {
@@ -13,7 +15,7 @@ async function set(key: string, value: any): Promise<boolean> {
   return true;
 }
 
-async function get(key: string): Promise<number | boolean | null> {
+async function get(key: string): Promise<number | boolean | ScoresType | null> {
   let ret: string | null = null;
   try {
     ret = await SecureStore.getItemAsync(key);

@@ -126,7 +126,7 @@ const calculateScore = ({ answers, guesses }: Score): number => {
   return percentage;
 }
 
-const DEFFAULT_GAMELEN = 30;
+const DEFFAULT_GAMELEN = 3//30;
 const DEFAULT_MATCHRATE = 0.3;
 type Defaults = {
   gameLen: number;
@@ -236,7 +236,7 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
           shouldDuckAndroid: false,
           playThroughEarpieceAndroid: false,
         });
-        
+
         if (isDualMode) {
           const nextSound = chooseNextSound(turn);
           const { sound } = await Audio.Sound.createAsync(nextSound);
@@ -283,6 +283,14 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
     answers,
   }
 }
+
+export const scoreKey = (date = new Date()) => {
+  const year = date.getFullYear();
+  const monthAbbr = date.toLocaleString("en-US", { month: "short" }); // "Jan", "Feb"
+  const day = String(date.getDate()).padStart(2, "0"); // Ensures two-digit day
+
+  return `${year}-${monthAbbr}-${day}`;
+};
 
 export { calculateScore, fillBoard, getDualMode, loadSounds, loadSound, MAXTIME, defaults };
 export default engine;

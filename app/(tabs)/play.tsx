@@ -7,6 +7,7 @@ import Square from "@/components/Square";
 import PlayButton from "@/components/PlayButton";
 import StatusButton from "@/components/StatusButton";
 import { showCustomAlert } from "@/util/alert";
+import { ScoreCard, ScoresType, SingleScoreType } from "@/util/ScoreCard";
 
 import security from "@/util/security";
 
@@ -21,12 +22,14 @@ import engine, {
   loadSound,
   Grid,
   calculateScore,
-  defaults
+  defaults,
+  scoreKey
 } from "@/util/engine";
 
 import { getGlobalStyles } from "@/styles/globalStyles";
 
-const fillGuessCard = (len: number): boolean[] => Array(len).fill(false)
+const fillGuessCard = (len: number): boolean[] => Array(len).fill(false);
+const newCard = new ScoreCard({});
 
 export default function Play() {
   // console.debug("RENDERED PLAY");
@@ -40,7 +43,8 @@ export default function Play() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [defaultN, setDefaultN] = useState<number>();
   const [isDualMode, setDualMode] = useState<boolean>(true);
-
+  
+  const playHistory = useRef(newCard).current;
   const gameLoopRef = useRef<CustomTimer>(null);
   const engineRef = useRef<RunningEngine>();
 
@@ -77,6 +81,23 @@ export default function Play() {
   const turnRef = useRef<number>(0);
   const setTurnRef = (t: number) => {
     turnRef.current = t;
+  }
+
+  // Previous Scores
+  const loadRecords = async () => {
+    const key = scoreKey();
+    try {
+      let rec: ScoresType = await security.get("records");
+      if (rec == null) {
+        const key = scoreKey();
+        rec = {
+          key: [0,0]
+        }
+      }
+      playHistory.scores = rec;
+    } catch (e) {
+      console.error("Error retrieving past scores.", e);
+    }
   }
 
   // Current N
@@ -125,6 +146,7 @@ export default function Play() {
     buzzGuesses?: boolean[];
   }
   // TODO move this to the engine util?
+  // TODO add guess error rate.
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
     const answers = engineRef.current?.answers();
 
@@ -134,6 +156,39 @@ export default function Play() {
 
     const soundScore = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
     const posScore = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
+
+    // TODO this is super ugly...
+    // TODO track error rate.
+    const key = scoreKey();
+    const saveScores = async () => {
+      if (playHistory.scores == null) {
+        const initialScore: SingleScoreType = [0,0];
+        playHistory.setValue(key, initialScore); // initialize today;
+      } 
+     
+      const newScores: SingleScoreType = [
+        posScore,
+        (posScore + soundScore) / 2
+      ]
+
+      const prevScores = playHistory.getValue(key);
+      if (prevScores && !playHistory.compareCards(prevScores, newScores)) {
+        if (prevScores[0] > newScores[0]) {
+          newScores[0] = prevScores[0];
+        } 
+        if (prevScores[1] > newScores[1]) {
+          newScores[1] = prevScores[1];
+        } 
+
+        playHistory.setValue(key, newScores);        
+        try {
+          await security.set("records", playHistory.scores);
+        } catch (e) {
+          console.error("Error saving scores", e);
+        }
+      }
+    }
+    saveScores();
 
     showCustomAlert("Score", JSON.stringify({
       sounds: soundScore,
@@ -180,7 +235,9 @@ export default function Play() {
           });
 
           engineRef.current.createNewGame();
-          // startGame(true);
+
+          await loadRecords();
+
           setIsLoading(false);
         } catch (e) {
           console.error("Error initializing game.", e);
