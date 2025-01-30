@@ -125,7 +125,7 @@ const calculateScore = ({ answers, guesses }: Score): number => {
   return percentage;
 }
 
-const DEFFAULT_GAMELEN = 3//30;
+const DEFFAULT_GAMELEN = 30;
 const DEFAULT_MATCHRATE = 0.3;
 type Defaults = {
   gameLen: number;

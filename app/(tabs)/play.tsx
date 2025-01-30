@@ -153,10 +153,10 @@ export default function Play() {
     // console.debug("sound guess: ", soundGuesses);
     // console.debug("pos guess:", posGuesses);
 
-    // const soundScore = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
-    // const posScore = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
-    const soundScore = 5;
-    const posScore = 6;
+    const soundScore = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
+    const posScore = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
+    // const soundScore = 5;
+    // const posScore = 6;
 
     // TODO this is super ugly...
     // TODO track error rate.
