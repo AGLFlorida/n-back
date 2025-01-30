@@ -121,10 +121,6 @@ export default function Settings() {
     });
   }
 
-
-
-  // TODO add "visual" toggle, allowing for people who need to play this silently or on low volume. not sure if there's science behind dual visual stimulus...
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView

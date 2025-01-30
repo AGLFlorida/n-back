@@ -24,7 +24,7 @@ export default function PlayButton({ onPress, isLoading, playing }: Props) {
     <View style={[styles.row, { marginTop: 40 }]}>
       {shouldShowButton &&
         <View style={[styles.cell, styles.clearBorder]}>
-          <Button label=" Begin " onPress={onPress} />
+          <Button label=" Play " onPress={onPress} />
         </View>
       }{!shouldShowButton &&
         <View style={[styles.cell, styles.play]}>

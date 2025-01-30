@@ -126,6 +126,25 @@ const calculateScore = ({ answers, guesses}: Score): number => {
   return percentage;
 }
 
+const DEFFAULT_GAMELEN = 30;
+const DEFAULT_MATCHRATE = 0.3;
+type Defaults = {
+  gameLen: number;
+  matchRate: number;
+  levelUp: boolean;
+}
+const defaults = (prevScore: number): Defaults => {
+  let gameLen = DEFFAULT_GAMELEN;
+  let matchRate = DEFAULT_MATCHRATE;
+  let levelUp = false;
+
+  return { // TODO these should be variable per game
+    gameLen,
+    matchRate,
+    levelUp
+  }
+}
+
 const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningEngine => {
 
   interface Patterns {
@@ -251,5 +270,5 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
   }
 }
 
-export { calculateScore, fillBoard, getDualMode, loadSounds, loadSound, MAXTIME };
+export { calculateScore, fillBoard, getDualMode, loadSounds, loadSound, MAXTIME, defaults };
 export default engine;

@@ -10,7 +10,19 @@ import { showCustomAlert } from "@/util/alert";
 
 import security from "@/util/security";
 
-import engine, { MAXTIME, getDualMode, fillBoard, SoundState, CustomTimer, loadSounds, RunningEngine, loadSound, Grid, calculateScore } from "@/util/engine";
+import engine, { 
+  MAXTIME, 
+  getDualMode, 
+  fillBoard, 
+  SoundState, 
+  CustomTimer, 
+  loadSounds, 
+  RunningEngine, 
+  loadSound, 
+  Grid, 
+  calculateScore, 
+  defaults 
+} from "@/util/engine";
 
 import { getGlobalStyles } from "@/styles/globalStyles";
 
@@ -31,9 +43,7 @@ export default function Play() {
   const gameLoopRef = useRef<CustomTimer>(null);
   const engineRef = useRef<RunningEngine>();
 
-  // TODO these should be variable per game
-  const gameLen = 30
-  const matchRate = 0.3
+  const { gameLen, matchRate } = defaults(1);
 
   // Is Dual N-Back Mode
   const isDualMode = useRef<boolean>(false);
@@ -50,12 +60,6 @@ export default function Play() {
   const sound = useRef<sound>(null);
   const setSound = (p: sound) => {
     sound.current = p;
-  }
-
-  // TODO Tracking Score
-  const clickRef = useRef(0);
-  const setClickRef = (fn: (p: number) => number) => {
-    clickRef.current = fn(clickRef.current);
   }
 
   const soundClickRef = useRef<boolean[]>([]);
@@ -268,13 +272,12 @@ export default function Play() {
           ))}
         </View>
       ))}
-      { /* TODO: buttons need visual feedback. */}
       <View style={[styles.row, { marginTop: 20 }]}>
         <View style={[styles.cell, styles.clearBorder]}>
           <Button label=" Sound " onPress={soundGuess} />
         </View>
         <View style={[styles.cell, styles.clearBorder]}>
-          <Button label=" Position " onPress={posGuess/*() => setClickRef((prev) => prev + 1)*/} />
+          <Button label=" Position " onPress={posGuess} />
         </View>
       </View>
       <StatusButton onPress={() => { resetGame(); startGame(true) }} isLoading={isLoading} playing={shouldStartGame} />
