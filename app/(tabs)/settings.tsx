@@ -55,6 +55,7 @@ export default function Settings() {
     await security.set("darkMode", isSystemDark);
     await security.set("silentMode", false);
     await security.set("termsAccepted", false);
+    await security.set("records", {});
     setDefaultN(2);
     toggleDualMode(true);
     toggleDarkMode(isSystemDark);
