@@ -58,8 +58,10 @@ export default function Settings() {
     setDefaultN(2);
     toggleDualMode(true);
     toggleDarkMode(isSystemDark);
+    toggleSilentMode(false);
 
-    showCustomAlert("Data Cleared!", "All data has been reset to defaults!");
+    showCustomAlert("Data Cleared!", "All data has been reset to defaults! Please re-accept terms.");
+    router.push('/terms')
   }
 
   const fetchSettings = async () => {
@@ -136,6 +138,7 @@ export default function Settings() {
               <Text style={styles.label}>Default N</Text>
             </View>
           </View>
+
           <View style={[styles.row, { margin: 5 }]}>
             <View style={styles.settingsCell}>
               <Switch
@@ -149,11 +152,12 @@ export default function Settings() {
               <Text style={styles.label}>Dual N-back</Text>
             </View>
           </View>
+
           <View style={[styles.row, { margin: 5 }]}>
             <View style={styles.settingsCell}>
               <Switch
                 trackColor={theme.toggle.trackColor}
-                thumbColor={theme.toggle.thumbColor(dualMode)}
+                thumbColor={theme.toggle.thumbColor(silentMode)}
                 onValueChange={toggleSilentMode}
                 value={silentMode}
               />
@@ -162,6 +166,7 @@ export default function Settings() {
               <Text style={styles.label}>Silent Mode (Requires Dual)</Text>
             </View>
           </View>
+          
           <View style={[styles.row, { margin: 5 }]}>
             <View style={styles.settingsCell}>
               <Switch

@@ -4,7 +4,7 @@ import { useFocusEffect, useNavigation } from "expo-router";
 import { Audio } from "expo-av";
 
 import Square from "@/components/Square";
-import Button from "@/components/Button";
+import PlayButton from "@/components/PlayButton";
 import StatusButton from "@/components/StatusButton";
 import { showCustomAlert } from "@/util/alert";
 
@@ -39,17 +39,13 @@ export default function Play() {
   const [elapsedTime, setElapsedTime] = useState<number>(-1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [defaultN, setDefaultN] = useState<number>();
+  const [isDualMode, setDualMode] = useState<boolean>(true);
 
   const gameLoopRef = useRef<CustomTimer>(null);
   const engineRef = useRef<RunningEngine>();
 
   const { gameLen, matchRate } = defaults(1);
 
-  // Is Dual N-Back Mode
-  const isDualMode = useRef<boolean>(false);
-  const setDualMode = (p: boolean) => {
-    isDualMode.current = p;
-  }
 
   // All Sounds
   const sounds = useRef<SoundState>({});
@@ -126,9 +122,9 @@ export default function Play() {
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
     const answers = engineRef.current?.answers();
 
-    console.debug("answers: ", answers);
-    console.debug("sound guess: ", soundGuesses);
-    console.debug("pos guess:", posGuesses);
+    // console.debug("answers: ", answers);
+    // console.debug("sound guess: ", soundGuesses);
+    // console.debug("pos guess:", posGuesses);
 
     const soundScore = calculateScore({answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[]});
     const posScore = calculateScore({answers: answers?.pos as boolean[], guesses: posGuesses as boolean[]});
@@ -233,7 +229,7 @@ export default function Play() {
           setGrid(round?.next as Grid);
           round?.playSound()
         } catch (e) {
-          console.log("Error in game. Ejecting.", e);
+          console.error("Error in game. Ejecting.", e);
           resetGame();
         }
       }
@@ -276,14 +272,7 @@ export default function Play() {
           ))}
         </View>
       ))}
-      <View style={[styles.row, { marginTop: 20 }]}>
-        <View style={[styles.cell, styles.clearBorder]}>
-          <Button label=" Sound " onPress={soundGuess} />
-        </View>
-        <View style={[styles.cell, styles.clearBorder]}>
-          <Button label=" Position " onPress={posGuess} />
-        </View>
-      </View>
+      <PlayButton soundGuess={soundGuess} posGuess={posGuess} dualMode={isDualMode} />
       <StatusButton onPress={() => { resetGame(); startGame(true) }} isLoading={isLoading} playing={shouldStartGame} />
     </View>
   );
