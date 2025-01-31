@@ -43,6 +43,7 @@ export default function Play() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [defaultN, setDefaultN] = useState<number>();
   const [isDualMode, setDualMode] = useState<boolean>(true);
+  const [isSilentMode, setSilenMode] = useState<boolean>(false);
 
   const playHistory = useRef(newCard).current;
   const gameLoopRef = useRef<CustomTimer>(null);
@@ -109,6 +110,16 @@ export default function Play() {
       throw e;
     }
   };
+
+  const getSilentMode = async (): Promise<boolean> => {
+    try {
+      const n = await security.get("silentMode");
+      return n as boolean
+    } catch (e) {
+      console.error("Error in [getSilentMode]", e);
+      throw e;
+    }
+  }
 
   const resetGame = () => {
     stopGameLoop();
@@ -218,10 +229,12 @@ export default function Play() {
           const isDualMode: boolean = await getDualMode();
           setDualMode(isDualMode);
 
+          const isSilentMode: boolean = await getSilentMode();
+          setSilenMode(isSilentMode);
+
           if (isDualMode) {
             const sounds = await loadSounds();
             setSounds(sounds);
-
           } else {
             const sound = await loadSound();
             setSound(sound);
@@ -297,7 +310,11 @@ export default function Play() {
         try {
           const round = engineRef.current?.nextRound(turn);
           setGrid(round?.next as Grid);
-          round?.playSound()
+          if (isSilentMode) {
+            round?.triggerVibration();
+          } else {
+            round?.playSound();
+          }
         } catch (e) {
           console.error("Error in game. Ejecting.", e);
           resetGame();
@@ -343,7 +360,7 @@ export default function Play() {
         </View>
       ))}
       <Animated.View style={{ opacity: playButtonFadeAnim }}>
-        <PlayButton soundGuess={soundGuess} posGuess={posGuess} dualMode={isDualMode} />
+        <PlayButton soundGuess={soundGuess} posGuess={posGuess} dualMode={isDualMode} silentMode={isSilentMode} />
       </Animated.View>
       <StatusButton onPress={() => { resetGame(); startGame(true) }} isLoading={isLoading} playing={shouldStartGame} />
     </View>

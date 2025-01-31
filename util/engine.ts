@@ -1,4 +1,5 @@
 import { Audio } from "expo-av";
+import * as Haptics from "expo-haptics";
 
 import security from './security';
 
@@ -37,8 +38,10 @@ export type CustomTimer = number | NodeJS.Timeout | null;
 
 let gridPositions: number[];
 let gridMatches: boolean[];
+let buzzPatterns: number[];
 let letterSounds: string[];
 let soundMatches: boolean[];
+let buzzMatches: boolean[];
 
 const fillBoard: () => Grid = () => Array.from({ length: 3 }, () => Array(3).fill(false));
 
@@ -52,6 +55,7 @@ interface Engine {
 type Round = {
   next: Grid;
   playSound: () => Promise<void>
+  triggerVibration: () => void
 }
 
 type Answers = {
@@ -107,23 +111,23 @@ interface Score {
   answers: boolean[];
   guesses: boolean[];
 }
-const calculateScore = ({ answers, guesses }: Score): {accuracy: number, errorRate: number} => {
+const calculateScore = ({ answers, guesses }: Score): { accuracy: number, errorRate: number } => {
   //TODO add error rate.
   if (answers.length !== guesses.length) {
     console.error("Error in [calculateScore], array lengths do not match.");
   }
 
-  const correct = answers.reduce((count, value, index) => 
+  const correct = answers.reduce((count, value, index) =>
     count + ((value === guesses[index] && value === true) ? 1 : 0),
-  0);
+    0);
 
-  const possible = answers.reduce((count, value) => 
-    count + (value === true ? 1 : 0), 
-  0);
+  const possible = answers.reduce((count, value) =>
+    count + (value === true ? 1 : 0),
+    0);
 
-  const incorrect = answers.reduce((count, value, index) => 
-    count + (value !== guesses[index] && guesses[index] === true ? 1 : 0), 
-  0);
+  const incorrect = answers.reduce((count, value, index) =>
+    count + (value !== guesses[index] && guesses[index] === true ? 1 : 0),
+    0);
 
   const accuracy = possible > 0 ? (correct / possible) * 100 : 0;
   const errorRate = possible > 0 ? (incorrect / possible) * 100 : 0;
@@ -158,14 +162,18 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
   interface Patterns {
     gridPositions: number[];
     letterSounds: string[];
+    buzzPattern: number[];
     gridMatches: boolean[];
     soundMatches: boolean[];
+    buzzMatches: boolean[];
   }
   const generatePattern = (): Patterns => {
     const gridPositions: number[] = [];
     const letterSounds: string[] = [];
+    const buzzPattern: number[] = [];
     const gridMatches: boolean[] = [];
     const soundMatches: boolean[] = [];
+    const buzzMatches: boolean[] = [];
     const possibleGridPositions = [1, 2, 3, 4, 5, 6, 7, 8, 9]; // 9 grid positions
     const possibleLetterSounds = ["C", "G", "H", "K", "P", "Q", "T", "W"]; // 8 sounds
 
@@ -192,10 +200,9 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
         // No match or not enough history
         let newLetter;
         do {
-          newLetter =
-            possibleLetterSounds[
+          newLetter = possibleLetterSounds[
             Math.floor(Math.random() * possibleLetterSounds.length)
-            ];
+          ];
         } while (i >= n && newLetter === letterSounds[i - n]); // Avoid accidental match
         letterSounds.push(newLetter); // Ensure newLetter is valid before pushing
         soundMatches.push(false)
@@ -204,10 +211,21 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
         letterSounds.push(letterSounds[i - n]);
         soundMatches.push(true);
       }
+
+      // Buzz Pattern Logic
+      if (i < n || Math.random() > matchRate) {
+        // No match or not enough history
+        buzzPattern.push(0);
+        buzzMatches.push(false);
+      } else {
+        // Match from `n` steps back
+        buzzPattern.push(1);
+        buzzMatches.push(true);
+      }
     }
 
     // console.debug(gridPositions, letterSounds);
-    return { gridPositions, letterSounds, gridMatches, soundMatches };
+    return { gridPositions, letterSounds, buzzPattern, gridMatches, soundMatches, buzzMatches };
   }
 
   const createNewGame = () => {
@@ -215,8 +233,10 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
       const patterns = generatePattern();
       gridPositions = patterns.gridPositions;
       letterSounds = patterns.letterSounds;
+      buzzPatterns = patterns.buzzPattern;
       gridMatches = patterns.gridMatches;
       soundMatches = patterns.soundMatches;
+      buzzMatches = patterns.buzzMatches;
     } catch (e) {
       console.error("Error in [createNewGame]", e);
       throw e;
@@ -240,7 +260,7 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
         await Audio.setAudioModeAsync({
           allowsRecordingIOS: false,
           staysActiveInBackground: false,
-          playsInSilentModeIOS: false, 
+          playsInSilentModeIOS: false,
           shouldDuckAndroid: false,
           playThroughEarpieceAndroid: false,
         });
@@ -259,6 +279,13 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
       }
     }
 
+    const triggerVibration = () => {
+      if (buzzPatterns[turn] === 1)
+        Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Success
+        );
+    };
+
     const nextGrid = (): Grid => {
       try {
         const nextIndex = (gridPositions[turn] - 1);
@@ -274,7 +301,8 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
 
     return {
       next: nextGrid(),
-      playSound
+      playSound,
+      triggerVibration
     }
   }
 
@@ -282,6 +310,7 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
     return {
       sounds: gridMatches,
       pos: soundMatches,
+      buzz: buzzMatches
     }
   }
 

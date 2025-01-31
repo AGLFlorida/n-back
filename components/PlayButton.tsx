@@ -6,13 +6,15 @@ import { getGlobalStyles } from '@/styles/globalStyles';
 type Props = {
   soundGuess?: () => void;
   posGuess?: () => void;
-  dualMode?: boolean
+  dualMode?: boolean;
+  silentMode?: boolean;
 }
 
 export default function PlayButton({
   soundGuess = () => { },
   posGuess = () => { },
   dualMode = true,
+  silentMode = false
 }: Props) {
   const styles = getGlobalStyles();
 
@@ -20,7 +22,7 @@ export default function PlayButton({
     <View style={[styles.row, { marginTop: 20 }]}>
       {dualMode && (
         <View style={[styles.cell, styles.clearBorder]}>
-          <Button label=" Sound " onPress={soundGuess} />
+          <Button label={(silentMode) ? " Touch " : " Sound "} onPress={soundGuess} />
         </View>)}
       <View style={[styles.cell, styles.clearBorder]}>
         <Button label=" Position " onPress={posGuess} />
