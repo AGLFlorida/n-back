@@ -1,4 +1,4 @@
-export type SingleScoreType = [number, number];
+export type SingleScoreType = [number, number, number];
 export type ScoresType = Record<string, SingleScoreType>;
 
 const ERROR_PREFIX = "Error in Scores: ";

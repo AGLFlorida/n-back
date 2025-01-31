@@ -61,6 +61,7 @@ type Round = {
 type Answers = {
   sounds: boolean[];
   pos: boolean[];
+  buzz: boolean[];
 }
 
 export type RunningEngine = {

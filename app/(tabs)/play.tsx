@@ -92,7 +92,7 @@ export default function Play() {
       if (rec == null) {
         const key = scoreKey();
         rec = {};
-        rec[key] = [0, 0];
+        rec[key] = [0, 0, 0];
       }
       playHistory.scores = rec as ScoresType;
     } catch (e) {
@@ -157,6 +157,10 @@ export default function Play() {
   }
   // TODO move this to the engine util?
   // TODO add guess error rate.
+  // TODO auto-progression based on score and error rate.
+  // TODO achievements
+  // TODO flesh out score screen
+  // TODO show version notes popup
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
     const answers = engineRef.current?.answers();
 
@@ -166,28 +170,34 @@ export default function Play() {
 
     const { accuracy: soundScore } = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
     const { accuracy: posScore } = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
+    const { accuracy: buzzScore } = calculateScore({ answers: answers?.buzz as boolean[], guesses: buzzGuesses as boolean[] });
 
     // TODO this is super ugly...
     // TODO track error rate.
     const key = scoreKey();
     const saveScores = async () => {
       if (playHistory.scores == null) {
-        const initialScore: SingleScoreType = [0, 0];
+        const initialScore: SingleScoreType = [0, 0, 0];
         playHistory.setValue(key, initialScore);
       }
 
       const newScores: SingleScoreType = [
         posScore,
-        (posScore + soundScore) / 2
+        (posScore + soundScore) / 2,
+        (posScore + buzzScore) / 2
       ]
 
       let prevScores = playHistory.getValue(key);
       if (prevScores && !playHistory.compareCards(prevScores, newScores)) {
-        if (prevScores[0] > newScores[0]) {
+        if (prevScores.length > 0 && prevScores[0] > newScores[0]) {
           newScores[0] = prevScores[0];
         }
-        if (prevScores[1] > newScores[1]) {
+        if (prevScores.length > 1 && prevScores[1] > newScores[1]) {
           newScores[1] = prevScores[1];
+        }
+
+        if (prevScores.length > 2 && prevScores[2] > newScores[2]) { // backwards compat. with old scoring system
+          newScores[2] = prevScores[2];
         }
       }
       
@@ -203,13 +213,14 @@ export default function Play() {
 
     showCustomAlert("Score", JSON.stringify({
       sounds: soundScore,
-      positions: posScore
+      positions: posScore,
+      buzz: buzzScore
     }))
 
     return {
       soundScoreCard: soundScore,
       posScoreCard: posScore,
-      // buzzGuesses: calculateMatchPercentage(answers?.sounds as boolean[], []),
+      buzzSCoreCard: buzzScore
     }
   }
 
