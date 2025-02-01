@@ -261,7 +261,7 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
         await Audio.setAudioModeAsync({
           allowsRecordingIOS: false,
           staysActiveInBackground: false,
-          playsInSilentModeIOS: false,
+          playsInSilentModeIOS: true,
           shouldDuckAndroid: false,
           playThroughEarpieceAndroid: false,
         });

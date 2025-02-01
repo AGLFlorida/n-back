@@ -155,6 +155,9 @@ export default function Play() {
     posGuesses?: boolean[];
     buzzGuesses?: boolean[];
   }
+
+  // TODO add 'learn more' screens for silent mode and dual n-back
+  // TODO two position turns in the same spot show no visual indicator of change.
   // TODO move this to the engine util?
   // TODO add guess error rate.
   // TODO auto-progression based on score and error rate.
@@ -168,9 +171,17 @@ export default function Play() {
     // console.debug("sound guess: ", soundGuesses);
     // console.debug("pos guess:", posGuesses);
 
-    const { accuracy: soundScore } = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
     const { accuracy: posScore } = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
-    const { accuracy: buzzScore } = calculateScore({ answers: answers?.buzz as boolean[], guesses: buzzGuesses as boolean[] });
+    
+    let soundScore: number = 0;
+    if (soundGuesses)
+      ({ accuracy: soundScore } = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] }));
+    
+
+    let buzzScore: number = 0;
+    if (buzzGuesses)
+      ({ accuracy: buzzScore } = calculateScore({ answers: answers?.buzz as boolean[], guesses: buzzGuesses as boolean[] }));
+    
 
     // TODO this is super ugly...
     // TODO track error rate.
@@ -192,11 +203,11 @@ export default function Play() {
         if (prevScores.length > 0 && prevScores[0] > newScores[0]) {
           newScores[0] = prevScores[0];
         }
-        if (prevScores.length > 1 && prevScores[1] > newScores[1]) {
+        if (soundScore > 0 && prevScores.length > 1 && prevScores[1] > newScores[1]) {
           newScores[1] = prevScores[1];
         }
 
-        if (prevScores.length > 2 && prevScores[2] > newScores[2]) { // backwards compat. with old scoring system
+        if (buzzScore > 0 && prevScores.length > 2 && prevScores[2] > newScores[2]) { 
           newScores[2] = prevScores[2];
         }
       }
@@ -320,16 +331,25 @@ export default function Play() {
         }
         try {
           const round = engineRef.current?.nextRound(turn);
-          setGrid(round?.next as Grid);
+          //setGrid(round?.next as Grid);
+          setGrid(fillBoard());
+          // fix for missing visual indicator when two turns have the same visible square.
+          const redraw = setTimeout(() => {
+            setGrid(round?.next as Grid);
+          }, 200);
+
           if (isSilentMode) {
             round?.triggerVibration();
           } else {
             round?.playSound();
           }
+          
+          return () => clearTimeout(redraw);
         } catch (e) {
           console.error("Error in game. Ejecting.", e);
           resetGame();
-        }
+        } 
+
       }
     }
   }, [elapsedTime])
