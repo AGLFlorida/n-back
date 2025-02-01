@@ -163,6 +163,7 @@ export default function Play() {
   // TODO achievements
   // TODO flesh out score screen
   // TODO show version notes popup
+  // TODO remove that awful sword noise on single n-back mode.
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
     const answers = engineRef.current?.answers();
     const { accuracy: posScore } = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
