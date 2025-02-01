@@ -7,6 +7,8 @@ import { getGlobalStyles } from "@/styles/globalStyles";
 
 import security from "@/util/security";
 
+//@TODO: instead of reading storage every time, 
+// we need to import storage once into global state and keep it until the app refreshes.
 export default function Index() {
   const router = useRouter();
   const styles = getGlobalStyles();
@@ -27,6 +29,14 @@ export default function Index() {
         }
       }
       getTerms();
+
+      const getVersionNotes = async () => {
+        const showVersionNotes = await security.get("showVersionNotes");
+        if (showVersionNotes) {
+          // TODO: popup with version notes.
+          // TODO: await security.set("showVersionNotes", true);
+        }
+      }
     }, [])
   );
 

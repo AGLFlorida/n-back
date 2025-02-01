@@ -157,7 +157,6 @@ export default function Play() {
   }
 
   // TODO add 'learn more' screens for silent mode and dual n-back
-  // TODO two position turns in the same spot show no visual indicator of change.
   // TODO move this to the engine util?
   // TODO add guess error rate.
   // TODO auto-progression based on score and error rate.
@@ -166,11 +165,6 @@ export default function Play() {
   // TODO show version notes popup
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
     const answers = engineRef.current?.answers();
-
-    // console.debug("answers: ", answers);
-    // console.debug("sound guess: ", soundGuesses);
-    // console.debug("pos guess:", posGuesses);
-
     const { accuracy: posScore } = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
     
     let soundScore: number = 0;
@@ -183,7 +177,6 @@ export default function Play() {
       ({ accuracy: buzzScore } = calculateScore({ answers: answers?.buzz as boolean[], guesses: buzzGuesses as boolean[] }));
     
 
-    // TODO this is super ugly...
     // TODO track error rate.
     const key = scoreKey();
     const saveScores = async () => {
@@ -331,7 +324,7 @@ export default function Play() {
         }
         try {
           const round = engineRef.current?.nextRound(turn);
-          //setGrid(round?.next as Grid);
+          
           setGrid(fillBoard());
           // fix for missing visual indicator when two turns have the same visible square.
           const redraw = setTimeout(() => {

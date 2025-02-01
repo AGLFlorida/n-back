@@ -109,34 +109,3 @@ export default function Terms() {
     </ScrollView>
   )
 }
-
-
-/*
-Last Updated: [Date]
-
-By downloading, installing, or using this app (“App”), you agree to the following terms:
-
-1. No Guarantees or Warranties
-This App is provided “as is” without any warranties, express or implied. The developer makes no guarantees about the availability, accuracy, or functionality of the App.
-
-2. Use at Your Own Risk
-You assume all risk when using the App. The developer is not responsible for any damages, data loss, or other issues that may arise from using the App.
-
-3. No Liability
-To the fullest extent permitted by law, the developer is not liable for any direct, indirect, incidental, or consequential damages related to your use of the App.
-
-4. Privacy Disclaimer
-This App does not collect, store, or share any personal data. All settings and app-related data are stored locally on your device and are not transmitted to the developer or any third parties.
-
-5. Updates and Termination
-The developer may update, modify, or discontinue the App at any time without notice.
-
-6. Changes to Terms
-These terms may be updated from time to time. Your continued use of the App means you accept any changes.
-
-7. Governing Law
-These terms are governed by the laws of [Your Jurisdiction].
-
-If you do not agree to these terms, do not download or use the App.
-
-*/

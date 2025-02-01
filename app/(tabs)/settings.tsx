@@ -19,8 +19,6 @@ import { useTheme } from "@/contexts/ThemeContext"
 import { showCustomAlert } from "@/util/alert";
 import { MAXN, MINN } from "@/util/engine";
 
-//@TODO add expo-haptics
-
 type N = number | undefined
 
 const systemTheme = Appearance.getColorScheme();
