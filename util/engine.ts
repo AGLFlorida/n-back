@@ -308,8 +308,8 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
 
   const answers = () => {
     return {
-      sounds: gridMatches,
-      pos: soundMatches,
+      sounds: soundMatches,
+      pos: gridMatches,
       buzz: buzzMatches
     }
   }

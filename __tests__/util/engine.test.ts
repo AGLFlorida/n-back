@@ -189,4 +189,48 @@ describe('Engine Core Functions', () => {
     });
   });
 
+  describe('pattern matching', () => {
+    const testEngine = engine({
+      n: 2,
+      gameLen: 5,
+      matchRate: 1  // Force matches to occur
+    });
+
+    it('should correctly identify n-back matches', () => {
+      testEngine.createNewGame();
+      const answers = testEngine.answers();
+      
+      // First two positions can't be matches (n=2)
+      expect(answers.pos[0]).toBe(false);
+      expect(answers.pos[1]).toBe(false);
+      
+      // From position 2 onwards, matches should be possible
+      expect(answers.pos.slice(2).some(x => x === true)).toBe(true);
+    });
+
+    it('should score perfect gameplay correctly', () => {
+      const mockAnswers = [false, false, true, true, false];
+      const mockGuesses = [false, false, true, true, false];
+      
+      const { accuracy } = calculateScore({
+        answers: mockAnswers,
+        guesses: mockGuesses
+      });
+      
+      expect(accuracy).toBe(100);
+    });
+
+    it('should handle missed matches correctly', () => {
+      const mockAnswers = [false, false, true, true, false];
+      const mockGuesses = [false, false, false, true, false]; // Missed one match
+      
+      const { accuracy } = calculateScore({
+        answers: mockAnswers,
+        guesses: mockGuesses
+      });
+      
+      expect(accuracy).toBe(50); // Only got 1 out of 2 matches
+    });
+  });
+
 }); 
