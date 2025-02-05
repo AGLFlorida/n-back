@@ -158,13 +158,11 @@ export default function Play() {
   }
 
   // TODO add 'learn more' screens for silent mode and dual n-back
-  // TODO move this to the engine util?
   // TODO add guess error rate.
   // TODO auto-progression based on score and error rate.
   // TODO achievements
   // TODO flesh out score screen
   // TODO show version notes popup
-  // TODO remove that awful sword noise on single n-back mode.
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
     const answers = engineRef.current?.answers();
     const { accuracy: posScore } = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
@@ -172,14 +170,11 @@ export default function Play() {
     let soundScore: number = 0;
     if (soundGuesses)
       ({ accuracy: soundScore } = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] }));
-    
 
     let buzzScore: number = 0;
     if (buzzGuesses)
       ({ accuracy: buzzScore } = calculateScore({ answers: answers?.buzz as boolean[], guesses: buzzGuesses as boolean[] }));
-    
 
-    // TODO track error rate.
     const key = scoreKey();
     const saveScores = async () => {
       if (playHistory.scores == null) {

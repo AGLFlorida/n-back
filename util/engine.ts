@@ -21,7 +21,12 @@ const soundFiles: SoundFile[] = [
 
 const soloSound: SoundFile = {
   key: "NOISE",
-  file: require("../assets/audio/swords.m4a")
+  file: require("../assets/audio/swap.m4a")
+}
+
+const celebration: SoundFile = {
+  key: "CELEBRATE",
+  file: require("../assets/audio/fanfare.m4a")
 }
 
 type AVPlaybackSource = Parameters<typeof Audio.Sound.createAsync>[0];
