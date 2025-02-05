@@ -11,6 +11,7 @@ import { scoreKey } from '@/util/engine';
 import security from "@/util/security";
 
 import Chart, { DataPointType } from '@/components/Chart';
+import log from '@/util/logger';
 
 const newCard = new ScoreCard({});
 
@@ -38,7 +39,7 @@ export default function History() {
           let rec = await security.get("records");
           setPlayHistory(rec as ScoresType);
         } catch (e) {
-          console.error("Error retrieving past scores.", e);
+          log.error("Error retrieving past scores.", e);
         }
       }
 

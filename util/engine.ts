@@ -2,6 +2,7 @@ import { Audio } from "expo-av";
 import * as Haptics from "expo-haptics";
 
 import security from './security';
+import log from "./logger";
 
 const MAXTIME = (5 * 60);
 export const MAXN = 9;
@@ -75,7 +76,7 @@ const getDualMode = async (): Promise<boolean> => {
     const dual = await security.get("dualMode");
     return dual as boolean;
   } catch (e) {
-    console.error("Error in [getDualMode]", e);
+    log.error("Error in [getDualMode]", e);
     throw e;
   }
 };
@@ -113,9 +114,8 @@ interface Score {
   guesses: boolean[];
 }
 const calculateScore = ({ answers, guesses }: Score): { accuracy: number, errorRate: number } => {
-  //TODO add error rate.
   if (answers.length !== guesses.length) {
-    console.error("Error in [calculateScore], array lengths do not match.");
+    log.error("Error in [calculateScore], array lengths do not match.");
   }
 
   const correct = answers.reduce((count, value, index) =>
@@ -225,7 +225,6 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
       }
     }
 
-    // console.debug(gridPositions, letterSounds);
     return { gridPositions, letterSounds, buzzPattern, gridMatches, soundMatches, buzzMatches };
   }
 
@@ -239,7 +238,7 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
       soundMatches = patterns.soundMatches;
       buzzMatches = patterns.buzzMatches;
     } catch (e) {
-      console.error("Error in [createNewGame]", e);
+      log.error("Error in [createNewGame]", e);
       throw e;
     }
   }
@@ -250,7 +249,7 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
       const nextIndex = soundFiles.findIndex((item) => item.key == patternIndex);
       return soundFiles[nextIndex].file;
     } catch (error) {
-      console.error("Error in chooseNextSound.");
+      log.error("Error in chooseNextSound.");
       throw error;
     }
   }
@@ -275,7 +274,7 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
           await sound.playAsync();
         }
       } catch (e) {
-        console.error("Error playing sound.", e);
+        log.error("Error playing sound.", e);
         throw e;
       }
     }
@@ -295,7 +294,7 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
         newGrid[newRow][newCol] = true;
         return newGrid
       } catch (error) {
-        console.error("Error in placing next square.");
+        log.error("Error in placing next square.");
         throw error;
       }
     }

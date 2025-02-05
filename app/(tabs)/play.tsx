@@ -10,6 +10,7 @@ import { showCustomAlert } from "@/util/alert";
 import { ScoreCard, ScoresType, SingleScoreType } from "@/util/ScoreCard";
 
 import security from "@/util/security";
+import log from "@/util/logger";
 
 import engine, {
   MAXTIME,
@@ -32,7 +33,7 @@ const fillGuessCard = (len: number): boolean[] => Array(len).fill(false);
 const newCard = new ScoreCard({});
 
 export default function Play() {
-  // console.debug("RENDERED PLAY");
+  // log.debug("RENDERED PLAY");
 
   const styles = getGlobalStyles();
   const navigation = useNavigation();
@@ -96,7 +97,7 @@ export default function Play() {
       }
       playHistory.scores = rec as ScoresType;
     } catch (e) {
-      console.error("Error retrieving past scores.", e);
+      log.error("Error retrieving past scores.", e);
     }
   }
 
@@ -106,7 +107,7 @@ export default function Play() {
       const n = await security.get("defaultN");
       return n as number
     } catch (e) {
-      console.error("Error in [getN]", e);
+      log.error("Error in [getN]", e);
       throw e;
     }
   };
@@ -116,7 +117,7 @@ export default function Play() {
       const n = await security.get("silentMode");
       return n as boolean
     } catch (e) {
-      console.error("Error in [getSilentMode]", e);
+      log.error("Error in [getSilentMode]", e);
       throw e;
     }
   }
@@ -210,7 +211,7 @@ export default function Play() {
       try {
         await security.set("records", playHistory.scores);
       } catch (e) {
-        console.error("Error saving scores", e);
+        log.error("Error saving scores", e);
       }
 
     }
@@ -269,7 +270,7 @@ export default function Play() {
 
           setIsLoading(false);
         } catch (e) {
-          console.error("Error initializing game.", e);
+          log.error("Error initializing game.", e);
         }
       }
 
@@ -302,7 +303,7 @@ export default function Play() {
   useEffect(() => {
     if (elapsedTime >= 0) {
       if (elapsedTime > MAXTIME) { // exit condition 1: game went too long.
-        console.warn("Game ended, timer: ", elapsedTime);
+        log.warn("Game ended, timer: ", elapsedTime);
         scoreGame({
           posGuesses: posClickRef.current,
           soundGuesses: soundClickRef.current,
@@ -315,7 +316,7 @@ export default function Play() {
         const turn = Math.floor(elapsedTime / 2);
         setTurnRef(turn);
         if (turn >= gameLen) { // exit condition 2: game is actually over.
-          // console.info("Game ended, turn: ", turn);
+          // log.info("Game ended, turn: ", turn);
           scoreGame({
             posGuesses: posClickRef.current,
             soundGuesses: soundClickRef.current,
@@ -340,7 +341,7 @@ export default function Play() {
           
           return () => clearTimeout(redraw);
         } catch (e) {
-          console.error("Error in game. Ejecting.", e);
+          log.error("Error in game. Ejecting.", e);
           resetGame();
         } 
 

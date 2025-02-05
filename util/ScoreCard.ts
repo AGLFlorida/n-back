@@ -1,6 +1,8 @@
 export type SingleScoreType = [number, number, number];
 export type ScoresType = Record<string, SingleScoreType>;
 
+import log from "@/util/logger";
+
 const ERROR_PREFIX = "Error in Scores: ";
 
 export class ScoreCard {
@@ -22,7 +24,7 @@ export class ScoreCard {
     try {
       return this._value[key];
     } catch (e) {
-      console.error(ERROR_PREFIX + "getValue.", e);
+      log.error(ERROR_PREFIX + "getValue.", e);
       throw e;
     }
   }
@@ -31,7 +33,7 @@ export class ScoreCard {
     try {
       this._value[key] = value;
     } catch (e) {
-      console.error(ERROR_PREFIX + "setValue.", e);
+      log.error(ERROR_PREFIX + "setValue.", e);
       throw e;
     }
    }
@@ -44,14 +46,14 @@ export class ScoreCard {
     try {
     delete this._value[key];
     } catch (e) {
-      console.error(ERROR_PREFIX + "deleteKey.", e);
+      log.error(ERROR_PREFIX + "deleteKey.", e);
       throw e;
     }
   }
 
   compareCards(card1: SingleScoreType, card2: SingleScoreType): boolean {
     if (card1.length != card2.length) {
-      console.warn("compareCards arrays are not equal in length.");
+      log.warn("compareCards arrays are not equal in length.");
       return false;
     }
 
