@@ -17,7 +17,7 @@ const defaultConfig = {
       error: "redBright" as const
     }
   },
-  async: true,
+  async: process.env.NODE_ENV !== 'test',
   dateFormat: "time",
   printLevel: true,
   printDate: true,
