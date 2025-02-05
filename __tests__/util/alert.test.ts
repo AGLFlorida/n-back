@@ -18,9 +18,9 @@ describe('alert', () => {
     it('should call Alert.alert with correct parameters', () => {
       const title = 'Test Title';
       const message = 'Test Message';
-      
+
       showCustomAlert(title, message);
-      
+
       expect(Alert.alert).toHaveBeenCalledWith(
         title,
         message,
@@ -34,7 +34,7 @@ describe('alert', () => {
     it('should be called with different messages', () => {
       showCustomAlert('Title 1', 'Message 1');
       showCustomAlert('Title 2', 'Message 2');
-      
+
       expect(Alert.alert).toHaveBeenCalledTimes(2);
       expect(Alert.alert).toHaveBeenNthCalledWith(
         1,

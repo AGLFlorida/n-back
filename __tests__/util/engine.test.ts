@@ -32,9 +32,10 @@ describe('Engine Core Functions', () => {
 
   describe('scoreKey', () => {
     it('should format date correctly', () => {
-      const testDate = new Date('2024-03-15');
+      const testDate = new Date('2024-03-15T12:00:00Z'); // Use ISO format with time
       const key = scoreKey(testDate);
-      expect(key).toBe('2024-Mar-15');
+      const expected = '2024-Mar-15';
+      expect(key).toBe(expected);
     });
   });
 
@@ -52,18 +53,140 @@ describe('Engine Core Functions', () => {
     it('should generate valid next rounds', () => {
       testEngine.createNewGame();
       const round = testEngine.nextRound(0);
-      
+
       expect(round).toHaveProperty('next');
       expect(round).toHaveProperty('playSound');
       expect(round).toHaveProperty('triggerVibration');
-      
+
       // Check grid structure
       expect(round.next.length).toBe(3);
       expect(round.next[0].length).toBe(3);
-      
+
       // Check that exactly one cell is true
       const trueCount = round.next.flat().filter(cell => cell === true).length;
       expect(trueCount).toBe(1);
     });
   });
+
+  describe('game engine e2e', () => {
+    const testEngine = engine({
+      n: 2,
+      gameLen: 30,
+      matchRate: 1
+    });
+
+    it('should score a perfect dual game correctly', () => {
+      testEngine.createNewGame();
+      const answers = testEngine.answers();
+
+      const posGuesses: boolean[] = [
+        false, false, true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true
+      ];
+
+      const soundGuesses: boolean[] = [
+        false, false, true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true
+      ];
+
+      const buzzGuesses = undefined;
+
+      const { accuracy: posScore } = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
+    
+      let soundScore: number = 0;
+      if (soundGuesses)
+        ({ accuracy: soundScore } = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] }));
+      
+  
+      let buzzScore: number = 0;
+      if (buzzGuesses)
+        ({ accuracy: buzzScore } = calculateScore({ answers: answers?.buzz as boolean[], guesses: buzzGuesses as boolean[] }));
+
+      expect(posScore).toBe(100);
+      expect(soundScore).toBe(100);
+      expect(buzzScore).toBe(0);
+    });
+
+    it('should score a perfect silent game correctly', () => {
+      testEngine.createNewGame();
+      const answers = testEngine.answers();
+
+      const posGuesses: boolean[] = [
+        false, false, true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true
+      ];
+
+      const buzzGuesses: boolean[] = [
+        false, false, true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true
+      ];
+      
+      const soundGuesses = undefined;
+
+      const { accuracy: posScore } = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
+    
+      let soundScore: number = 0;
+      if (soundGuesses)
+        ({ accuracy: soundScore } = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] }));
+      
+  
+      let buzzScore: number = 0;
+      if (buzzGuesses)
+        ({ accuracy: buzzScore } = calculateScore({ answers: answers?.buzz as boolean[], guesses: buzzGuesses as boolean[] }));
+
+      expect(posScore).toBe(100);
+      expect(soundScore).toBe(0);
+      expect(buzzScore).toBe(100);
+    });
+
+    it('should score a perfect silent game correctly', () => {
+      testEngine.createNewGame();
+      const answers = testEngine.answers();
+
+      const posGuesses: boolean[] = [
+        false, false, true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true,
+        true,  true,  true, true, true
+      ];
+
+      const buzzGuesses = undefined;
+      
+      const soundGuesses = undefined;
+
+      const { accuracy: posScore } = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
+    
+      let soundScore: number = 0;
+      if (soundGuesses)
+        ({ accuracy: soundScore } = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] }));
+      
+  
+      let buzzScore: number = 0;
+      if (buzzGuesses)
+        ({ accuracy: buzzScore } = calculateScore({ answers: answers?.buzz as boolean[], guesses: buzzGuesses as boolean[] }));
+
+      expect(posScore).toBe(100);
+      expect(soundScore).toBe(0);
+      expect(buzzScore).toBe(0);
+    });
+  });
+
 }); 

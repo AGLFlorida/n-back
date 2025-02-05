@@ -31,11 +31,11 @@ describe('security', () => {
   describe('set', () => {
     it('should successfully save data', async () => {
       (SecureStore.setItemAsync as jest.Mock).mockResolvedValueOnce(undefined);
-      
+
       const result = await security.set('testKey', { data: 'test' });
-      
-      await new Promise(resolve => setImmediate(resolve)); 
-      
+
+      await new Promise(resolve => setImmediate(resolve));
+
       expect(result).toBe(true);
       expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
         'testKey',
@@ -45,9 +45,9 @@ describe('security', () => {
 
     it('should handle errors when saving', async () => {
       (SecureStore.setItemAsync as jest.Mock).mockRejectedValueOnce(new Error('Save failed'));
-      
+
       const result = await security.set('testKey', { data: 'test' });
-      
+
       expect(result).toBe(false);
     });
   });
@@ -56,26 +56,26 @@ describe('security', () => {
     it('should successfully retrieve data', async () => {
       const mockData = { data: 'test' };
       (SecureStore.getItemAsync as jest.Mock).mockResolvedValueOnce(JSON.stringify(mockData));
-      
+
       const result = await security.get('testKey');
-      
+
       expect(result).toEqual(mockData);
       expect(SecureStore.getItemAsync).toHaveBeenCalledWith('testKey');
     });
 
     it('should return null for non-existent data', async () => {
       (SecureStore.getItemAsync as jest.Mock).mockResolvedValueOnce(null);
-      
+
       const result = await security.get('testKey');
-      
+
       expect(result).toBeNull();
     });
 
     it('should handle errors when retrieving', async () => {
       (SecureStore.getItemAsync as jest.Mock).mockRejectedValueOnce(new Error('Retrieval failed'));
-      
+
       const result = await security.get('testKey');
-      
+
       expect(result).toBeNull();
     });
   });
