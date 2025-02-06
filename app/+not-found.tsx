@@ -1,4 +1,4 @@
-import React from 'react';
+import { SafeAreaView } from 'react-native';
 import { Stack } from 'expo-router';
 
 import { useTheme } from '@/contexts/ThemeContext';
@@ -8,7 +8,7 @@ export default function NotFoundScreen() {
   const { theme } = useTheme();
 
   return (
-    <>
+    <SafeAreaView>
       <Stack.Screen options={{
         title: "Oops! Not Found",
         headerStyle: {
@@ -17,6 +17,6 @@ export default function NotFoundScreen() {
         headerTintColor: theme.textColor,
       }} />
       <FourOhFour />
-    </>
+    </SafeAreaView>
   );
 }

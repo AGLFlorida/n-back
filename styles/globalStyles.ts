@@ -1,96 +1,100 @@
 import { StyleSheet } from "react-native";
 import { useTheme } from "@/contexts/ThemeContext";
 
+export const themeColors = {
+  white: '#ffffff',
+  red: '#ff0000',
+}
 
-export const getGlobalStyles = () => {
+export const useGlobalStyles = () => {
   const { theme } = useTheme();
 
   return StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: theme.backgroundColor,
-    },
-    grid: {
-      width: "100%",
-      backgroundColor: theme.accentColor,
-    },
-    row: {
-      flexDirection: "row",
-      justifyContent: "center",
+    button: {
+      color: themeColors.white,
+      fontSize: 20,
+      textDecorationLine: 'underline',
     },
     cell: {
-      borderWidth: 1,
       borderColor: theme.borderColor,
+      borderWidth: 1,
       padding: 1,
-    },
-    placeHolder: {
-      width: 120,
-      height: 120,
-      backgroundColor: theme.backgroundColor,
     },
     clearBorder: {
       borderWidth: 0,
     },
-    numberInput: {
-      height: 40,
-      borderColor: theme.borderColor,
-      borderWidth: 1,
-      paddingHorizontal: 20,
-      marginVertical: 10,
-      borderRadius: 5,
+    container: {
+      backgroundColor: theme.backgroundColor,
+      flex: 1,
+    },
+    grid: {
+      backgroundColor: theme.accentColor,
+      width: "100%",
+    },
+    heading: {
       color: theme.textColor,
+      fontSize: 22,
+      fontWeight:'bold',
+      marginBottom: 20,
+      textAlign: 'center',
+      textDecorationLine: 'underline'
     },
     label: {
       color: theme.textColor,
     },
+    listItem: {
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      marginBottom: 12,
+    },
+    number: {
+      color: theme.textColor,
+      fontSize: 18,
+      fontWeight: 'bold',
+      lineHeight: 26, 
+      marginRight: 10,
+    },
+    numberInput: {
+      borderColor: theme.borderColor,
+      borderRadius: 5,
+      borderWidth: 1,
+      color: theme.textColor,
+      height: 40,
+      marginVertical: 10,
+      paddingHorizontal: 20,
+    },
+    placeHolder: {
+      backgroundColor: theme.backgroundColor,
+      height: 120,
+      width: 120,
+    },
     play: {
-      padding: 4,
+      alignItems: 'center',
       borderColor: theme.screenOptions.tabBarActiveTintColor,
       borderRadius: 14,
       overflow: 'hidden',
+      padding: 4,
       width: '50%',
-      alignItems: 'center',
     },
     playLabel: {
       color: theme.screenOptions.tabBarActiveTintColor,
       fontSize: 24,
       margin: 20,
     },
-    settingsCell: {
-      padding: 3,
-      justifyContent: 'center',
-      borderWidth: 0,
-      borderColor: theme.borderColor,
+    row: {
+      flexDirection: "row",
+      justifyContent: "center",
     },
-    button: {
-      fontSize: 20,
-      textDecorationLine: 'underline',
-      color: '#fff',
+    settingsCell: {
+      borderColor: theme.borderColor,
+      borderWidth: 0,
+      justifyContent: 'center',
+      padding: 3,
     },
     text: {
       color: theme.textColor,
-      fontSize: 18,
-      lineHeight: 26,
       flex: 1,
-    },
-    heading: {
-      color: theme.textColor,
-      fontSize: 22,
-      fontWeight:'bold',
-      textDecorationLine: 'underline',
-      marginBottom: 20,
-      textAlign: 'center'
-    },
-    listItem: {
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      marginBottom: 12,
-    },
-    number: {
       fontSize: 18,
-      fontWeight: 'bold',
-      color: theme.textColor,
-      marginRight: 10, 
       lineHeight: 26,
     },
   });

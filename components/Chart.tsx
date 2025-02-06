@@ -1,5 +1,4 @@
 import { useTheme } from "@/contexts/ThemeContext";
-import { getGlobalStyles } from "@/styles/globalStyles";
 import React from "react";
 import { View } from "react-native";
 import Svg, { Line, Polyline, Circle, Text } from "react-native-svg";

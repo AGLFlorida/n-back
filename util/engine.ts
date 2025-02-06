@@ -24,10 +24,11 @@ const soloSound: SoundFile = {
   file: require("../assets/audio/swap.m4a")
 }
 
-const celebration: SoundFile = {
-  key: "CELEBRATE",
-  file: require("../assets/audio/fanfare.m4a")
-}
+// TODO
+// const celebration: SoundFile = {
+//   key: "CELEBRATE",
+//   file: require("../assets/audio/fanfare.m4a")
+// }
 
 type AVPlaybackSource = Parameters<typeof Audio.Sound.createAsync>[0];
 
@@ -36,7 +37,7 @@ type SoundFile = {
   file: AVPlaybackSource;
 };
 
-export type Grid = any[][];
+export type Grid = boolean[][];
 export type MultiType = number | ((arg0: number) => number);
 
 export type SoundState = Record<string, Audio.Sound | null>;
@@ -106,7 +107,7 @@ const loadSound = async (): Promise<Audio.Sound> => {
 const gridIndexes: Array<[number, number]> = (() => {
   const allCells: Array<[number, number]> = [];
   fillBoard().forEach((row, rowIndex) => {
-    row.forEach((_: any, colIndex: number) => {
+    row.forEach((_, colIndex: number) => {
       allCells.push([rowIndex, colIndex]);
     });
   });
@@ -151,10 +152,10 @@ type Defaults = {
   matchRate: number;
   levelUp: boolean;
 }
-const defaults = (prevScore: number): Defaults => {
-  let gameLen = DEFFAULT_GAMELEN;
-  let matchRate = DEFAULT_MATCHRATE;
-  let levelUp = false;
+const defaults = (/*prevScore: number*/): Defaults => {
+  const gameLen = DEFFAULT_GAMELEN;
+  const matchRate = DEFAULT_MATCHRATE;
+  const levelUp = false;
 
   return { // TODO these should be variable per game
     gameLen,

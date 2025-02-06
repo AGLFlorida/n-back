@@ -1,16 +1,16 @@
-import { StyleSheet, Platform, Pressable, Text } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 
 import { useTheme } from "@/contexts/ThemeContext";
 
-export const getButtonStyles = () => {
+export const useButtonStyles = () => {
   const { theme } = useTheme();
 
   return StyleSheet.create({
     buttonContainer: {
-      borderRadius: 14,
-      overflow: 'hidden',
       alignItems: 'center',
+      borderRadius: 14,
       justifyContent: 'center',
+      overflow: 'hidden',
       ...Platform.select({
         ios: {
           shadowColor: theme.accentColor,

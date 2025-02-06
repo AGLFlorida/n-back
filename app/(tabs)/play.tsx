@@ -27,7 +27,7 @@ import engine, {
   scoreKey
 } from "@/util/engine";
 
-import { getGlobalStyles } from "@/styles/globalStyles";
+import { useGlobalStyles } from "@/styles/globalStyles";
 
 const fillGuessCard = (len: number): boolean[] => Array(len).fill(false);
 const newCard = new ScoreCard({});
@@ -35,14 +35,14 @@ const newCard = new ScoreCard({});
 export default function Play() {
   // log.debug("RENDERED PLAY");
 
-  const styles = getGlobalStyles();
+  const styles = useGlobalStyles();
   const navigation = useNavigation();
 
   const [grid, setGrid] = useState<Grid>(fillBoard());
   const [shouldStartGame, startGame] = useState<boolean>(false);
   const [elapsedTime, setElapsedTime] = useState<number>(-1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [defaultN, setDefaultN] = useState<number>();
+  const [, setDefaultN] = useState<number>();
   const [isDualMode, setDualMode] = useState<boolean>(true);
   const [isSilentMode, setSilenMode] = useState<boolean>(false);
 
@@ -50,7 +50,7 @@ export default function Play() {
   const gameLoopRef = useRef<CustomTimer>(null);
   const engineRef = useRef<RunningEngine>();
 
-  const { gameLen, matchRate } = defaults(1);
+  const { gameLen, matchRate } = defaults(/*1*/);
 
   // Make button transitions less abrupt
   const playButtonFadeAnim = useRef(new Animated.Value(0)).current;
@@ -87,7 +87,6 @@ export default function Play() {
 
   // Previous Scores
   const loadRecords = async () => {
-    const key = scoreKey();
     try {
       let rec = await security.get("records");
       if (rec == null) {
@@ -188,7 +187,7 @@ export default function Play() {
         (posScore + buzzScore) / 2
       ]
 
-      let prevScores = playHistory.getValue(key);
+      const prevScores = playHistory.getValue(key);
       if (prevScores && !playHistory.compareCards(prevScores, newScores)) {
         if (prevScores.length > 0 && prevScores[0] > newScores[0]) {
           newScores[0] = prevScores[0];

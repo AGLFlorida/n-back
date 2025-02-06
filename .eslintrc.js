@@ -26,4 +26,12 @@ module.exports = {
       version: 'detect',
     },
   },
-}; 
+  ignorePatterns: [
+    'node_modules/',
+    'dist/',
+    'build/',
+    '*.config.js',
+    '.eslintrc.js',
+    'jest.setup.js'
+  ],
+};

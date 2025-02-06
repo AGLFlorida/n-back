@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 
 import Button from './Button';
-import { getGlobalStyles } from '@/styles/globalStyles';
+import { useGlobalStyles } from '@/styles/globalStyles';
 
 type Props = {
   soundGuess?: () => void;
@@ -16,7 +16,7 @@ export default function PlayButton({
   dualMode = true,
   silentMode = false
 }: Props) {
-  const styles = getGlobalStyles();
+  const styles = useGlobalStyles();
 
   return (
     <View style={[styles.row, { marginTop: 20 }]}>

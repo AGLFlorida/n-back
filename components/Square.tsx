@@ -52,7 +52,7 @@ export default function Square({ indicator }: Props) {
     {indicator !== undefined && <Text style={{textAlign: 'center', margin: 'auto', alignSelf: 'center', fontSize: 20, color: "#fff"}}>{indicator}</Text>}
     </Animated.View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

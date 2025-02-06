@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, Animated } from 'react-native';
 
-import { getGlobalStyles } from '@/styles/globalStyles';
+import { useGlobalStyles } from '@/styles/globalStyles';
 import Button from './Button';
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 }
 
 export default function PlayButton({ onPress, isLoading, playing }: Props) {
-  const styles = getGlobalStyles();
+  const styles = useGlobalStyles();
   const [shouldShowButton, setShowButton] = useState<boolean>((!isLoading && !playing));
   const fadeAnim = useRef(new Animated.Value(0)).current;
 

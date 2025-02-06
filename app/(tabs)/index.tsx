@@ -3,7 +3,7 @@ import { View, Text, Alert } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 
 import Button from "@/components/Button";
-import { getGlobalStyles } from "@/styles/globalStyles";
+import { useGlobalStyles } from "@/styles/globalStyles";
 
 import security from "@/util/security";
 
@@ -11,7 +11,7 @@ import security from "@/util/security";
 // we need to import storage once into global state and keep it until the app refreshes.
 export default function Index() {
   const router = useRouter();
-  const styles = getGlobalStyles();
+  const styles = useGlobalStyles();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -30,14 +30,14 @@ export default function Index() {
       }
       getTerms();
 
-      const getVersionNotes = async () => {
-        const showVersionNotes = await security.get("showVersionNotes");
-        if (showVersionNotes) {
-          // TODO: popup with version notes.
-          // TODO: await security.set("showVersionNotes", true);
-        }
-      }
-    }, [])
+      // const getVersionNotes = async () => {
+      //   const showVersionNotes = await security.get("showVersionNotes");
+      //   if (showVersionNotes) {
+      //     // TODO: popup with version notes.
+      //     // TODO: await security.set("showVersionNotes", true);
+      //   }
+      // }
+    }, [router])
   );
 
   return (
@@ -49,12 +49,12 @@ export default function Index() {
       </View>
       <View style={styles.listItem}>
         <Text style={styles.number}>2.</Text>
-        <Text style={styles.text}>Compare the current item to the one "N" steps back. For example: If you are playing 2-back, compare the current item with the one 2 steps back. For 3-back, 3 steps... etc.</Text>
+        <Text style={styles.text}>Compare the current item to the one &quot;N&quot; steps back. For example: If you are playing 2-back, compare the current item with the one 2 steps back. For 3-back, 3 steps... etc.</Text>
       </View>
       <View style={styles.listItem}>
         <Text style={styles.number}>3.</Text>
         <Text style={styles.text}>
-          If they match, tap the match button. If they don't, don't tap anything.
+          If they match, tap the match button. If they don&apos;t, don&apos;t tap anything.
         </Text>
       </View>
       <View style={styles.listItem}>

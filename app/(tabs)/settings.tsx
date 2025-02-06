@@ -14,7 +14,7 @@ import { useRouter } from "expo-router";
 
 import Button from "@/components/Button";
 import security from "@/util/security";
-import { getGlobalStyles } from "@/styles/globalStyles";
+import { useGlobalStyles } from "@/styles/globalStyles";
 import { useTheme } from "@/contexts/ThemeContext"
 import { showCustomAlert } from "@/util/alert";
 import { MAXN, MINN } from "@/util/engine";
@@ -24,7 +24,7 @@ type N = number | undefined
 const systemTheme = Appearance.getColorScheme();
 
 export default function Settings() {
-  const styles = getGlobalStyles();
+  const styles = useGlobalStyles();
   const { toggleTheme, theme } = useTheme();
   const router = useRouter();
 

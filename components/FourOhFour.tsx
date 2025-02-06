@@ -1,11 +1,11 @@
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 
-import { getGlobalStyles } from '@/styles/globalStyles';
+import { useGlobalStyles } from '@/styles/globalStyles';
 import  Button from '@/components/Button';
 
 export default function FourOhFour() {
-  const styles = getGlobalStyles();
+  const styles = useGlobalStyles();
   const router = useRouter();
 
   return (

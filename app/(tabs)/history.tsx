@@ -2,28 +2,22 @@ import { useCallback, useRef, useState, useEffect } from 'react';
 import { useFocusEffect } from "expo-router";
 import { View, Text } from "react-native";
 
-import { getGlobalStyles } from "@/styles/globalStyles";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useGlobalStyles } from "@/styles/globalStyles";
 
-import { ScoreCard, ScoresType } from '@/util/ScoreCard';
-import { scoreKey } from '@/util/engine';
+import { ScoresType } from '@/util/ScoreCard';
 
 import security from "@/util/security";
 
 import Chart, { DataPointType } from '@/components/Chart';
 import log from '@/util/logger';
 
-const newCard = new ScoreCard({});
-
 
 export default function History() {
-  const styles = getGlobalStyles();
-  const { theme } = useTheme();
+  const styles = useGlobalStyles();
 
   const [lineData, setLineData] = useState<DataPointType[]>([]);
-  const [lineData2, setLineData2] = useState<DataPointType[]>([]);
+  const [, setLineData2] = useState<DataPointType[]>([]);
   const [playHistory, setPlayHistory] = useState<ScoresType>();
-  // const [showChart, setShowChart] = useState<boolean>(false);
 
   const showChart = useRef<boolean>(false);
   const setShowChart = (p: boolean) => showChart.current = p;
@@ -34,9 +28,8 @@ export default function History() {
   useFocusEffect(
     useCallback(() => {
       const loadRecords = async () => {
-        const key = scoreKey();
         try {
-          let rec = await security.get("records");
+          const rec = await security.get("records");
           setPlayHistory(rec as ScoresType);
         } catch (e) {
           log.error("Error retrieving past scores.", e);
@@ -98,4 +91,4 @@ export default function History() {
       </View>
     </View>
   );
-};
+}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, Pressable, Text, Animated, TextStyle } from 'react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 
-import { getButtonStyles } from '@/styles/buttonStyles';
+import { useButtonStyles } from '@/styles/buttonStyles';
 import { useTheme } from '@/contexts/ThemeContext';
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export default function Button({ label, onPress, onLongPress, style }: Props) {
-  const styles = getButtonStyles();
+  const styles = useButtonStyles();
   const { theme } = useTheme();
 
   const [scaleAnim] = useState(new Animated.Value(1)); // For scaling effect
