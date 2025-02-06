@@ -24,7 +24,6 @@ const soloSound: SoundFile = {
   file: require("../assets/audio/swap.m4a")
 }
 
-// TODO
 const celebration: SoundFile = {
   key: "CELEBRATE",
   file: require("../assets/audio/fanfare.m4a")

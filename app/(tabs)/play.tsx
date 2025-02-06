@@ -172,10 +172,8 @@ export default function Play() {
   }
 
   // TODO add 'learn more' screens for silent mode and dual n-back
-  // TODO add guess error rate.
   // TODO auto-progression based on score and error rate.
   // TODO achievements
-  // TODO flesh out score screen
   // TODO show version notes popup
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
     const answers = engineRef.current?.answers();
