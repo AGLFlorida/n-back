@@ -3,6 +3,9 @@ import React from "react";
 import { View } from "react-native";
 import Svg, { Line, Polyline, Circle, Text } from "react-native-svg";
 
+// TODO limit the number of vectors to what fits on the viewable screen
+// TODO add charts for the other 2 game modes
+// TODO add highest score to top of screen
 
 export type DataPointType = {
   x: number,
@@ -21,17 +24,18 @@ const Chart = ({ data, xLabels = [] }: Props) => {
   const chartWidth = 300;
   const chartHeight = 300;
   const maxY = 110;
-  const xOffset = 10;
+  const xOffset = 30;
   const yAxisX = 20;
   const yAxisLabelX = 10;
+  const spacing = (chartWidth - 40) / (data.length - 1);
 
   const yLabels = Array.from({ length: 6 }, (_, i) => ({
     label: (i * 20).toString(),
     yPos: chartHeight - ((i * 20) / maxY) * chartHeight,
   }));
 
-  const scaledData = data.map(d => ({
-    x: (d.x / 100) * (chartWidth - 40) + yAxisX + xOffset,
+  const scaledData = data.map((d, index) => ({
+    x: yAxisX + xOffset + (spacing * (index/2)),
     y: chartHeight - (d.y / maxY) * chartHeight,
   }));
 
@@ -39,12 +43,12 @@ const Chart = ({ data, xLabels = [] }: Props) => {
 
   return (
     <View style={{ alignItems: "center", marginTop: 50 }}>
-      <Svg width={chartWidth + 50} height={chartHeight + 200} viewBox={`-30 0 ${chartWidth + 50} ${chartHeight + 200}`}>
+      <Svg width={chartWidth + 100} height={chartHeight + 200} viewBox={`-30 0 ${chartWidth + 100} ${chartHeight + 200}`}>
         {/* Y-Axis */}
         <Line x1="20" y1="10" x2="20" y2={chartHeight} stroke={theme.textColor} strokeWidth="2" />
 
         {/* X-Axis */}
-        <Line x1="20" y1={chartHeight} x2={chartWidth} y2={chartHeight} stroke={theme.textColor} strokeWidth="2" />
+        <Line x1="20" y1={chartHeight} x2={chartWidth + 50} y2={chartHeight} stroke={theme.textColor} strokeWidth="2" />
 
         {/* Line Chart */}
         {data.length > 1 && <Polyline points={points} fill="none" stroke="blue" strokeWidth="2" />}
@@ -76,7 +80,7 @@ const Chart = ({ data, xLabels = [] }: Props) => {
             x={yAxisLabelX - 10}
             y={label.yPos + 4}
             fontSize="15"
-            textAnchor="middle" 
+            textAnchor="middle"
             fill={theme.textColor}
           >
             {label.label}
