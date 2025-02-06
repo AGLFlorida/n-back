@@ -136,6 +136,9 @@ const calculateScore = ({ answers, guesses }: Score): { accuracy: number, errorR
     0);
 
   const accuracy = possible > 0 ? (correct / possible) * 100 : 0;
+
+  // TODO there is a bug in the incorrect score where it's always
+  // 100 - correct
   const errorRate = possible > 0 ? (incorrect / possible) * 100 : 0;
 
   return {

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Animated, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { useTheme } from "@/contexts/ThemeContext";
 
 type ScoreOverlayProps = {
@@ -54,17 +54,18 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores 
 
   return (
     <View style={[styles.container, { pointerEvents: 'box-none' }]}>
-      <Animated.View
-        style={[
-          styles.backdrop,
-          {
-            opacity,
-            backgroundColor: theme.backgroundColor,
-            pointerEvents: 'auto'
-          }
-        ]}
-        onTouchEnd={onClose}
-      />
+      <TouchableWithoutFeedback onPress={onClose}>
+        <Animated.View
+          style={[
+            styles.backdrop,
+            {
+              opacity,
+              backgroundColor: theme.backgroundColor,
+              pointerEvents: 'auto'
+            }
+          ]}
+        />
+      </TouchableWithoutFeedback>
       <Animated.View
         style={[
           styles.modal,
@@ -85,27 +86,27 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores 
           <Text style={[styles.score, { color: theme.textColor }]}>
             Position Score: {scores.positions}%
           </Text>
-          {scores.pError && (
+          {scores.pError !== undefined && scores.pError > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
               Position Error Rate: {scores.pError}%
             </Text>
           )}
-          {scores.sounds && (
+          {scores.sounds !== undefined && scores.sounds > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
               Sound Score: {scores.sounds}% 
             </Text>
           )}
-          {scores.sError && (
+          {scores.sError !== undefined && scores.sError > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
               Position Error Rate: {scores.sError}%
             </Text>
           )}
-          {scores.buzz && (
+          {scores.buzz !== undefined && scores.buzz > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
               Haptic Score: {scores.buzz}% 
             </Text>
           )}
-          {scores.bError && (
+          {scores.bError !== undefined && scores.bError > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
               Position Error Rate: {scores.bError}%
             </Text>
@@ -165,4 +166,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ScoreOverlay; 
+export default ScoreOverlay;

@@ -172,7 +172,6 @@ export default function Play() {
     buzzGuesses?: boolean[];
   }
 
-  // TODO add 'learn more' screens for silent mode and dual n-back
   // TODO auto-progression based on score and error rate.
   // TODO achievements
   // TODO show version notes popup
