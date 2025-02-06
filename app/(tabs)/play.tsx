@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Animated } from "react-native";
-import { useFocusEffect, useNavigation } from "expo-router";
+import { View, Animated, Alert } from "react-native";
+import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { Audio } from "expo-av";
 
 import Square from "@/components/Square";
@@ -36,6 +36,7 @@ const newCard = new ScoreCard({});
 export default function Play() {
   const styles = useGlobalStyles();
   const navigation = useNavigation();
+  const router = useRouter();
 
   const [grid, setGrid] = useState<Grid>(fillBoard());
   const [shouldStartGame, startGame] = useState<boolean>(false);
@@ -239,6 +240,33 @@ export default function Play() {
       celebrate.current.playAsync();
     }
   }
+
+  useFocusEffect(
+      React.useCallback(() => {
+        const getTerms = async () => {
+          const terms = await security.get("termsAccepted");
+          if (!terms) {
+            Alert.alert(
+              "Terms & Conditions",
+              "You must accept the terms and conditions before continuing.",
+              [
+                { text: "See Terms", onPress: () => router.push('/terms') },
+              ],
+              { cancelable: false }
+            );
+          }
+        }
+        getTerms();
+  
+        // const getVersionNotes = async () => {
+        //   const showVersionNotes = await security.get("showVersionNotes");
+        //   if (showVersionNotes) {
+        //     // TODO: popup with version notes.
+        //     // TODO: await security.set("showVersionNotes", true);
+        //   }
+        // }
+      }, [router])
+    );
 
   // Main Gameplay Loop
   useFocusEffect(

@@ -9,6 +9,7 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "Back" }} />
         <Stack.Screen name="terms" />
+        <Stack.Screen name="learn" />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />

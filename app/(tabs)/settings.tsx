@@ -46,21 +46,23 @@ export default function Settings() {
     setDefaultN(MINN);
   };
 
-  const clearSettings = async () => {
-    const isSystemDark = (systemTheme === "dark") ? true : false;
-    await security.set("defaultN", 2);
-    await security.set("dualMode", true);
-    await security.set("darkMode", isSystemDark);
-    await security.set("silentMode", false);
-    await security.set("termsAccepted", false);
-    await security.set("records", {});
-    setDefaultN(2);
-    toggleDualMode(true);
-    toggleDarkMode(isSystemDark);
-    toggleSilentMode(false);
+  const clearSettings = () => {
+    const clear = async () => {
+      const isSystemDark = (systemTheme === "dark") ? true : false;
+      await security.set("defaultN", 2);
+      await security.set("dualMode", false);
+      await security.set("darkMode", isSystemDark);
+      await security.set("silentMode", false);
+      await security.set("termsAccepted", false);
+      await security.set("records", {});
+      setDefaultN(2);
+      toggleDualMode(false);
+      toggleDarkMode(isSystemDark);
+      toggleSilentMode(false);
+      router.push('/terms');
+    }
 
-    showCustomAlert("Data Cleared!", "All data has been reset to defaults! Please re-accept terms.");
-    router.push('/terms')
+    showCustomAlert("Reset Data?", "All data will be reset to defaults and you will need to re-accept the terms.", clear, true);
   }
 
   const fetchSettings = async () => {
@@ -165,7 +167,7 @@ export default function Settings() {
               <Text style={styles.label}>Silent Mode (Requires Dual)</Text>
             </View>
           </View>
-          
+
           <View style={[styles.row, { margin: 5 }]}>
             <View style={styles.settingsCell}>
               <Switch
@@ -188,7 +190,13 @@ export default function Settings() {
             </View>
           )}
         </View>
-        <Pressable style={{ marginTop: 'auto', alignSelf: 'flex-end', marginBottom: 20, marginRight: 10 }} onPress={clearSettings}>
+        <Pressable style={{ alignSelf: 'flex-end', marginTop: 20, marginRight: 10 }} onPress={() => router.push('/learn')}>
+          <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>Learn More</Text>
+        </Pressable>
+        <Pressable style={{ marginTop: 'auto', alignSelf: 'flex-end', marginBottom: 20, marginRight: 10 }} onPress={() => router.push('/')}>
+          <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>Version Notes</Text>
+        </Pressable>
+        <Pressable style={{ alignSelf: 'flex-end', marginBottom: 20, marginRight: 10 }} onPress={clearSettings}>
           <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>Reset Data</Text>
         </Pressable>
         <Pressable style={{ alignSelf: 'flex-end', marginBottom: 20, marginRight: 10 }} onPress={() => router.push('/terms')}>
