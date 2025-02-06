@@ -100,45 +100,45 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores 
 };
 
 const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
   },
+  button: {
+    alignItems: 'center',
+    borderRadius: 5,
+    padding: 10,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  container: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   modal: {
-    width: '80%',
-    padding: 20,
     borderRadius: 10,
     elevation: 5,
+    padding: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+    width: '80%',
+  },
+  score: {
+    fontSize: 18,
+    marginVertical: 5,
+  },
+  scoresContainer: {
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-  },
-  scoresContainer: {
-    marginBottom: 20,
-  },
-  score: {
-    fontSize: 18,
-    marginVertical: 5,
-  },
-  button: {
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 
