@@ -25,10 +25,10 @@ const soloSound: SoundFile = {
 }
 
 // TODO
-// const celebration: SoundFile = {
-//   key: "CELEBRATE",
-//   file: require("../assets/audio/fanfare.m4a")
-// }
+const celebration: SoundFile = {
+  key: "CELEBRATE",
+  file: require("../assets/audio/fanfare.m4a")
+}
 
 type AVPlaybackSource = Parameters<typeof Audio.Sound.createAsync>[0];
 
@@ -164,6 +164,24 @@ const defaults = (/*prevScore: number*/): Defaults => {
   }
 }
 
+const loadCelebrate = async (): Promise<Audio.Sound> => {
+  
+  await Audio.setAudioModeAsync({
+    allowsRecordingIOS: false,
+    staysActiveInBackground: false,
+    playsInSilentModeIOS: true,
+    shouldDuckAndroid: false,
+    playThroughEarpieceAndroid: false,
+  });
+
+  const { sound } = await Audio.Sound.createAsync(
+    celebration.file
+  );
+
+
+  return sound
+}
+
 const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningEngine => {
 
   interface Patterns {
@@ -273,7 +291,7 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
 
         if (isDualMode) {
           const nextSound = chooseNextSound(turn);
-          const { sound } = await Audio.Sound.createAsync(nextSound);
+          const { sound } = await Audio.Sound.createAsync(nextSound); // TODO we are running createAsync twice for each sound :P
           await sound.playAsync();
         } else {
           const { sound } = await Audio.Sound.createAsync(soloSound.file);
@@ -335,5 +353,5 @@ export const scoreKey = (date = new Date()) => {
   return `${year}-${monthAbbr}-${day}`;
 };
 
-export { calculateScore, fillBoard, getDualMode, loadSounds, loadSound, MAXTIME, defaults };
+export { calculateScore, fillBoard, getDualMode, loadSounds, loadSound, MAXTIME, defaults, loadCelebrate };
 export default engine;

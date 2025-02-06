@@ -6,7 +6,6 @@ import { Audio } from "expo-av";
 import Square from "@/components/Square";
 import PlayButton from "@/components/PlayButton";
 import StatusButton from "@/components/StatusButton";
-import { showCustomAlert } from "@/util/alert";
 import { ScoreCard, ScoresType, SingleScoreType } from "@/util/ScoreCard";
 
 import security from "@/util/security";
@@ -24,17 +23,17 @@ import engine, {
   Grid,
   calculateScore,
   defaults,
-  scoreKey
+  scoreKey,
+  loadCelebrate
 } from "@/util/engine";
 
 import { useGlobalStyles } from "@/styles/globalStyles";
+import ScoreOverlay from '@/components/ScoreOverlay';
 
 const fillGuessCard = (len: number): boolean[] => Array(len).fill(false);
 const newCard = new ScoreCard({});
 
 export default function Play() {
-  // log.debug("RENDERED PLAY");
-
   const styles = useGlobalStyles();
   const navigation = useNavigation();
 
@@ -45,6 +44,8 @@ export default function Play() {
   const [, setDefaultN] = useState<number>();
   const [isDualMode, setDualMode] = useState<boolean>(true);
   const [isSilentMode, setSilenMode] = useState<boolean>(false);
+  const [showScoreOverlay, setShowScoreOverlay] = useState(false);
+  const [gameScores, setGameScores] = useState({ positions: 0, sounds: 0, buzz: 0 });
 
   const playHistory = useRef(newCard).current;
   const gameLoopRef = useRef<CustomTimer>(null);
@@ -68,6 +69,11 @@ export default function Play() {
   const sound = useRef<sound>(null);
   const setSound = (p: sound) => {
     sound.current = p;
+  }
+
+  const celebrate = useRef<sound>(null);
+  const setCelebrate = (p: sound) => {
+    celebrate.current = p;
   }
 
   const soundClickRef = useRef<boolean[]>([]);
@@ -211,16 +217,14 @@ export default function Play() {
     }
     saveScores();
 
-    showCustomAlert("Score", JSON.stringify({
-      sounds: soundScore,
+    setGameScores({
       positions: posScore,
+      sounds: soundScore,
       buzz: buzzScore
-    }))
-
-    return {
-      soundScoreCard: soundScore,
-      posScoreCard: posScore,
-      buzzSCoreCard: buzzScore
+    });
+    setShowScoreOverlay(true);
+    if (celebrate.current !== null) {
+      celebrate.current.playAsync();
     }
   }
 
@@ -250,6 +254,9 @@ export default function Play() {
             const sound = await loadSound();
             setSound(sound);
           }
+
+          const yay = await loadCelebrate();
+          setCelebrate(yay);
 
           engineRef.current = engine({
             n,
@@ -355,6 +362,10 @@ export default function Play() {
       if (sound.current !== null) {
         sound.current.unloadAsync();
       }
+
+      if (celebrate.current !== null) {
+        celebrate.current.unloadAsync();
+      }
     }
 
     return () => { // Cleanup on unmount
@@ -383,6 +394,11 @@ export default function Play() {
         <PlayButton soundGuess={soundGuess} posGuess={posGuess} dualMode={isDualMode} silentMode={isSilentMode} />
       </Animated.View>
       <StatusButton onPress={() => { resetGame(); startGame(true) }} isLoading={isLoading} playing={shouldStartGame} />
+      <ScoreOverlay 
+        isVisible={showScoreOverlay}
+        onClose={() => setShowScoreOverlay(false)}
+        scores={gameScores}
+      />
     </View>
   );
 }
