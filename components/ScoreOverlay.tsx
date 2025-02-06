@@ -50,11 +50,15 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores 
   if (!isVisible) return null;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { pointerEvents: 'box-none' }]}>
       <Animated.View 
         style={[
           styles.backdrop,
-          { opacity, backgroundColor: theme.backgroundColor }
+          { 
+            opacity, 
+            backgroundColor: theme.backgroundColor,
+            pointerEvents: 'auto'
+          }
         ]}
         onTouchEnd={onClose}
       />
@@ -68,7 +72,8 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores 
                 outputRange: [600, 0]
               })
             }],
-            backgroundColor: theme.backgroundColor
+            backgroundColor: theme.backgroundColor,
+            pointerEvents: 'auto'
           }
         ]}
       >
