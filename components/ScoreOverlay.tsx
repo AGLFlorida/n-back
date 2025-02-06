@@ -9,6 +9,9 @@ type ScoreOverlayProps = {
     sounds?: number;
     positions: number;
     buzz?: number;
+    pError?: number;
+    sError?: number;
+    bError?: number;
   };
 };
 
@@ -51,11 +54,11 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores 
 
   return (
     <View style={[styles.container, { pointerEvents: 'box-none' }]}>
-      <Animated.View 
+      <Animated.View
         style={[
           styles.backdrop,
-          { 
-            opacity, 
+          {
+            opacity,
             backgroundColor: theme.backgroundColor,
             pointerEvents: 'auto'
           }
@@ -82,19 +85,34 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores 
           <Text style={[styles.score, { color: theme.textColor }]}>
             Position Score: {scores.positions}%
           </Text>
-          {scores.sounds !== undefined && (
+          {scores.pError && (
             <Text style={[styles.score, { color: theme.textColor }]}>
-              Sound Score: {scores.sounds}%
+              Position Error Rate: {scores.pError}%
             </Text>
           )}
-          {scores.buzz !== undefined && (
+          {scores.sounds && (
             <Text style={[styles.score, { color: theme.textColor }]}>
-              Haptic Score: {scores.buzz}%
+              Sound Score: {scores.sounds}% 
+            </Text>
+          )}
+          {scores.sError && (
+            <Text style={[styles.score, { color: theme.textColor }]}>
+              Position Error Rate: {scores.sError}%
+            </Text>
+          )}
+          {scores.buzz && (
+            <Text style={[styles.score, { color: theme.textColor }]}>
+              Haptic Score: {scores.buzz}% 
+            </Text>
+          )}
+          {scores.bError && (
+            <Text style={[styles.score, { color: theme.textColor }]}>
+              Position Error Rate: {scores.bError}%
             </Text>
           )}
         </View>
-        <TouchableOpacity 
-          style={[styles.button, { backgroundColor: theme.accentColor }]} 
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: theme.accentColor }]}
           onPress={onClose}
         >
           <Text style={[styles.buttonText, { color: theme.textColor }]}>Close</Text>
@@ -130,7 +148,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    width: '80%',
+    width: '90%',
   },
   score: {
     fontSize: 18,

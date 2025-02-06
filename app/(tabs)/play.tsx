@@ -45,7 +45,16 @@ export default function Play() {
   const [isDualMode, setDualMode] = useState<boolean>(true);
   const [isSilentMode, setSilenMode] = useState<boolean>(false);
   const [showScoreOverlay, setShowScoreOverlay] = useState(false);
-  const [gameScores, setGameScores] = useState({ positions: 0, sounds: 0, buzz: 0 });
+
+  type GameScores = {
+    positions: number;
+    sounds: number;
+    buzz: number;
+    pError?: number;
+    sError?: number;
+    bError?: number;
+  }
+  const [gameScores, setGameScores] = useState<GameScores>({ positions: 0, sounds: 0, buzz: 0, pError: 0, sError: 0, bError: 0 });
 
   const playHistory = useRef(newCard).current;
   const gameLoopRef = useRef<CustomTimer>(null);
@@ -170,15 +179,17 @@ export default function Play() {
   // TODO show version notes popup
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
     const answers = engineRef.current?.answers();
-    const { accuracy: posScore } = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
+    const { accuracy: posScore, errorRate: posError } = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
     
     let soundScore: number = 0;
+    let soundError: number = 0;
     if (soundGuesses)
-      ({ accuracy: soundScore } = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] }));
+      ({ accuracy: soundScore, errorRate: soundError } = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] }));
 
     let buzzScore: number = 0;
+    let buzzError: number = 0;
     if (buzzGuesses)
-      ({ accuracy: buzzScore } = calculateScore({ answers: answers?.buzz as boolean[], guesses: buzzGuesses as boolean[] }));
+      ({ accuracy: buzzScore, errorRate: buzzError } = calculateScore({ answers: answers?.buzz as boolean[], guesses: buzzGuesses as boolean[] }));
 
     const key = scoreKey();
     const saveScores = async () => {
@@ -220,7 +231,10 @@ export default function Play() {
     setGameScores({
       positions: posScore,
       sounds: soundScore,
-      buzz: buzzScore
+      buzz: buzzScore,
+      pError: posError,
+      sError: soundError,
+      bError: buzzError
     });
     setShowScoreOverlay(true);
     if (celebrate.current !== null) {
