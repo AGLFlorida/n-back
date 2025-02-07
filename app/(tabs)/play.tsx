@@ -90,7 +90,6 @@ export default function Play() {
     engineRef.current = e;
   }
 
-
   const { gameLen: DEFAULT_GAMELEN, matchRate: DEFAULT_MATCHRATE } = defaults(1)
   const gameLen = useRef<number>();
   const setGameLen = (p: number) => {
@@ -108,14 +107,13 @@ export default function Play() {
   }
 
   if (matchRate == undefined || gameLen == undefined) {
-    const { gameLen: g, matchRate: m } = defaults(/*1*/); // TODO pass in saved scores
+    const { gameLen: g, matchRate: m } = defaults();
     setMatchRate(m);
     setGameLen(g);
   }
 
   const playerLevel = useRef<number>(1);
   const doLevelUp = () => {
-    console.log("do level up!")
     playerLevel.current += 1;
     setFailCount(0);
     setSuccessCount(0);
@@ -313,16 +311,13 @@ export default function Play() {
 
     // TODO we need separate level tracking between the three game mode combinations.
     // TODO need to save player level between instances of game.
-    console.log("player level: ", getPlayerLevel());
     if (playerWon(
       posResult,
       getPlayerLevel(),
       (isDualMode && !isSilentMode) ? soundResult: undefined,
       (isDualMode && isSilentMode) ? buzzResult: undefined
     )) {
-      console.log("player won.")
       const successes = getSuccessCount() + 1;
-      console.log("successes: ", successes);
       setSuccessCount(successes);
       if (shouldLevelUp(successes)) {
         doLevelUp();
@@ -355,6 +350,17 @@ export default function Play() {
 
     }, [router])
   );
+
+  useEffect(() => {
+    // reset win count when game mode changes.
+    setFailCount(0);
+    setSuccessCount(0);
+
+    return () => {
+      setFailCount(0);
+      setSuccessCount(0);
+    }
+  }, [isDualMode, isSilentMode]);
 
   // Main Gameplay Loop
   useFocusEffect(
@@ -492,9 +498,9 @@ export default function Play() {
         sound.current.unloadAsync();
       }
 
-      if (celebrate.current !== null) {
-        celebrate.current.unloadAsync();
-      }
+      // if (celebrate.current !== null) {
+      //   celebrate.current.unloadAsync();
+      // } 
     }
 
     return () => { // Cleanup on unmount

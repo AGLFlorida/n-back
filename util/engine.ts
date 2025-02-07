@@ -193,11 +193,9 @@ const shouldLevelUp = (winStreak: number): boolean => (winStreak > 2);
  * @returns {boolean} - True if the player should level up, false otherwise.
  */
 const playerWon = (pScore: Result, level: number = 1, sScore?: Result, bScore?: Result): boolean => {
-  console.log("p score: ", pScore);
-  console.log("s score: ", sScore);
-  console.log("b score: ", bScore);
   const accuracyThresholds = [0, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45]; // index corresponds to N-1
-  const maxErrorRate = 0.4;
+  // const maxErrorRate = 0.4; // Error rate is passed in as a whole number (i.e. a percentage) rather than a decimal;
+  const maxErrorRate = 40;
 
   // min accuracy threshold
   const requiredAccuracy = accuracyThresholds[Math.min(level, accuracyThresholds.length - 1)];
@@ -224,7 +222,6 @@ const playerWon = (pScore: Result, level: number = 1, sScore?: Result, bScore?: 
     return accuracy >= requiredAccuracy && errorRate <= maxErrorRate;
   };
 
-  console.log(passedPos(), passedBuzz(), passedSound());
   return passedPos() && passedBuzz() && passedSound();
 }
 
