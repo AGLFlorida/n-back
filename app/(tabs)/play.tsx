@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Animated, Alert } from "react-native";
+import { View, Animated, Alert, Text } from "react-native";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { Audio } from "expo-av";
 
@@ -8,11 +8,11 @@ import PlayButton from "@/components/PlayButton";
 import StatusButton from "@/components/StatusButton";
 import { ScoreCard, ScoresType, SingleScoreType } from "@/util/ScoreCard";
 
+import { showCustomAlert } from "@/util/alert";
 import security from "@/util/security";
 import log from "@/util/logger";
 
 import engine, {
-  MAXTIME,
   getDualMode,
   fillBoard,
   SoundState,
@@ -24,7 +24,9 @@ import engine, {
   calculateScore,
   defaults,
   scoreKey,
-  loadCelebrate
+  loadCelebrate,
+  shouldLevelUp,
+  playerWon
 } from "@/util/engine";
 
 import { useGlobalStyles } from "@/styles/globalStyles";
@@ -59,9 +61,73 @@ export default function Play() {
 
   const playHistory = useRef(newCard).current;
   const gameLoopRef = useRef<CustomTimer>(null);
-  const engineRef = useRef<RunningEngine>();
 
-  const { gameLen, matchRate } = defaults(/*1*/);
+  const successCount = useRef<number>(0);
+  const setSuccessCount = (n: number) => {
+    successCount.current = n;
+  }
+  const getSuccessCount = (): number => {
+    return successCount.current || 0;
+  }
+  const failCount = useRef<number>(0);
+  const setFailCount = (n: number) => {
+    failCount.current = n;
+  }
+  const getFailCount = (): number => {
+    return failCount.current || 0;
+  }
+
+  const engineRef = useRef<RunningEngine>();
+  const getEngine = (): RunningEngine => {
+    return engineRef.current || engine({
+      n: 2,
+      gameLen: getGameLen(),
+      matchRate: getMatchRate(),
+      isDualMode
+    })
+  }
+  const setEngine = (e: RunningEngine) => {
+    engineRef.current = e;
+  }
+
+
+  const { gameLen: DEFAULT_GAMELEN, matchRate: DEFAULT_MATCHRATE } = defaults(1)
+  const gameLen = useRef<number>();
+  const setGameLen = (p: number) => {
+    gameLen.current = p;
+  }
+  const getGameLen = (): number => {
+    return gameLen.current || DEFAULT_GAMELEN;
+  }
+  const matchRate = useRef<number>();
+  const setMatchRate = (p: number) => {
+    matchRate.current = p;
+  }
+  const getMatchRate = (): number => {
+    return matchRate.current || DEFAULT_MATCHRATE
+  }
+
+  if (matchRate == undefined || gameLen == undefined) {
+    const { gameLen: g, matchRate: m } = defaults(/*1*/); // TODO pass in saved scores
+    setMatchRate(m);
+    setGameLen(g);
+  }
+
+  const playerLevel = useRef<number>(1);
+  const doLevelUp = () => {
+    console.log("do level up!")
+    playerLevel.current += 1;
+    setFailCount(0);
+    setSuccessCount(0);
+  }
+  const doLevelDown = () => {
+    playerLevel.current -= 1;
+    setFailCount(0);
+    setSuccessCount(0);
+  }
+  const getPlayerLevel = (): number => {
+    return playerLevel.current || 1;
+  }
 
   // Make button transitions less abrupt
   const playButtonFadeAnim = useRef(new Animated.Value(0)).current;
@@ -162,8 +228,8 @@ export default function Play() {
   }
 
   const emptyGuessCards = () => {
-    posClickRef.current = fillGuessCard(gameLen);
-    soundClickRef.current = fillGuessCard(gameLen);
+    posClickRef.current = fillGuessCard(getGameLen());
+    if (isDualMode) soundClickRef.current = fillGuessCard(getGameLen());
   }
 
   interface ScoreCard {
@@ -175,18 +241,25 @@ export default function Play() {
   // TODO auto-progression based on score and error rate.
   // TODO achievements
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
-    const answers = engineRef.current?.answers();
-    const { accuracy: posScore, errorRate: posError } = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
-    
+    const answers = getEngine().answers();
+    const posResult = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
+    const { accuracy: posScore, errorRate: posError } = posResult;
+
     let soundScore: number = 0;
     let soundError: number = 0;
-    if (soundGuesses)
-      ({ accuracy: soundScore, errorRate: soundError } = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] }));
+    let soundResult;
+    if (soundGuesses) {
+      soundResult = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
+      ({ accuracy: soundScore, errorRate: soundError } = soundResult);
+    }
 
     let buzzScore: number = 0;
     let buzzError: number = 0;
-    if (buzzGuesses)
-      ({ accuracy: buzzScore, errorRate: buzzError } = calculateScore({ answers: answers?.buzz as boolean[], guesses: buzzGuesses as boolean[] }));
+    let buzzResult;
+    if (buzzGuesses) {
+      buzzResult = calculateScore({ answers: answers?.buzz as boolean[], guesses: buzzGuesses as boolean[] });
+      ({ accuracy: buzzScore, errorRate: buzzError } = buzzResult);
+    }
 
     const key = scoreKey();
     const saveScores = async () => {
@@ -210,11 +283,11 @@ export default function Play() {
           newScores[1] = prevScores[1];
         }
 
-        if (buzzScore > 0 && prevScores.length > 2 && prevScores[2] > newScores[2]) { 
+        if (buzzScore > 0 && prevScores.length > 2 && prevScores[2] > newScores[2]) {
           newScores[2] = prevScores[2];
         }
       }
-      
+
       playHistory.setValue(key, newScores);
       try {
         await security.set("records", playHistory.scores);
@@ -237,27 +310,51 @@ export default function Play() {
     if (celebrate.current !== null) {
       celebrate.current.playAsync();
     }
+
+    // TODO we need separate level tracking between the three game mode combinations.
+    // TODO need to save player level between instances of game.
+    console.log("player level: ", getPlayerLevel());
+    if (playerWon(
+      posResult,
+      getPlayerLevel(),
+      (isDualMode && !isSilentMode) ? soundResult: undefined,
+      (isDualMode && isSilentMode) ? buzzResult: undefined
+    )) {
+      console.log("player won.")
+      const successes = getSuccessCount() + 1;
+      console.log("successes: ", successes);
+      setSuccessCount(successes);
+      if (shouldLevelUp(successes)) {
+        doLevelUp();
+      }
+    } else {
+      const failures = getFailCount() + 1;
+      setFailCount(failures);
+      if (failures > 3) {
+        showCustomAlert("Try an easier level?", "Would you like to decrease the difficulty? There's no penalty for taking a moment to reset.", doLevelDown, true);
+      }
+    }
   }
 
   useFocusEffect(
-      React.useCallback(() => {
-        const getTerms = async () => {
-          const terms = await security.get("termsAccepted");
-          if (!terms) {
-            Alert.alert(
-              "Terms & Conditions",
-              "You must accept the terms and conditions before continuing.",
-              [
-                { text: "See Terms", onPress: () => router.push('/terms') },
-              ],
-              { cancelable: false }
-            );
-          }
+    React.useCallback(() => {
+      const getTerms = async () => {
+        const terms = await security.get("termsAccepted");
+        if (!terms) {
+          Alert.alert(
+            "Terms & Conditions",
+            "You must accept the terms and conditions before continuing.",
+            [
+              { text: "See Terms", onPress: () => router.push('/terms') },
+            ],
+            { cancelable: false }
+          );
         }
-        getTerms();
+      }
+      getTerms();
 
-      }, [router])
-    );
+    }, [router])
+  );
 
   // Main Gameplay Loop
   useFocusEffect(
@@ -289,14 +386,16 @@ export default function Play() {
           const yay = await loadCelebrate();
           setCelebrate(yay);
 
-          engineRef.current = engine({
-            n,
-            gameLen,
-            matchRate,
-            isDualMode
-          });
+          setEngine(
+            engine({
+              n,
+              gameLen: getGameLen(),
+              matchRate: getMatchRate(),
+              isDualMode
+            })
+          );
 
-          engineRef.current.createNewGame();
+          getEngine().createNewGame();
 
           await loadRecords();
 
@@ -324,7 +423,6 @@ export default function Play() {
   useEffect(() => {
     if (shouldStartGame) {
       startGameLoop();
-      // setIsLoading(false);
 
       return () => {
         stopGameLoop();
@@ -334,7 +432,7 @@ export default function Play() {
 
   useEffect(() => {
     if (elapsedTime >= 0) {
-      if (elapsedTime > MAXTIME) { // exit condition 1: game went too long.
+      if (elapsedTime > getEngine().timeLimit) { // exit condition 1: game went too long.
         log.warn("Game ended, timer: ", elapsedTime);
         scoreGame({
           posGuesses: posClickRef.current,
@@ -347,7 +445,7 @@ export default function Play() {
       if (elapsedTime % 2 === 0) {
         const turn = Math.floor(elapsedTime / 2);
         setTurnRef(turn);
-        if (turn >= gameLen) { // exit condition 2: game is actually over.
+        if (turn >= getGameLen()) { // exit condition 2: game is actually over.
           // log.info("Game ended, turn: ", turn);
           scoreGame({
             posGuesses: posClickRef.current,
@@ -357,8 +455,8 @@ export default function Play() {
           return;
         }
         try {
-          const round = engineRef.current?.nextRound(turn);
-          
+          const round = getEngine().nextRound(turn);
+
           setGrid(fillBoard());
           // fix for missing visual indicator when two turns have the same visible square.
           const redraw = setTimeout(() => {
@@ -370,12 +468,12 @@ export default function Play() {
           } else {
             round?.playSound();
           }
-          
+
           return () => clearTimeout(redraw);
         } catch (e) {
           log.error("Error in game. Ejecting.", e);
           resetGame();
-        } 
+        }
 
       }
     }
@@ -425,7 +523,11 @@ export default function Play() {
         <PlayButton soundGuess={soundGuess} posGuess={posGuess} dualMode={isDualMode} silentMode={isSilentMode} />
       </Animated.View>
       <StatusButton onPress={() => { resetGame(); startGame(true) }} isLoading={isLoading} playing={shouldStartGame} />
-      <ScoreOverlay 
+      <View>
+        <Text style={{ color: 'white' }}>Level: {getPlayerLevel()}</Text>
+        <Text style={{ color: 'white' }}>Wins: {getSuccessCount()}</Text>
+      </View>
+      <ScoreOverlay
         isVisible={showScoreOverlay}
         onClose={() => setShowScoreOverlay(false)}
         scores={gameScores}

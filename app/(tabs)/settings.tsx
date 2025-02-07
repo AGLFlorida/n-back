@@ -164,7 +164,7 @@ export default function Settings() {
               />
             </View>
             <View style={styles.settingsCell}>
-              <Text style={styles.label}>Silent Mode (Requires Dual)</Text>
+              <Text style={styles.label}>Silent Mode (Experimental, Requires Dual)</Text>
             </View>
           </View>
 

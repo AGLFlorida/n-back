@@ -4,10 +4,6 @@ import * as Haptics from "expo-haptics";
 import security from './security';
 import log from "./logger";
 
-const MAXTIME = (5 * 60);
-export const MAXN = 9;
-export const MINN = 2;
-
 const soundFiles: SoundFile[] = [
   { key: "C", file: require("../assets/audio/C.m4a") as AVPlaybackSource },
   { key: "G", file: require("../assets/audio/G.m4a") as AVPlaybackSource },
@@ -74,6 +70,7 @@ export type RunningEngine = {
   createNewGame: () => void,
   nextRound: (arg0: number) => Round,
   answers: () => Answers;
+  timeLimit: number;
 }
 
 const getDualMode = async (): Promise<boolean> => {
@@ -118,7 +115,11 @@ interface Score {
   answers: boolean[];
   guesses: boolean[];
 }
-const calculateScore = ({ answers, guesses }: Score): { accuracy: number, errorRate: number } => {
+interface Result {
+  accuracy: number,
+  errorRate: number
+}
+const calculateScore = ({ answers, guesses }: Score): Result => {
   if (answers.length !== guesses.length) {
     log.error("Error in [calculateScore], array lengths do not match.");
   }
@@ -137,7 +138,7 @@ const calculateScore = ({ answers, guesses }: Score): { accuracy: number, errorR
 
   const accuracy = possible > 0 ? (correct / possible) * 100 : 0;
 
-  // TODO there is a bug in the incorrect score where it's always
+  // TODO there is a bug in the errorRate score where it's always
   // 100 - correct
   const errorRate = possible > 0 ? (incorrect / possible) * 100 : 0;
 
@@ -147,27 +148,88 @@ const calculateScore = ({ answers, guesses }: Score): { accuracy: number, errorR
   }
 };
 
-const DEFFAULT_GAMELEN = 30;
-const DEFAULT_MATCHRATE = 0.3;
-type Defaults = {
-  gameLen: number;
-  matchRate: number;
-  levelUp: boolean;
+const MAXTIME = (5 * 60);
+export const MAXN = 9;
+export const MINN = 2;
+const DEFAULT_GAMELEN = 30;
+interface Level {
+  gameLen: number,
+  matchRate: number,
+  newN: number
 }
-const defaults = (/*prevScore: number*/): Defaults => {
-  const gameLen = DEFFAULT_GAMELEN;
-  const matchRate = DEFAULT_MATCHRATE;
-  const levelUp = false;
+/**
+ * Provides basic game settings based on the current level.
+ * 
+ * @param {number} [level=1] - The current level of the game.
+ * @returns {Level} - An object containing the game length, match rate, and new N-back value.
+ */
+const defaults = (level: number = 1): Level => {
+  let _l = level;
+  const maxLevel = (MAXN - MINN) * 4 + 4; // theoretical max level is 32
 
-  return { // TODO these should be variable per game
-    gameLen,
-    matchRate,
-    levelUp
-  }
+  if (level > maxLevel) _l = maxLevel;
+
+  const gameLen = DEFAULT_GAMELEN;
+
+  const newN = MINN + Math.floor((_l - 1) / 4);
+
+  const matchRateCycle = [.5, .4, .3, .2];
+  const matchRate = matchRateCycle[(_l - 1) % matchRateCycle.length];
+
+  return { gameLen, matchRate, newN };
+}
+
+
+const shouldLevelUp = (winStreak: number): boolean => (winStreak > 2);
+
+/**
+ * Determines if the player won the game based on their performance scores. This assumes
+ * that if you don't pass a sound or buzz Score, then the player can proceed.
+ * 
+ * @param {Result} pScore - The player's position score.
+ * @param {number} [level=1] - The current level of the game.
+ * @param {Result} [sScore] - The player's sound score (optional).
+ * @param {Result} [bScore] - The player's buzz score (optional).
+ * @returns {boolean} - True if the player should level up, false otherwise.
+ */
+const playerWon = (pScore: Result, level: number = 1, sScore?: Result, bScore?: Result): boolean => {
+  console.log("p score: ", pScore);
+  console.log("s score: ", sScore);
+  console.log("b score: ", bScore);
+  const accuracyThresholds = [0, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45]; // index corresponds to N-1
+  const maxErrorRate = 0.4;
+
+  // min accuracy threshold
+  const requiredAccuracy = accuracyThresholds[Math.min(level, accuracyThresholds.length - 1)];
+
+  const passedPos = (): boolean => {
+    const { accuracy, errorRate } = pScore;
+
+    return accuracy >= requiredAccuracy && errorRate <= maxErrorRate;
+  };
+
+  const passedSound = (): boolean => {
+    if (!sScore) return true;
+    
+    const { accuracy, errorRate } = sScore;
+
+    return accuracy >= requiredAccuracy && errorRate <= maxErrorRate;
+  };
+
+  const passedBuzz = (): boolean => {
+    if (!bScore) return true;
+
+    const { accuracy, errorRate } = bScore;
+
+    return accuracy >= requiredAccuracy && errorRate <= maxErrorRate;
+  };
+
+  console.log(passedPos(), passedBuzz(), passedSound());
+  return passedPos() && passedBuzz() && passedSound();
 }
 
 const loadCelebrate = async (): Promise<Audio.Sound> => {
-  
+
   await Audio.setAudioModeAsync({
     allowsRecordingIOS: false,
     staysActiveInBackground: false,
@@ -203,6 +265,11 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
     const buzzMatches: boolean[] = [];
     const possibleGridPositions = [1, 2, 3, 4, 5, 6, 7, 8, 9]; // 9 grid positions
     const possibleLetterSounds = ["C", "G", "H", "K", "P", "Q", "T", "W"]; // 8 sounds
+
+    if (matchRate > 1) {
+      log.error("Match rate  was greater than 100% while generating pattern. Defaulting to 50%");
+      matchRate = .5; // override match rate on error.
+    }
 
     for (let i = 0; i < gameLen; i++) {
       // Grid Positions Logic
@@ -344,6 +411,7 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
     createNewGame,
     nextRound,
     answers,
+    timeLimit: MAXTIME
   }
 }
 
@@ -355,5 +423,15 @@ export const scoreKey = (date = new Date()) => {
   return `${year}-${monthAbbr}-${day}`;
 };
 
-export { calculateScore, fillBoard, getDualMode, loadSounds, loadSound, MAXTIME, defaults, loadCelebrate };
+export {
+  calculateScore,
+  fillBoard,
+  getDualMode,
+  loadSounds,
+  loadSound,
+  defaults,
+  loadCelebrate,
+  shouldLevelUp,
+  playerWon
+};
 export default engine;
