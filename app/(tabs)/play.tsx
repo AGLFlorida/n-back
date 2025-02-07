@@ -174,7 +174,6 @@ export default function Play() {
 
   // TODO auto-progression based on score and error rate.
   // TODO achievements
-  // TODO show version notes popup
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
     const answers = engineRef.current?.answers();
     const { accuracy: posScore, errorRate: posError } = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
@@ -256,14 +255,7 @@ export default function Play() {
           }
         }
         getTerms();
-  
-        // const getVersionNotes = async () => {
-        //   const showVersionNotes = await security.get("showVersionNotes");
-        //   if (showVersionNotes) {
-        //     // TODO: popup with version notes.
-        //     // TODO: await security.set("showVersionNotes", true);
-        //   }
-        // }
+
       }, [router])
     );
 

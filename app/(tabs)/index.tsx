@@ -30,13 +30,6 @@ export default function Index() {
       }
       getTerms();
 
-      // const getVersionNotes = async () => {
-      //   const showVersionNotes = await security.get("showVersionNotes");
-      //   if (showVersionNotes) {
-      //     // TODO: popup with version notes.
-      //     // TODO: await security.set("showVersionNotes", true);
-      //   }
-      // }
     }, [router])
   );
 
