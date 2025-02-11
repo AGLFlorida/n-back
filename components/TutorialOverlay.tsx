@@ -52,8 +52,9 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
       toValue: -direction * SCREEN_WIDTH,
       useNativeDriver: true,
     }).start(() => {
-      setCurrentPage(_ => newPage);
+      setCurrentPage(newPage);
       position.setValue(0);
+      currentPageRef.current = newPage;
     });
   };
 
@@ -77,7 +78,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
           useNativeDriver: true,
         }),
         Animated.timing(opacity, {
-          toValue: 0.7,
+          toValue: 0.5,
           duration: 300,
           useNativeDriver: true,
         })
@@ -95,6 +96,10 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
           useNativeDriver: true,
         })
       ]).start();
+
+      setCurrentPage(0);
+      position.setValue(0);
+      currentPageRef.current = 0;
     }
   }, [isVisible]);
 
@@ -118,37 +123,44 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
   );
 
   const renderContent = () => {
+    position.setValue(0);
     switch (currentPage) {
       case 0:
         return (
-          <View style={styles.contentContainer}>
-            <Text style={[styles.text, { color: theme.textColor }]}>
-              Glad you're here! Let's do a brief overview of the game board.
-            </Text>
-          </View>
+            <View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor, alignContent: 'center' }]}>
+              <Text style={[styles.text, { color: theme.textColor }]}>
+                Glad you're here! Let's do a brief overview of the game board.
+              </Text>
+              {renderNavigationButtons()}
+              {renderDots()}
+            </View>
         );
       case 1:
         return (
           <>
-            <View style={[styles.gridHighlight, { alignSelf: 'center', alignItems: 'center' }]}>
+             <View style={[styles.gridHighlight, { alignSelf: 'center', alignItems: 'center', marginBottom: 10 }]}>
               <Ionicons name="arrow-up-outline" color="yellow" size={90} />
             </View>
-            <View style={styles.contentContainer}>
+            <View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor }]}>
               <Text style={[styles.text, { color: theme.textColor }]}>
                 This is the "grid". You will intermittently see blocks appear in random order on this part.
               </Text>
+              {renderNavigationButtons()}
+              {renderDots()}
             </View>
           </>
         );
       case 2:
         return (
           <>
-            <View style={styles.contentContainer}>
+            <View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor }]}>
               <Text style={[styles.text, { color: theme.textColor }]}>
                 These are your controls. They give you a game status and a one or more buttons for play. If you see something you want to react to, these are the buttons you press. When you're ready to begin, just tap "Play".
               </Text>
+              {renderNavigationButtons()}
+              {renderDots()}
             </View>
-            <View style={[styles.buttonHighlight, { alignSelf: 'center', alignItems: 'center' }]}>
+            <View style={[styles.buttonHighlight, { alignSelf: 'center', alignItems: 'center', marginTop: 30 }]}>
               <Ionicons name="arrow-down-outline" color="yellow" size={90} />
             </View>
           </>
@@ -205,6 +217,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
       <Animated.View
         {...panResponder.panHandlers}
         style={[
+          { flex: 0.7},
           {
             transform: [
               {
@@ -221,15 +234,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
           },
         ]}
       >
-        {/* {renderContent()}
-        {renderNavigationButtons()}
-        {renderDots()} */}
-        <View style={[styles.modal, {backgroundColor: theme.backgroundColor}]}>
-          <Text>Box 1</Text>
-        </View>
-        <View>
-          <Text>Box 2</Text>
-      </View>
+        {renderContent()}
       </Animated.View>
     </View>
   );
@@ -286,8 +291,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   gridHighlight: {
-    position: 'absolute',
-    top: -200,
     width: 200,
     borderWidth: 4,
     borderColor: 'yellow',
@@ -299,8 +302,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
   buttonHighlight: {
-    position: 'absolute',
-    bottom: -200,
     width: 200,
     borderWidth: 4,
     borderColor: 'yellow',
@@ -322,6 +323,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     minWidth: 100,
     alignItems: 'center',
+    marginLeft: 10,
+    marginRight: 10,
   },
   navButtonText: {
     fontSize: 16,
