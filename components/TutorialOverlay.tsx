@@ -19,6 +19,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
   const slideAnim = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const position = useRef(new Animated.Value(0)).current;
+  const contentOpacity = useRef(new Animated.Value(1)).current;
 
   const panResponder = useRef(
     PanResponder.create({
@@ -44,13 +45,25 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
 
   const animateToPage = (newPage: number) => {
     const direction = newPage > currentPageRef.current ? 1 : -1;
-    Animated.spring(position, {
-      toValue: -direction * SCREEN_WIDTH,
-      useNativeDriver: true,
-    }).start(() => {
+    Animated.sequence([
+      Animated.timing(contentOpacity, {
+        toValue: 0,
+        duration: 100, 
+        useNativeDriver: true,
+      }),
+      Animated.spring(position, {
+        toValue: -direction * SCREEN_WIDTH,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
       setCurrentPage(newPage);
       position.setValue(0);
       currentPageRef.current = newPage;
+      Animated.timing(contentOpacity, {
+        toValue: 1,
+        duration: 100, 
+        useNativeDriver: true,
+      }).start();
     });
   };
 
@@ -120,21 +133,20 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
 
   const renderContent = () => {
     position.setValue(0);
-    switch (currentPage) {
-      case 0:
-        return (
-            <View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor, alignContent: 'center' }]}>
-              <Text style={[styles.text, { color: theme.textColor }]}>
-                Glad you're here! Let's do a brief overview of the game board.
-              </Text>
-              {renderNavigationButtons()}
-              {renderDots()}
-            </View>
-        );
-      case 1:
-        return (
+    return (
+      <Animated.View style={{ opacity: contentOpacity }}>
+        {currentPage === 0 && (
+          <View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor, alignContent: 'center' }]}>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              Glad you're here! Let's do a brief overview of the game board.
+            </Text>
+            {renderNavigationButtons()}
+            {renderDots()}
+          </View>
+        )}
+        {currentPage === 1 && (
           <>
-             <View style={[styles.gridHighlight, {marginBottom: 10 }]}>
+            <View style={[styles.gridHighlight, { marginBottom: 10 }]}>
               <Ionicons name="arrow-up-outline" color="yellow" size={90} />
             </View>
             <View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor }]}>
@@ -145,9 +157,8 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
               {renderDots()}
             </View>
           </>
-        );
-      case 2:
-        return (
+        )}
+        {currentPage === 2 && (
           <>
             <View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor }]}>
               <Text style={[styles.text, { color: theme.textColor }]}>
@@ -160,8 +171,9 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
               <Ionicons name="arrow-down-outline" color="yellow" size={90} />
             </View>
           </>
-        );
-    }
+        )}
+      </Animated.View>
+    );
   };
 
   const renderNavigationButtons = () => (
@@ -222,7 +234,10 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
                 }),
               },
               {
-                translateX: position,
+                translateX: position.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [(SCREEN_WIDTH / 20), 0],
+                }),
               },
             ],
             // backgroundColor: theme.backgroundColor,
@@ -286,13 +301,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   gridHighlight: {
-    margin: 'auto',
+    // margin: 'auto',
     minWidth: 200,
     alignItems: 'center',
     // borderWidth: 4,
     // borderColor: 'yellow',
     // borderRadius: 100,
-    paddingTop: 100,
+    // paddingTop: 100,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -303,7 +318,7 @@ const styles = StyleSheet.create({
     // borderWidth: 4,
     // borderColor: 'yellow',
     // borderRadius: 100,
-    paddingBottom: 100,
+    // paddingBottom: 100,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
