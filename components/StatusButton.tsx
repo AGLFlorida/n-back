@@ -8,9 +8,10 @@ type Props = {
   isLoading: boolean;
   playing: boolean;
   onPress?: () => void;
+  onTutorial?: () => void;
 }
 
-export default function PlayButton({ onPress, isLoading, playing }: Props) {
+export default function PlayButton({ onPress, isLoading, playing, onTutorial = () => { } }: Props) {
   const styles = useGlobalStyles();
   const [shouldShowButton, setShowButton] = useState<boolean>((!isLoading && !playing));
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -33,9 +34,14 @@ export default function PlayButton({ onPress, isLoading, playing }: Props) {
   return (
     <View style={[styles.row, { marginTop: 40 }]}>
       {shouldShowButton &&
-        <Animated.View style={[styles.cell, styles.clearBorder, { opacity: fadeAnim }]}>
-          <Button label=" Play " onPress={onPress} />
-        </Animated.View>
+        <>
+          <Animated.View style={[styles.cell, styles.clearBorder, { opacity: fadeAnim }]}>
+            <Button label=" Play " onPress={onPress} />
+          </Animated.View>
+          <Animated.View style={[styles.cell, styles.clearBorder, { opacity: fadeAnim }]}>
+            <Button label=" Tutorial " onPress={onTutorial} />
+          </Animated.View>
+        </>
       }{!shouldShowButton &&
         <View style={[styles.cell, styles.play]}>
           <Text style={styles.playLabel}>

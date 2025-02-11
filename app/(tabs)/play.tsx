@@ -31,6 +31,7 @@ import engine, {
 
 import { useGlobalStyles } from "@/styles/globalStyles";
 import ScoreOverlay from '@/components/ScoreOverlay';
+import TutorialOverlay from '@/components/TutorialOverlay';
 
 const fillGuessCard = (len: number): boolean[] => Array(len).fill(false);
 const newCard = new ScoreCard({});
@@ -48,6 +49,7 @@ export default function Play() {
   const [isDualMode, setDualMode] = useState<boolean>(true);
   const [isSilentMode, setSilenMode] = useState<boolean>(false);
   const [showScoreOverlay, setShowScoreOverlay] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(true);
 
   type GameScores = {
     positions: number;
@@ -528,7 +530,7 @@ export default function Play() {
       <Animated.View style={{ opacity: playButtonFadeAnim }}>
         <PlayButton soundGuess={soundGuess} posGuess={posGuess} dualMode={isDualMode} silentMode={isSilentMode} />
       </Animated.View>
-      <StatusButton onPress={() => { resetGame(); startGame(true) }} isLoading={isLoading} playing={shouldStartGame} />
+      <StatusButton onPress={() => { resetGame(); startGame(true) }} isLoading={isLoading} playing={shouldStartGame} onTutorial={() => setShowTutorial(!showTutorial)} />
       <View>
         <Text style={{ color: 'white' }}>Level: {getPlayerLevel()}</Text>
         <Text style={{ color: 'white' }}>Wins: {getSuccessCount()}</Text>
@@ -537,6 +539,10 @@ export default function Play() {
         isVisible={showScoreOverlay}
         onClose={() => setShowScoreOverlay(false)}
         scores={gameScores}
+      />
+      <TutorialOverlay 
+        isVisible={showTutorial}
+        onClose={() => setShowTutorial(false)}
       />
     </View>
   );
