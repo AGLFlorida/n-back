@@ -4,8 +4,6 @@ import { useTheme } from "@/contexts/ThemeContext";
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import log from "@/util/logger";
-
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 120;
 
@@ -35,11 +33,9 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
           } else if (gestureState.dx < 0 && currentPageRef.current < 2) {
             animateToPage(currentPageRef.current + 1);
           } else {
-            log.warn('Invalid swipe, resetting');
             resetPosition();
           }
         } else {
-          log.info('Threshold not met, resetting');
           resetPosition();
         }
       },
@@ -138,7 +134,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
       case 1:
         return (
           <>
-             <View style={[styles.gridHighlight, { alignSelf: 'center', alignItems: 'center', marginBottom: 10 }]}>
+             <View style={[styles.gridHighlight, {marginBottom: 10 }]}>
               <Ionicons name="arrow-up-outline" color="yellow" size={90} />
             </View>
             <View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor }]}>
@@ -155,7 +151,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
           <>
             <View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor }]}>
               <Text style={[styles.text, { color: theme.textColor }]}>
-                These are your controls. They give you a game status and a one or more buttons for play. If you see something you want to react to, these are the buttons you press. When you're ready to begin, just tap "Play".
+                These are your controls. They give you status updates and one or more buttons for play. If you see something you want to react to, these are the buttons you press. When you're ready to begin, just tap "Play".
               </Text>
               {renderNavigationButtons()}
               {renderDots()}
@@ -217,7 +213,6 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
       <Animated.View
         {...panResponder.panHandlers}
         style={[
-          { flex: 0.7},
           {
             transform: [
               {
@@ -248,7 +243,7 @@ const styles = StyleSheet.create({
   },
   lowContainer: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     marginBottom: 20,
     alignItems: 'center',
   },
@@ -291,10 +286,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   gridHighlight: {
-    width: 200,
-    borderWidth: 4,
-    borderColor: 'yellow',
-    borderRadius: 100,
+    margin: 'auto',
+    minWidth: 200,
+    alignItems: 'center',
+    // borderWidth: 4,
+    // borderColor: 'yellow',
+    // borderRadius: 100,
     paddingTop: 100,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -303,9 +300,9 @@ const styles = StyleSheet.create({
   },
   buttonHighlight: {
     width: 200,
-    borderWidth: 4,
-    borderColor: 'yellow',
-    borderRadius: 100,
+    // borderWidth: 4,
+    // borderColor: 'yellow',
+    // borderRadius: 100,
     paddingBottom: 100,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -325,6 +322,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 10,
     marginRight: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   navButtonText: {
     fontSize: 16,
@@ -332,4 +333,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TutorialOverlay; 
+export default TutorialOverlay;

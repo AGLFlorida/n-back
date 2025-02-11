@@ -43,9 +43,9 @@ export default function PlayButton({ onPress, isLoading, playing, onTutorial = (
           </Animated.View>
         </>
       }{!shouldShowButton &&
-        <View style={[styles.cell, styles.play]}>
+        <View style={[styles.cell, styles.play, {borderWidth: 0}]}>
           <Text style={styles.playLabel}>
-            {(isLoading) ? "loading..." : "playing"}
+            {/* {(isLoading) ? "loading..." : "playing"} */}
           </Text>
         </View>
       }
