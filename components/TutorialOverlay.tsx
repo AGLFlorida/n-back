@@ -19,7 +19,6 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
   const slideAnim = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const position = useRef(new Animated.Value(0)).current;
-  const contentOpacity = useRef(new Animated.Value(1)).current;
 
   const panResponder = useRef(
     PanResponder.create({
@@ -45,25 +44,12 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
 
   const animateToPage = (newPage: number) => {
     const direction = newPage > currentPageRef.current ? 1 : -1;
-    Animated.sequence([
-      Animated.timing(contentOpacity, {
-        toValue: 0,
-        duration: 100, 
-        useNativeDriver: true,
-      }),
-      Animated.spring(position, {
-        toValue: -direction * SCREEN_WIDTH,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setCurrentPage(newPage);
-      position.setValue(0);
+    Animated.spring(position, {
+      toValue: -direction * SCREEN_WIDTH,
+      useNativeDriver: true,
+    }).start(() => {
       currentPageRef.current = newPage;
-      Animated.timing(contentOpacity, {
-        toValue: 1,
-        duration: 100, 
-        useNativeDriver: true,
-      }).start();
+      setCurrentPage(newPage);
     });
   };
 
@@ -76,6 +62,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
 
   useEffect(() => {
     currentPageRef.current = currentPage;
+    position.setValue(0);
   }, [currentPage]);
 
   useEffect(() => {
@@ -132,48 +119,48 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
   );
 
   const renderContent = () => {
-    position.setValue(0);
-    return (
-      <Animated.View style={{ opacity: contentOpacity }}>
-        {currentPage === 0 && (
-          <View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor, alignContent: 'center' }]}>
+    switch (currentPage) {
+      case 0:
+        return (
+          <Animated.View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor, alignContent: 'center'}]}>
             <Text style={[styles.text, { color: theme.textColor }]}>
               Glad you're here! Let's do a brief overview of the game board.
             </Text>
             {renderNavigationButtons()}
             {renderDots()}
-          </View>
-        )}
-        {currentPage === 1 && (
+          </Animated.View>
+        );
+      case 1:
+        return (
           <>
-            <View style={[styles.gridHighlight, { marginBottom: 10 }]}>
+            <Animated.View style={[styles.gridHighlight, { marginBottom: 10 }]}>
               <Ionicons name="arrow-up-outline" color="yellow" size={90} />
-            </View>
-            <View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor }]}>
+            </Animated.View>
+            <Animated.View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor }]}>
               <Text style={[styles.text, { color: theme.textColor }]}>
                 This is the "grid". You will intermittently see blocks appear in random order on this part.
               </Text>
               {renderNavigationButtons()}
               {renderDots()}
-            </View>
+            </Animated.View>
           </>
-        )}
-        {currentPage === 2 && (
+        );
+      case 2:
+        return (
           <>
-            <View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor }]}>
+            <Animated.View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor }]}>
               <Text style={[styles.text, { color: theme.textColor }]}>
                 These are your controls. They give you status updates and one or more buttons for play. If you see something you want to react to, these are the buttons you press. When you're ready to begin, just tap "Play".
               </Text>
               {renderNavigationButtons()}
               {renderDots()}
-            </View>
-            <View style={[styles.buttonHighlight, { alignSelf: 'center', alignItems: 'center', marginTop: 30 }]}>
+            </Animated.View>
+            <Animated.View style={[styles.buttonHighlight, { alignSelf: 'center', alignItems: 'center', marginTop: 30 }]}>
               <Ionicons name="arrow-down-outline" color="yellow" size={90} />
-            </View>
+            </Animated.View>
           </>
-        )}
-      </Animated.View>
-    );
+        );
+    }
   };
 
   const renderNavigationButtons = () => (
@@ -224,7 +211,8 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
       />
       <Animated.View
         {...panResponder.panHandlers}
-        style={{
+        style={[
+          {
             transform: [
               {
                 translateY: slideAnim.interpolate({
@@ -233,14 +221,12 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
                 }),
               },
               {
-                translateX: position.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [(SCREEN_WIDTH / 20), 0],
-                }),
+                translateX: position,
               },
             ],
             // backgroundColor: theme.backgroundColor,
-          }}
+          },
+        ]}
       >
         {renderContent()}
       </Animated.View>
@@ -249,81 +235,92 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
 };
 
 const styles = StyleSheet.create({
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  buttonHighlight: {
-    width: 200,
-    // borderWidth: 4,
-    // borderColor: 'yellow',
-    // borderRadius: 100,
-    // paddingBottom: 100,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
   container: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  lowContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  highContainer: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  modal: {
+    width: '90%',
+    padding: 20,
+    borderRadius: 10,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   contentContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 200,
   },
-  dot: {
-    borderRadius: 5,
-    height: 10,
-    marginHorizontal: 5,
-    width: 10,
+  text: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginVertical: 20,
   },
   dotsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
   },
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
   gridHighlight: {
-    // margin: 'auto',
+    margin: 'auto',
     minWidth: 200,
     alignItems: 'center',
     // borderWidth: 4,
     // borderColor: 'yellow',
     // borderRadius: 100,
-    // paddingTop: 100,
+    paddingTop: 100,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  highContainer: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-  },
-  lowContainer: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-  },
-  modal: {
-    borderRadius: 10,
-    elevation: 5,
-    padding: 20,
+  buttonHighlight: {
+    width: 200,
+    // borderWidth: 4,
+    // borderColor: 'yellow',
+    // borderRadius: 100,
+    paddingBottom: 100,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    width: '90%',
+  },
+  navigationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    paddingHorizontal: 20,
   },
   navButton: {
-    alignItems: 'center',
+    padding: 10,
     borderRadius: 5,
+    minWidth: 100,
+    alignItems: 'center',
     marginLeft: 10,
     marginRight: 10,
-    minWidth: 100,
-    padding: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -332,17 +329,6 @@ const styles = StyleSheet.create({
   navButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  navigationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-    paddingHorizontal: 20,
-  },
-  text: {
-    fontSize: 18,
-    marginVertical: 20,
-    textAlign: 'center',
   },
 });
 
