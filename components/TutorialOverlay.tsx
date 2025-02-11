@@ -224,8 +224,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
       />
       <Animated.View
         {...panResponder.panHandlers}
-        style={[
-          {
+        style={{
             transform: [
               {
                 translateY: slideAnim.interpolate({
@@ -241,8 +240,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
               },
             ],
             // backgroundColor: theme.backgroundColor,
-          },
-        ]}
+          }}
       >
         {renderContent()}
       </Animated.View>
@@ -251,54 +249,40 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
 };
 
 const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  lowContainer: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  highContainer: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-  },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
   },
-  modal: {
-    width: '90%',
-    padding: 20,
-    borderRadius: 10,
-    elevation: 5,
+  buttonHighlight: {
+    width: 200,
+    // borderWidth: 4,
+    // borderColor: 'yellow',
+    // borderRadius: 100,
+    // paddingBottom: 100,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+  },
+  container: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   contentContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 200,
   },
-  text: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginVertical: 20,
+  dot: {
+    borderRadius: 5,
+    height: 10,
+    marginHorizontal: 5,
+    width: 10,
   },
   dotsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
   },
   gridHighlight: {
     // margin: 'auto',
@@ -313,30 +297,33 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  buttonHighlight: {
-    width: 200,
-    // borderWidth: 4,
-    // borderColor: 'yellow',
-    // borderRadius: 100,
-    // paddingBottom: 100,
+  highContainer: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+  },
+  lowContainer: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  modal: {
+    borderRadius: 10,
+    elevation: 5,
+    padding: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-  },
-  navigationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-    paddingHorizontal: 20,
+    width: '90%',
   },
   navButton: {
-    padding: 10,
-    borderRadius: 5,
-    minWidth: 100,
     alignItems: 'center',
+    borderRadius: 5,
     marginLeft: 10,
     marginRight: 10,
+    minWidth: 100,
+    padding: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -345,6 +332,17 @@ const styles = StyleSheet.create({
   navButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  navigationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+  text: {
+    fontSize: 18,
+    marginVertical: 20,
+    textAlign: 'center',
   },
 });
 

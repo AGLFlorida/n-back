@@ -4,20 +4,12 @@ import { Stack, useRouter } from 'expo-router';
 
 import { useGlobalStyles } from '@/styles/globalStyles';
 import { useTheme } from '@/contexts/ThemeContext';
-import Button from '@/components/Button';
-
-import security from '@/util/security';
 
 export default function Learn() {
   const styles = useGlobalStyles();
   const { theme } = useTheme();
 
   const router = useRouter();
-
-  const acceptTerms = async () => {
-    await security.set("termsAccepted", true);
-    router.push("/");
-  }
 
   return (
     <SafeAreaView style={{ backgroundColor: theme.backgroundColor, flex: 1 }}>
