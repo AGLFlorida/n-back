@@ -138,8 +138,6 @@ const calculateScore = ({ answers, guesses }: Score): Result => {
 
   const accuracy = possible > 0 ? (correct / possible) * 100 : 0;
 
-  // TODO there is a bug in the errorRate score where it's always
-  // 100 - correct
   const errorRate = possible > 0 ? (incorrect / possible) * 100 : 0;
 
   return {
@@ -193,14 +191,17 @@ const shouldLevelUp = (winStreak: number): boolean => (winStreak > 2);
  * @returns {boolean} - True if the player should level up, false otherwise.
  */
 const playerWon = (pScore: Result, level: number = 1, sScore?: Result, bScore?: Result): boolean => {
-  const accuracyThresholds = [0, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45]; // index corresponds to N-1
-  // const maxErrorRate = 0.4; // Error rate is passed in as a whole number (i.e. a percentage) rather than a decimal;
+  // Error rate and accuracy are passed in as a whole number (i.e. a percentage) rather than a decimal;
+  // const accuracyThresholds = [0, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45]; // index corresponds to N-1
+  const accuracyThresholds = [0, 80, 75, 70, 65, 60, 55, 50, 45]; // index corresponds to N-1
+  // const maxErrorRate = 0.4; 
   const maxErrorRate = 40;
 
   // min accuracy threshold
   const requiredAccuracy = accuracyThresholds[Math.min(level, accuracyThresholds.length - 1)];
 
   const passedPos = (): boolean => {
+
     const { accuracy, errorRate } = pScore;
 
     return accuracy >= requiredAccuracy && errorRate <= maxErrorRate;
@@ -208,7 +209,7 @@ const playerWon = (pScore: Result, level: number = 1, sScore?: Result, bScore?: 
 
   const passedSound = (): boolean => {
     if (!sScore) return true;
-    
+
     const { accuracy, errorRate } = sScore;
 
     return accuracy >= requiredAccuracy && errorRate <= maxErrorRate;
@@ -225,6 +226,7 @@ const playerWon = (pScore: Result, level: number = 1, sScore?: Result, bScore?: 
   return passedPos() && passedBuzz() && passedSound();
 }
 
+// TODO doesn't always play.
 const loadCelebrate = async (): Promise<Audio.Sound> => {
 
   await Audio.setAudioModeAsync({
