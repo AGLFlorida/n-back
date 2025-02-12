@@ -138,8 +138,6 @@ const calculateScore = ({ answers, guesses }: Score): Result => {
 
   const accuracy = possible > 0 ? (correct / possible) * 100 : 0;
 
-  // TODO there is a bug in the errorRate score where it's always
-  // 100 - correct
   const errorRate = possible > 0 ? (incorrect / possible) * 100 : 0;
 
   return {
@@ -388,12 +386,6 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
         newGrid[newRow][newCol] = true;
         return newGrid
       } catch (error) {
-        // TODO ANDROID ONLY
-        /*
-(NOBRIDGE) LOG  10:33:20 AM | ERROR : Error in placing next square.
- (NOBRIDGE) LOG  10:33:20 AM | ERROR : Error in game. Ejecting. Invalid attempt to destructure non-iterable instance.
-In order to be iterable, non-array objects must have a [Symbol.iterator]() method.
-        */
         log.error("Error in placing next square.");
         throw error;
       }

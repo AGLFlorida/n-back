@@ -45,7 +45,7 @@ export default function Play() {
   const [shouldStartGame, startGame] = useState<boolean>(false);
   const [elapsedTime, setElapsedTime] = useState<number>(-1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [, setDefaultN] = useState<number>();
+  const [defaultN, setDefaultN] = useState<number>(2);
   const [isDualMode, setDualMode] = useState<boolean>(true);
   const [isSilentMode, setSilenMode] = useState<boolean>(false);
   const [showScoreOverlay, setShowScoreOverlay] = useState(false);
@@ -369,8 +369,10 @@ export default function Play() {
     React.useCallback(() => {
       const initGame = async () => {
         try {
-          const n: number = await getN();
+          let n: number = await getN();
           emptyGuessCards();
+
+          if (n === null) n = defaultN; // (android only?) first install, this is always null.
 
           navigation.setOptions({
             title: `Play (${n}-back)`,
