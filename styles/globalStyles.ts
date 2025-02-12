@@ -31,6 +31,12 @@ export const useGlobalStyles = () => {
       backgroundColor: theme.accentColor,
       width: "100%",
     },
+    h1: {
+      color: theme.textColor,
+      fontSize: 24,
+      fontWeight: 700,
+      marginTop: 20
+    },
     heading: {
       color: theme.textColor,
       fontSize: 22,
@@ -96,12 +102,6 @@ export const useGlobalStyles = () => {
       flex: 1,
       fontSize: 18,
       lineHeight: 26,
-    },
-    h1: {
-      marginTop: 20,
-      color: theme.textColor,
-      fontWeight: 700,
-      fontSize: 24
     }
   });
 };
