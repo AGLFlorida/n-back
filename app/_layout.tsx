@@ -1,18 +1,75 @@
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import { Drawer } from "expo-router/drawer";
+import { ToastProvider } from "expo-toast";
 
-import { ThemeProvider } from '@/contexts/ThemeContext';
+import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
+import Menu from "@/components/Menu";
+import BackButton from "@/components/BackButton";
+
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "Back" }} />
-        <Stack.Screen name="terms" />
-        <Stack.Screen name="learn" />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
+      <ToastProvider>
+        <RootNav />
+      </ToastProvider>
     </ThemeProvider>
   );
 }
+
+function RootNav() {
+  const { theme } = useTheme();
+
+  return (
+    <Drawer
+      screenOptions={{
+        ...theme.screenOptions,
+        drawerPosition: "right",
+        drawerStyle: { backgroundColor: theme.backgroundColor },
+        drawerContentStyle: { backgroundColor: theme.backgroundColor },
+        drawerLabelStyle: { color: theme.textColor },
+        drawerActiveTintColor: theme.screenOptions.headerTintColor,
+        drawerInactiveTintColor: theme.screenOptions.headerTintColor,
+        headerRight: () => <Menu color={theme.screenOptions.headerTintColor} />,
+        headerLeft: () => <BackButton color={theme.screenOptions.headerTintColor} />,
+        headerStyle: {
+          backgroundColor: theme.backgroundColor
+        },
+        headerTintColor: theme.textColor,
+      }}
+    >
+      <Drawer.Screen name="(tabs)" options={{
+        headerShown: false,
+        title: "Home",
+        drawerIcon: HomeIcon
+      }} />
+      <Drawer.Screen name="+not-found" options={{ title: "Not Found", drawerItemStyle: { display: "none" } }} />
+      <Drawer.Screen name="learn" options={{ title: "", drawerItemStyle: { display: "none" } }} />
+      <Drawer.Screen name="terms" options={{
+        title: "Terms and Conditions",
+        drawerIcon: TermsIcon
+      }} />
+      <Drawer.Screen name="settings" options={{
+        title: "Settings",
+        drawerIcon: SettingsIcon
+      }} />
+    </Drawer>
+  );
+}
+
+
+type IconProps = {
+  color: string;
+  focused: boolean;
+  size: number;
+}
+const SettingsIcon = ({ color, focused, size }: IconProps) => (
+  <Ionicons name={focused ? 'cog-sharp' : 'cog-outline'} color={color} size={size} />
+);
+const HomeIcon = ({ color, focused, size }: IconProps) => (
+  <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={size} />
+);
+const TermsIcon = ({ color, focused, size }: IconProps) => (
+  <Ionicons name={focused ? 'book-sharp' : 'book-outline'} color={color} size={size} />
+);

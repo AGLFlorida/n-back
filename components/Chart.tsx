@@ -27,7 +27,7 @@ const Chart = ({ data, xLabels = [] }: Props) => {
   const xOffset = 30;
   const yAxisX = 20;
   const yAxisLabelX = 10;
-  const spacing = (chartWidth - 40) / (data.length - 1);
+  const spacing = (data.length > 1) ? ((chartWidth - 40) / (data.length - 1)) : 0;
 
   const yLabels = Array.from({ length: 6 }, (_, i) => ({
     label: (i * 20).toString(),
@@ -35,7 +35,7 @@ const Chart = ({ data, xLabels = [] }: Props) => {
   }));
 
   const scaledData = data.map((d, index) => ({
-    x: yAxisX + xOffset + (spacing * (index/2)),
+    x: yAxisX + xOffset + (spacing * index/2),
     y: chartHeight - (d.y / maxY) * chartHeight,
   }));
 

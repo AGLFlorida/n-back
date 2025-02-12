@@ -133,6 +133,11 @@ export default function Settings() {
         <View style={[styles.grid, { alignItems: "flex-start" }]}>
           <View style={[styles.row, { margin: 5 }]}>
             <View style={styles.settingsCell}>
+              <Text style={styles.h1}>Basic Settings:</Text>
+            </View>
+          </View>
+          <View style={[styles.row, { margin: 5 }]}>
+            <View style={styles.settingsCell}>
               <Button label={JSON.stringify(defaultN)} style={{ width: 50, textAlign: "center" }} onPress={handleTapN} onLongPress={handleLongPressN} />
             </View>
             <View style={styles.settingsCell}>
@@ -164,7 +169,7 @@ export default function Settings() {
               />
             </View>
             <View style={styles.settingsCell}>
-              <Text style={styles.label}>Silent Mode (Requires Dual)</Text>
+              <Text style={styles.label}>Silent Mode (Experimental, Requires Dual)</Text>
             </View>
           </View>
 
@@ -184,6 +189,16 @@ export default function Settings() {
           <View style={[styles.row, { margin: 5 }]}>
             <Button label="Save" onPress={() => handleSaved()} style={{ width: 60, textAlign: 'center' }} />
           </View>
+          <View style={[styles.row, { margin: 5 }]}>
+            <View style={styles.settingsCell}>
+              <Text style={styles.h1}>Danger Zone:</Text>
+            </View>
+          </View>
+          <View style={[styles.row, { margin: 5 }]}>
+            <Pressable style={{ marginTop: 'auto', alignSelf: 'flex-end', marginBottom: 20, marginRight: 10 }} onPress={clearSettings}>
+              <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>Reset Data</Text>
+            </Pressable>
+          </View>
           {error && (
             <View style={[styles.row, { margin: 10 }]}>
               <Text style={[styles.settingsCell, { color: 'red' }]}>{error}</Text>
@@ -193,16 +208,7 @@ export default function Settings() {
         <Pressable style={{ alignSelf: 'flex-end', marginTop: 20, marginRight: 10 }} onPress={() => router.push('/learn')}>
           <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>Learn More</Text>
         </Pressable>
-        <Pressable style={{ marginTop: 'auto', alignSelf: 'flex-end', marginBottom: 20, marginRight: 10 }} onPress={() => router.push('/')}>
-          <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>Version Notes</Text>
-        </Pressable>
-        <Pressable style={{ alignSelf: 'flex-end', marginBottom: 20, marginRight: 10 }} onPress={clearSettings}>
-          <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>Reset Data</Text>
-        </Pressable>
-        <Pressable style={{ alignSelf: 'flex-end', marginBottom: 20, marginRight: 10 }} onPress={() => router.push('/terms')}>
-          <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>Terms of Use and Privacy Notices</Text>
-        </Pressable>
       </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+    </TouchableWithoutFeedback >
   );
 }

@@ -1,6 +1,8 @@
 import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+import Menu from '@/components/Menu';
+
 import { useTheme } from '@/contexts/ThemeContext';
 
 export default function TabLayout() {
@@ -8,7 +10,10 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      screenOptions={theme.screenOptions}
+      screenOptions={{
+        ...theme.screenOptions,
+        headerRight: () => <Menu color={theme.screenOptions.headerTintColor} />
+      }}
     >
       <Tabs.Screen
         name="index"
@@ -38,7 +43,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
@@ -46,7 +51,7 @@ export default function TabLayout() {
             <Ionicons name={focused ? 'cog-sharp' : 'cog-outline'} color={color} size={24} />
           ),
         }}
-      />
+      /> */}
     </Tabs>
   );
 }

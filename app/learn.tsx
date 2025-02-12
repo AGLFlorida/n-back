@@ -1,12 +1,9 @@
 import React from 'react';
 import { View, Text, ScrollView, SafeAreaView } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 import { useGlobalStyles } from '@/styles/globalStyles';
 import { useTheme } from '@/contexts/ThemeContext';
-import Button from '@/components/Button';
-
-import security from '@/util/security';
 
 export default function Learn() {
   const styles = useGlobalStyles();
@@ -14,23 +11,11 @@ export default function Learn() {
 
   const router = useRouter();
 
-  const acceptTerms = async () => {
-    await security.set("termsAccepted", true);
-    router.push("/");
-  }
-
   return (
     <SafeAreaView style={{ backgroundColor: theme.backgroundColor, flex: 1 }}>
       <ScrollView>
-        <Stack.Screen options={{
-          title: "Learn More",
-          headerStyle: {
-            backgroundColor: theme.backgroundColor
-          },
-          headerTintColor: theme.textColor,
-        }} />
         <View style={[styles.container, { alignItems: 'center', marginHorizontal: 30, marginVertical: 10, }]}>
-          <Text style={styles.heading}>How the Game Works</Text>
+          <Text style={styles.heading}>About Settings</Text>
 
           {/* 1 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>

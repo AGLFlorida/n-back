@@ -9,13 +9,13 @@ export default function NotFoundScreen() {
 
   return (
     <SafeAreaView>
-      <Stack.Screen options={{
+      {/* <Stack.Screen options={{
         title: "Oops! Not Found",
         headerStyle: {
           backgroundColor: theme.backgroundColor
         },
         headerTintColor: theme.textColor,
-      }} />
+      }} /> */}
       <FourOhFour />
     </SafeAreaView>
   );

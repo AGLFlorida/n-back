@@ -1,6 +1,9 @@
-import React from 'react';
-import { View, Text, ScrollView, SafeAreaView } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import React, { ReactNode } from 'react';
+import { View, Text, ScrollView, SafeAreaView, Pressable, Platform } from 'react-native';
+import { useRouter } from 'expo-router';
+import * as Clipboard from "expo-clipboard";
+import { POSTION, useToast } from "expo-toast";
+
 
 import { useGlobalStyles } from '@/styles/globalStyles';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -22,13 +25,6 @@ export default function Terms() {
   return (
     <SafeAreaView style={{ backgroundColor: theme.backgroundColor }}>
       <ScrollView>
-        <Stack.Screen options={{
-          title: "Terms & Conditions",
-          headerStyle: {
-            backgroundColor: theme.backgroundColor
-          },
-          headerTintColor: theme.textColor,
-        }} />
         <View style={[styles.container, { alignItems: 'center', marginHorizontal: 30, marginVertical: 10, }]}>
           <Text style={styles.heading}>Terms of Use & Privacy Disclaimer</Text>
           <View style={{ alignSelf: 'flex-start', marginBottom: 5 }}>
@@ -101,26 +97,42 @@ export default function Terms() {
             <Text style={{ color: theme.textColor }}>These terms are governed by the laws of the state of Florida, USA.</Text>
           </View>
 
-
           {/* 8 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
             <Text style={styles.number}>8.</Text>
+            <Text style={[styles.text, { fontWeight: '700' }]}>Purchase Agreement</Text>
+          </View>
+          <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
+            <Text style={{ color: theme.textColor }}>By making a purchase, you are paying for a limited, non-transferable, revocable license to access additional features within the App. This access is subject to compliance with the Terms of Service, and may be revoked if you violate these terms. All payments are final and non-refundable, except where required by law.</Text>
+          </View>
+
+          {/* 9 */}
+          <View style={[styles.listItem, { marginBottom: 3 }]}>
+            <Text style={styles.number}>9.</Text>
             <Text style={[styles.text, { fontWeight: '700' }]}>Additional Attribution</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>n-back task by Wayne Kirchner in 1958. https://psycnet.apa.org/record/1959-07784-001</Text>
+            <CustomLink textToCopy="https://psycnet.apa.org/record/1959-07784-001">
+              <Text style={{ color: theme.textColor }}>n-back task by Wayne Kirchner in 1958. https://psycnet.apa.org/record/1959-07784-001</Text>
+            </CustomLink>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>dual n-back by Susanne Jaeggi et al. in 2003. https://www.sciencedirect.com/science/article/abs/pii/S1053811903000983</Text>
+            <CustomLink textToCopy="https://www.sciencedirect.com/science/article/abs/pii/S1053811903000983">
+              <Text style={{ color: theme.textColor }}>dual n-back by Susanne Jaeggi et al. in 2003. https://www.sciencedirect.com/science/article/abs/pii/S1053811903000983</Text>
+            </CustomLink>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <Text style={{ color: theme.textColor }}>Some sounds provided by freesound.org and licenced under Creative Commons 0 and others.</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>&quot;Single mode&quot; tile movement provided by Game Menu Select Sound 2 by digimistic -- https://freesound.org/s/705174/ -- License: Creative Commons 0.</Text>
+            <CustomLink textToCopy="https://freesound.org/s/705174/">
+              <Text style={{ color: theme.textColor }}>&quot;Single mode&quot; tile movement provided by Game Menu Select Sound 2 by digimistic -- https://freesound.org/s/705174/ -- License: Creative Commons 0.</Text>
+            </CustomLink>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>&quot;Game Complete&quot; fanfare provided by Fanfare short.wav by vitovsky1 -- https://freesound.org/s/400163/ -- License: Attribution 3.0</Text>
+            <CustomLink textToCopy="https://freesound.org/s/400163/">
+              <Text style={{ color: theme.textColor }}>&quot;Game Complete&quot; fanfare provided by Fanfare short.wav by vitovsky1 -- https://freesound.org/s/400163/ -- License: Attribution 3.0</Text>
+            </CustomLink>
           </View>
 
           <View style={{ alignSelf: 'flex-start', marginBottom: 20, marginTop: 20 }}>
@@ -134,3 +146,33 @@ export default function Terms() {
     </SafeAreaView>
   )
 }
+
+type CustomLinkProps = {
+  children: ReactNode;
+  textToCopy: string;
+};
+
+const CustomLink: React.FC<CustomLinkProps> = ({ children, textToCopy }) => {
+  const toast = useToast();
+
+  const handleCopyToClipboard = async () => {
+    try {
+      if (Platform.OS === "web") {
+        await navigator.clipboard.writeText(textToCopy);
+      } else {
+        await Clipboard.setStringAsync(textToCopy);
+      }
+
+      toast.show("Copied to clipboard!", { duration: 2000 });
+    } catch (error) {
+      console.error("Clipboard copy failed:", error);
+      toast.show("Failed to copy text.", { duration: 2000 });
+    }
+  };
+
+  return (
+    <Pressable onPress={handleCopyToClipboard}>
+      {children}
+    </Pressable>
+  );
+};
