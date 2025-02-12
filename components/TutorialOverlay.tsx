@@ -47,6 +47,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
     Animated.spring(position, {
       toValue: -direction * SCREEN_WIDTH,
       useNativeDriver: true,
+      speed: 100,
     }).start(() => {
       currentPageRef.current = newPage;
       setCurrentPage(newPage);
@@ -134,7 +135,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
         return (
           <>
             <Animated.View style={[styles.gridHighlight, { marginBottom: 10 }]}>
-              <Ionicons name="arrow-up-outline" color="yellow" size={90} />
+              <Ionicons name="arrow-up-outline" color={theme.screenOptions.tabBarActiveTintColor} size={90} />
             </Animated.View>
             <Animated.View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor }]}>
               <Text style={[styles.text, { color: theme.textColor }]}>
@@ -156,7 +157,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
               {renderDots()}
             </Animated.View>
             <Animated.View style={[styles.buttonHighlight, { alignSelf: 'center', alignItems: 'center', marginTop: 30 }]}>
-              <Ionicons name="arrow-down-outline" color="yellow" size={90} />
+              <Ionicons name="arrow-down-outline" color={theme.screenOptions.tabBarActiveTintColor} size={90} />
             </Animated.View>
           </>
         );
@@ -224,7 +225,6 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
                 translateX: position,
               },
             ],
-            // backgroundColor: theme.backgroundColor,
           },
         ]}
       >
