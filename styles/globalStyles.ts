@@ -34,7 +34,7 @@ export const useGlobalStyles = () => {
     heading: {
       color: theme.textColor,
       fontSize: 22,
-      fontWeight:'bold',
+      fontWeight: 'bold',
       marginBottom: 20,
       textAlign: 'center',
       textDecorationLine: 'underline'
@@ -51,7 +51,7 @@ export const useGlobalStyles = () => {
       color: theme.textColor,
       fontSize: 18,
       fontWeight: 'bold',
-      lineHeight: 26, 
+      lineHeight: 26,
       marginRight: 10,
     },
     numberInput: {
@@ -97,5 +97,11 @@ export const useGlobalStyles = () => {
       fontSize: 18,
       lineHeight: 26,
     },
+    h1: {
+      marginTop: 20,
+      color: theme.textColor,
+      fontWeight: 700,
+      fontSize: 24
+    }
   });
 };

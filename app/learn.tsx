@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, SafeAreaView } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 import { useGlobalStyles } from '@/styles/globalStyles';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -14,15 +14,8 @@ export default function Learn() {
   return (
     <SafeAreaView style={{ backgroundColor: theme.backgroundColor, flex: 1 }}>
       <ScrollView>
-        <Stack.Screen options={{
-          title: "Learn More",
-          headerStyle: {
-            backgroundColor: theme.backgroundColor
-          },
-          headerTintColor: theme.textColor,
-        }} />
         <View style={[styles.container, { alignItems: 'center', marginHorizontal: 30, marginVertical: 10, }]}>
-          <Text style={styles.heading}>How the Game Works</Text>
+          <Text style={styles.heading}>About Settings</Text>
 
           {/* 1 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>

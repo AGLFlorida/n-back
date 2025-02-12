@@ -43,7 +43,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
@@ -51,7 +51,7 @@ export default function TabLayout() {
             <Ionicons name={focused ? 'cog-sharp' : 'cog-outline'} color={color} size={24} />
           ),
         }}
-      />
+      /> */}
     </Tabs>
   );
 }
