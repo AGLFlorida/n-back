@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, Animated } from 'react-native';
 
-import { useGlobalStyles } from '@/styles/globalStyles';
+import { useGlobalStyles, height } from '@/styles/globalStyles';
 import Button from './Button';
 
 type Props = {
@@ -16,6 +16,7 @@ export default function PlayButton({ onPress, isLoading, playing, onTutorial = (
   const [shouldShowButton, setShowButton] = useState<boolean>((!isLoading && !playing));
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
+  const padding = Math.floor(40 * Math.pow(height / 1000, 8));
   useEffect(() => {
     setShowButton((!isLoading && !playing));
 
@@ -32,7 +33,7 @@ export default function PlayButton({ onPress, isLoading, playing, onTutorial = (
   }, [fadeAnim])
 
   return (
-    <View style={[styles.row, { marginTop: 40 }]}>
+    <View style={[styles.row, { marginTop: padding }]}>
       {shouldShowButton &&
         <>
           <Animated.View style={[styles.cell, styles.clearBorder, { opacity: fadeAnim }]}>

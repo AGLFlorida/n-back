@@ -32,6 +32,8 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
             animateToPage(currentPageRef.current - 1);
           } else if (gestureState.dx < 0 && currentPageRef.current < 2) {
             animateToPage(currentPageRef.current + 1);
+          } else if (gestureState.dx < 0 && currentPageRef.current === 2) {
+            onClose();
           } else {
             resetPosition();
           }

@@ -1,5 +1,7 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { useTheme } from "@/contexts/ThemeContext";
+
+export const { width, height } = Dimensions.get("window");
 
 export const themeColors = {
   white: '#ffffff',
@@ -8,6 +10,7 @@ export const themeColors = {
 
 export const useGlobalStyles = () => {
   const { theme } = useTheme();
+  const padding = Math.floor(height / 30 - 5);
 
   return StyleSheet.create({
     button: {
@@ -102,6 +105,11 @@ export const useGlobalStyles = () => {
       flex: 1,
       fontSize: 18,
       lineHeight: 26,
+    },
+    indexContainer: { 
+      alignItems: 'center', 
+      paddingHorizontal: padding, 
+      paddingVertical: 10, 
     }
   });
 };

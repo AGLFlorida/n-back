@@ -34,8 +34,7 @@ export default function Index() {
   );
 
   return (
-    <View style={[styles.container, { alignItems: 'center', paddingHorizontal: 30, paddingVertical: 10, }]}>
-      <Text style={styles.heading}>How to Play</Text>
+    <View style={[styles.container, styles.indexContainer]}>
       <View style={styles.listItem}>
         <Text style={styles.number}>1.</Text>
         <Text style={styles.text}>You will see a sequence of squares on a grid.</Text>

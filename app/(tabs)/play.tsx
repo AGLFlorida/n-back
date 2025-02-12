@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { View, Animated, Alert, Text } from "react-native";
+import React, { useState, useEffect, useRef, ReactNode } from "react";
+import { View, Animated, Alert, Text, ScrollView } from "react-native";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { Audio } from "expo-av";
 
@@ -29,7 +29,7 @@ import engine, {
   playerWon
 } from "@/util/engine";
 
-import { useGlobalStyles } from "@/styles/globalStyles";
+import { height, useGlobalStyles } from "@/styles/globalStyles";
 import ScoreOverlay from '@/components/ScoreOverlay';
 import TutorialOverlay from '@/components/TutorialOverlay';
 
@@ -316,8 +316,8 @@ export default function Play() {
     if (playerWon(
       posResult,
       getPlayerLevel(),
-      (isDualMode && !isSilentMode) ? soundResult: undefined,
-      (isDualMode && isSilentMode) ? buzzResult: undefined
+      (isDualMode && !isSilentMode) ? soundResult : undefined,
+      (isDualMode && isSilentMode) ? buzzResult : undefined
     )) {
       const successes = getSuccessCount() + 1;
       setSuccessCount(successes);
@@ -514,38 +514,63 @@ export default function Play() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      {grid.map((row, rowIndex) => (
-        <View key={`row-${rowIndex}`} style={styles.row}>
-          {row.map((isActive: boolean, colIndex: number) => (
-            <View key={`cell-${rowIndex}-${colIndex}`} style={styles.cell}>
-              {isActive &&
-                (<Square key={`cell-${rowIndex}-${colIndex}`} />)
-              }
-              {!isActive &&
-                (<View style={styles.placeHolder} />)
-              }
-            </View>
-          ))}
+    <Display>
+      <View style={styles.container}>
+        {grid.map((row, rowIndex) => (
+          <View key={`row-${rowIndex}`} style={styles.row}>
+            {row.map((isActive: boolean, colIndex: number) => (
+              <View key={`cell-${rowIndex}-${colIndex}`} style={styles.cell}>
+                {isActive &&
+                  (<Square key={`cell-${rowIndex}-${colIndex}`} />)
+                }
+                {!isActive &&
+                  (<View style={styles.placeHolder} />)
+                }
+              </View>
+            ))}
+          </View>
+        ))}
+        <Animated.View style={{ opacity: playButtonFadeAnim }}>
+          <PlayButton soundGuess={soundGuess} posGuess={posGuess} dualMode={isDualMode} silentMode={isSilentMode} />
+        </Animated.View>
+        <StatusButton onPress={() => { resetGame(); startGame(true) }} isLoading={isLoading} playing={shouldStartGame} onTutorial={() => setShowTutorial(!showTutorial)} />
+        <View>
+          <Text style={{ color: 'white' }}>Level: {getPlayerLevel()}</Text>
+          <Text style={{ color: 'white' }}>Wins: {getSuccessCount()}</Text>
         </View>
-      ))}
-      <Animated.View style={{ opacity: playButtonFadeAnim }}>
-        <PlayButton soundGuess={soundGuess} posGuess={posGuess} dualMode={isDualMode} silentMode={isSilentMode} />
-      </Animated.View>
-      <StatusButton onPress={() => { resetGame(); startGame(true) }} isLoading={isLoading} playing={shouldStartGame} onTutorial={() => setShowTutorial(!showTutorial)} />
-      <View>
-        <Text style={{ color: 'white' }}>Level: {getPlayerLevel()}</Text>
-        <Text style={{ color: 'white' }}>Wins: {getSuccessCount()}</Text>
+        <ScoreOverlay
+          isVisible={showScoreOverlay}
+          onClose={() => setShowScoreOverlay(false)}
+          scores={gameScores}
+        />
+        <TutorialOverlay
+          isVisible={showTutorial}
+          onClose={() => setShowTutorial(false)}
+        />
       </View>
-      <ScoreOverlay
-        isVisible={showScoreOverlay}
-        onClose={() => setShowScoreOverlay(false)}
-        scores={gameScores}
-      />
-      <TutorialOverlay 
-        isVisible={showTutorial}
-        onClose={() => setShowTutorial(false)}
-      />
-    </View>
+    </Display>
   );
+}
+
+
+type DisplayProps = {
+  children: ReactNode;
+}
+function Display({ children }: DisplayProps) {
+  const makeScroll: boolean = height < 800;
+
+  return (
+    <>
+      {makeScroll &&
+        <ScrollView>
+          {children}
+        </ScrollView>
+      }
+      {!makeScroll &&
+        <>
+          {children}
+        </>
+      }
+    </>
+  )
 }
