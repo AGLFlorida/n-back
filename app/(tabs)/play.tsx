@@ -1,3 +1,6 @@
+
+
+
 import React, { useState, useEffect, useRef, ReactNode } from "react";
 import { View, Animated, Alert, Text, ScrollView } from "react-native";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
@@ -6,11 +9,14 @@ import { Audio } from "expo-av";
 import Square from "@/components/Square";
 import PlayButton from "@/components/PlayButton";
 import StatusButton from "@/components/StatusButton";
-import { ScoreCard, ScoresType, SingleScoreType } from "@/util/ScoreCard";
+import { ScoreBlock, ScoreCard, ScoresType, SingleScoreType, scoreKey } from "@/util/ScoreCard";
 
 import { showCustomAlert } from "@/util/alert";
 import security from "@/util/security";
 import log from "@/util/logger";
+
+// TODO success sound doesn't always play
+
 
 import engine, {
   getDualMode,
@@ -23,10 +29,12 @@ import engine, {
   Grid,
   calculateScore,
   defaults,
-  scoreKey,
   loadCelebrate,
   shouldLevelUp,
-  playerWon
+  playerWon,
+  whichGameMode,
+  gameModeScore,
+  GameModeEnum
 } from "@/util/engine";
 
 import { height, useGlobalStyles } from "@/styles/globalStyles";
@@ -171,10 +179,23 @@ export default function Play() {
   const loadRecords = async () => {
     try {
       let rec = await security.get("records");
+      console.log("Previous Scores: ", rec);
       if (rec == null) {
-        const key = scoreKey();
-        rec = {};
-        rec[key] = [0, 0, 0];
+        const initSingleN: SingleScoreType = {
+          score: 0,
+          errorRate: 0,
+          n: defaultN,
+        };
+        const initDualN: SingleScoreType = {
+          score: 0,
+          score2: 0,
+          errorRate: 0,
+          errotRate2: 0,
+          n: defaultN,
+        }
+        playHistory.setValue(GameModeEnum.SingleN, initSingleN);
+        playHistory.setValue(GameModeEnum.DualN, initDualN);
+        playHistory.setValue(GameModeEnum.SilentDualN, initDualN);
       }
       playHistory.scores = rec as ScoresType;
     } catch (e) {
@@ -261,43 +282,6 @@ export default function Play() {
       ({ accuracy: buzzScore, errorRate: buzzError } = buzzResult);
     }
 
-    const key = scoreKey();
-    const saveScores = async () => {
-      if (playHistory.scores == null) {
-        const initialScore: SingleScoreType = [0, 0, 0];
-        playHistory.setValue(key, initialScore);
-      }
-
-      const newScores: SingleScoreType = [
-        posScore,
-        (posScore + soundScore) / 2,
-        (posScore + buzzScore) / 2
-      ]
-
-      const prevScores = playHistory.getValue(key);
-      if (prevScores && !playHistory.compareCards(prevScores, newScores)) {
-        if (prevScores.length > 0 && prevScores[0] > newScores[0]) {
-          newScores[0] = prevScores[0];
-        }
-        if (soundScore > 0 && prevScores.length > 1 && prevScores[1] > newScores[1]) {
-          newScores[1] = prevScores[1];
-        }
-
-        if (buzzScore > 0 && prevScores.length > 2 && prevScores[2] > newScores[2]) {
-          newScores[2] = prevScores[2];
-        }
-      }
-
-      playHistory.setValue(key, newScores);
-      try {
-        await security.set("records", playHistory.scores);
-      } catch (e) {
-        log.error("Error saving scores", e);
-      }
-
-    }
-    saveScores();
-
     setGameScores({
       positions: posScore,
       sounds: soundScore,
@@ -324,6 +308,12 @@ export default function Play() {
       if (shouldLevelUp(successes)) {
         doLevelUp();
       }
+
+      // Persist game scores.
+      const currentGameMode = whichGameMode(isDualMode, isSilentMode);
+      const currentGameScore: SingleScoreType = gameModeScore(posResult, soundResult, buzzResult);
+      playHistory.setValue(currentGameMode, currentGameScore);
+      playHistory.save();
     } else {
       const failures = getFailCount() + 1;
       setFailCount(failures);

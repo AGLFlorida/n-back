@@ -3,6 +3,47 @@ import * as Haptics from "expo-haptics";
 
 import security from './security';
 import log from "./logger";
+import { SingleScoreType } from "./ScoreCard";
+
+/*
+TODO ANDROID(?)
+ (NOBRIDGE) LOG  5:38:51 PM | ERROR : AVPlayerItem failed: The AVPlayerItem instance has failed with the error code -11819 and domain "AVFoundationErrorDomain".
+*/
+
+export enum GameModeEnum {
+  SingleN = "SingleN",
+  DualN = "DualN",
+  SilentDualN = "SilentDualN"
+}
+export function whichGameMode(isDualMode: boolean, isSilentMode: boolean = false): string {
+  if (!isDualMode) {
+    return GameModeEnum.SingleN;
+  } else if (isDualMode && !isSilentMode) {
+    return GameModeEnum.DualN;
+  } else {
+    return GameModeEnum.SilentDualN;
+  }
+}
+export function gameModeScore(pScore: Result, sScore?: Result, bScore?: Result): SingleScoreType {
+  const card: SingleScoreType = {
+    n: 1,
+    score: 1,
+    errorRate: 1
+  }
+
+  let accuracy;
+  let errorRate;
+  if (sScore !== undefined) {
+    ({accuracy, errorRate} = sScore);
+  } else if (bScore !== undefined) {
+    ({accuracy, errorRate} = bScore);
+  }
+
+  card.score2 = accuracy;
+  card.errotRate2 = errorRate;
+
+  return card;
+}
 
 const soundFiles: SoundFile[] = [
   { key: "C", file: require("../assets/audio/C.m4a") as AVPlaybackSource },
@@ -87,7 +128,13 @@ const loadSounds = async (): Promise<SoundState> => {
   const loadedSounds: SoundState = {};
 
   for (const { key, file } of soundFiles) {
-    const { sound } = await Audio.Sound.createAsync(file);
+    const { sound } = await Audio.Sound.createAsync(file, { shouldPlay: false });
+    sound.setOnPlaybackStatusUpdate((status) => {
+      if (!status.isLoaded && status.error) {
+        log.error("AVPlayerItem failed:", status.error);
+        sound.unloadAsync();
+      }
+    });
     loadedSounds[key] = sound;
   }
 
@@ -95,7 +142,13 @@ const loadSounds = async (): Promise<SoundState> => {
 }
 
 const loadSound = async (): Promise<Audio.Sound> => {
-  const { sound } = await Audio.Sound.createAsync(soloSound.file);
+  const { sound } = await Audio.Sound.createAsync(soloSound.file, { shouldPlay: false });
+  sound.setOnPlaybackStatusUpdate((status) => {
+    if (!status.isLoaded && status.error) {
+      log.error("AVPlayerItem failed:", status.error);
+      sound.unloadAsync();
+    }
+  });
 
   return sound;
 }
@@ -149,7 +202,7 @@ const calculateScore = ({ answers, guesses }: Score): Result => {
 const MAXTIME = (5 * 60);
 export const MAXN = 9;
 export const MINN = 2;
-const DEFAULT_GAMELEN = 30;
+const DEFAULT_GAMELEN = 10;//30;
 interface Level {
   gameLen: number,
   matchRate: number,
@@ -190,12 +243,13 @@ const shouldLevelUp = (winStreak: number): boolean => (winStreak > 2);
  * @param {Result} [bScore] - The player's buzz score (optional).
  * @returns {boolean} - True if the player should level up, false otherwise.
  */
+export const MAX_ERROR_RATE = 40;
 const playerWon = (pScore: Result, level: number = 1, sScore?: Result, bScore?: Result): boolean => {
   // Error rate and accuracy are passed in as a whole number (i.e. a percentage) rather than a decimal;
   // const accuracyThresholds = [0, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45]; // index corresponds to N-1
   const accuracyThresholds = [0, 80, 75, 70, 65, 60, 55, 50, 45]; // index corresponds to N-1
   // const maxErrorRate = 0.4; 
-  const maxErrorRate = 40;
+  const maxErrorRate = MAX_ERROR_RATE;
 
   // min accuracy threshold
   const requiredAccuracy = accuracyThresholds[Math.min(level, accuracyThresholds.length - 1)];
@@ -414,13 +468,13 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
   }
 }
 
-export const scoreKey = (date = new Date()) => {
-  const year = date.getFullYear();
-  const monthAbbr = date.toLocaleString("en-US", { month: "short" }); // "Jan", "Feb"
-  const day = String(date.getDate()).padStart(2, "0"); // Ensures two-digit day
+// export const scoreKey = (date = new Date()) => {
+//   const year = date.getFullYear();
+//   const monthAbbr = date.toLocaleString("en-US", { month: "short" }); // "Jan", "Feb"
+//   const day = String(date.getDate()).padStart(2, "0"); // Ensures two-digit day
 
-  return `${year}-${monthAbbr}-${day}`;
-};
+//   return `${year}-${monthAbbr}-${day}`;
+// };
 
 export {
   calculateScore,
