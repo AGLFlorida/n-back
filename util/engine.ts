@@ -45,34 +45,6 @@ export function gameModeScore(pScore: Result, sScore?: Result, bScore?: Result):
   return card;
 }
 
-const soundFiles: SoundFile[] = [
-  { key: "C", file: require("../assets/audio/C.m4a") as AVPlaybackSource },
-  { key: "G", file: require("../assets/audio/G.m4a") as AVPlaybackSource },
-  { key: "H", file: require("../assets/audio/H.m4a") as AVPlaybackSource },
-  { key: "K", file: require("../assets/audio/K.m4a") as AVPlaybackSource },
-  { key: "P", file: require("../assets/audio/P.m4a") as AVPlaybackSource },
-  { key: "Q", file: require("../assets/audio/Q.m4a") as AVPlaybackSource },
-  { key: "T", file: require("../assets/audio/T.m4a") as AVPlaybackSource },
-  { key: "W", file: require("../assets/audio/W.m4a") as AVPlaybackSource },
-];
-
-const soloSound: SoundFile = {
-  key: "NOISE",
-  file: require("../assets/audio/swap.m4a")
-}
-
-const celebration: SoundFile = {
-  key: "CELEBRATE",
-  file: require("../assets/audio/fanfare.m4a")
-}
-
-type AVPlaybackSource = Parameters<typeof Audio.Sound.createAsync>[0];
-
-type SoundFile = {
-  key: string;
-  file: AVPlaybackSource;
-};
-
 export type Grid = boolean[][];
 export type MultiType = number | ((arg0: number) => number);
 
@@ -97,8 +69,8 @@ interface Engine {
 
 type Round = {
   next: Grid;
-  playSound: () => Promise<void>
-  triggerVibration: () => void
+  triggerVibration: () => void;
+  letter: string
 }
 
 type Answers = {
@@ -123,35 +95,6 @@ const getDualMode = async (): Promise<boolean> => {
     throw e;
   }
 };
-
-const loadSounds = async (): Promise<SoundState> => {
-  const loadedSounds: SoundState = {};
-
-  for (const { key, file } of soundFiles) {
-    const { sound } = await Audio.Sound.createAsync(file, { shouldPlay: false });
-    sound.setOnPlaybackStatusUpdate((status) => {
-      if (!status.isLoaded && status.error) {
-        log.error("AVPlayerItem failed:", status.error);
-        sound.unloadAsync();
-      }
-    });
-    loadedSounds[key] = sound;
-  }
-
-  return loadedSounds;
-}
-
-const loadSound = async (): Promise<Audio.Sound> => {
-  const { sound } = await Audio.Sound.createAsync(soloSound.file, { shouldPlay: false });
-  sound.setOnPlaybackStatusUpdate((status) => {
-    if (!status.isLoaded && status.error) {
-      log.error("AVPlayerItem failed:", status.error);
-      sound.unloadAsync();
-    }
-  });
-
-  return sound;
-}
 
 const gridIndexes: Array<[number, number]> = (() => {
   const allCells: Array<[number, number]> = [];
@@ -202,7 +145,7 @@ const calculateScore = ({ answers, guesses }: Score): Result => {
 const MAXTIME = (5 * 60);
 export const MAXN = 9;
 export const MINN = 2;
-const DEFAULT_GAMELEN = 10;//30;
+const DEFAULT_GAMELEN = 30;
 interface Level {
   gameLen: number,
   matchRate: number,
@@ -278,25 +221,6 @@ const playerWon = (pScore: Result, level: number = 1, sScore?: Result, bScore?: 
   };
 
   return passedPos() && passedBuzz() && passedSound();
-}
-
-// TODO doesn't always play.
-const loadCelebrate = async (): Promise<Audio.Sound> => {
-
-  await Audio.setAudioModeAsync({
-    allowsRecordingIOS: false,
-    staysActiveInBackground: false,
-    playsInSilentModeIOS: true,
-    shouldDuckAndroid: false,
-    playThroughEarpieceAndroid: false,
-  });
-
-  const { sound } = await Audio.Sound.createAsync(
-    celebration.file
-  );
-
-
-  return sound
 }
 
 const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningEngine => {
@@ -389,39 +313,19 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
     }
   }
 
-  const chooseNextSound = (turn: number) => {
-    try {
-      const patternIndex = letterSounds[turn];
-      const nextIndex = soundFiles.findIndex((item) => item.key == patternIndex);
-      return soundFiles[nextIndex].file;
-    } catch (error) {
-      log.error("Error in chooseNextSound.");
-      throw error;
-    }
-  }
-
   const nextRound = (turn: number): Round => {
-    const playSound = async () => {
+    const chooseNextLetter = (turn: number) => {
       try {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          staysActiveInBackground: false,
-          playsInSilentModeIOS: true,
-          shouldDuckAndroid: false,
-          playThroughEarpieceAndroid: false,
-        });
-
+        let patternIndex;
         if (isDualMode) {
-          const nextSound = chooseNextSound(turn);
-          const { sound } = await Audio.Sound.createAsync(nextSound); // TODO we are running createAsync twice for each sound :P
-          await sound.playAsync();
+          patternIndex = letterSounds[turn];
         } else {
-          const { sound } = await Audio.Sound.createAsync(soloSound.file);
-          await sound.playAsync();
+          patternIndex = "swap";
         }
-      } catch (e) {
-        log.error("Error playing sound.", e);
-        throw e;
+        return patternIndex
+      } catch (error) {
+        log.error("Error in chooseNextSound.");
+        throw error;
       }
     }
 
@@ -447,8 +351,8 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
 
     return {
       next: nextGrid(),
-      playSound,
-      triggerVibration
+      triggerVibration,
+      letter: chooseNextLetter(turn)
     }
   }
 
@@ -464,7 +368,7 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
     createNewGame,
     nextRound,
     answers,
-    timeLimit: MAXTIME
+    timeLimit: MAXTIME,
   }
 }
 
@@ -480,10 +384,7 @@ export {
   calculateScore,
   fillBoard,
   getDualMode,
-  loadSounds,
-  loadSound,
   defaults,
-  loadCelebrate,
   shouldLevelUp,
   playerWon
 };

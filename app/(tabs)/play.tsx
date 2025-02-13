@@ -9,7 +9,8 @@ import { Audio } from "expo-av";
 import Square from "@/components/Square";
 import PlayButton from "@/components/PlayButton";
 import StatusButton from "@/components/StatusButton";
-import { ScoreBlock, ScoreCard, ScoresType, SingleScoreType, scoreKey } from "@/util/ScoreCard";
+import { ScoreCard, ScoresType, SingleScoreType } from "@/util/ScoreCard";
+import useGameSounds, { SoundKey } from "@/hooks/sounds";
 
 import { showCustomAlert } from "@/util/alert";
 import security from "@/util/security";
@@ -21,15 +22,11 @@ import log from "@/util/logger";
 import engine, {
   getDualMode,
   fillBoard,
-  SoundState,
   CustomTimer,
-  loadSounds,
   RunningEngine,
-  loadSound,
   Grid,
   calculateScore,
   defaults,
-  loadCelebrate,
   shouldLevelUp,
   playerWon,
   whichGameMode,
@@ -48,6 +45,8 @@ export default function Play() {
   const styles = useGlobalStyles();
   const navigation = useNavigation();
   const router = useRouter();
+
+  const { playSound } = useGameSounds();
 
   const [grid, setGrid] = useState<Grid>(fillBoard());
   const [shouldStartGame, startGame] = useState<boolean>(false);
@@ -144,22 +143,6 @@ export default function Play() {
     playButtonFadeAnim.setValue(0);
   }
 
-  // All Sounds
-  const sounds = useRef<SoundState>({});
-  const setSounds = (p: SoundState) => {
-    sounds.current = p;
-  }
-  type sound = Audio.Sound | null;
-  const sound = useRef<sound>(null);
-  const setSound = (p: sound) => {
-    sound.current = p;
-  }
-
-  const celebrate = useRef<sound>(null);
-  const setCelebrate = (p: sound) => {
-    celebrate.current = p;
-  }
-
   const soundClickRef = useRef<boolean[]>([]);
   const soundGuess = () => {
     soundClickRef.current[turnRef.current] = true;
@@ -179,7 +162,6 @@ export default function Play() {
   const loadRecords = async () => {
     try {
       let rec = await security.get("records");
-      console.log("Previous Scores: ", rec);
       if (rec == null) {
         const initSingleN: SingleScoreType = {
           score: 0,
@@ -291,9 +273,7 @@ export default function Play() {
       bError: buzzError
     });
     setShowScoreOverlay(true);
-    if (celebrate.current !== null) {
-      celebrate.current.playAsync();
-    }
+    playSound("yay");
 
     // TODO we need separate level tracking between the three game mode combinations.
     // TODO need to save player level between instances of game.
@@ -375,17 +355,6 @@ export default function Play() {
           const isSilentMode: boolean = await getSilentMode();
           setSilenMode(isSilentMode);
 
-          if (isDualMode) {
-            const sounds = await loadSounds();
-            setSounds(sounds);
-          } else {
-            const sound = await loadSound();
-            setSound(sound);
-          }
-
-          const yay = await loadCelebrate();
-          setCelebrate(yay);
-
           setEngine(
             engine({
               n,
@@ -446,7 +415,6 @@ export default function Play() {
         const turn = Math.floor(elapsedTime / 2);
         setTurnRef(turn);
         if (turn >= getGameLen()) { // exit condition 2: game is actually over.
-          // log.info("Game ended, turn: ", turn);
           scoreGame({
             posGuesses: posClickRef.current,
             soundGuesses: soundClickRef.current,
@@ -458,6 +426,7 @@ export default function Play() {
           const round = getEngine().nextRound(turn);
 
           setGrid(fillBoard());
+          
           // fix for missing visual indicator when two turns have the same visible square.
           const redraw = setTimeout(() => {
             setGrid(round?.next as Grid);
@@ -466,7 +435,7 @@ export default function Play() {
           if (isSilentMode) {
             round?.triggerVibration();
           } else {
-            round?.playSound();
+            playSound(round?.letter as SoundKey);
           }
 
           return () => clearTimeout(redraw);
@@ -481,24 +450,7 @@ export default function Play() {
 
   // Cleanup
   useEffect(() => {
-    const unloadSounds = () => {
-      if (sounds.current !== null) {
-        Object.values(sounds).forEach(({ current }) => {
-          if (current) current.unloadAsync();
-        });
-      }
-
-      if (sound.current !== null) {
-        sound.current.unloadAsync();
-      }
-
-      // if (celebrate.current !== null) {
-      //   celebrate.current.unloadAsync();
-      // } 
-    }
-
     return () => { // Cleanup on unmount
-      unloadSounds();
       resetGame();
     };
   }, []);
