@@ -16,9 +16,6 @@ import { showCustomAlert } from "@/util/alert";
 import security from "@/util/security";
 import log from "@/util/logger";
 
-// TODO success sound doesn't always play
-
-
 import engine, {
   getDualMode,
   fillBoard,

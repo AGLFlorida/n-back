@@ -61,7 +61,8 @@ const useGameSounds = () => {
         for (const key of Object.keys(soundFileMap) as SoundKey[]) {
           const { sound } = await Audio.Sound.createAsync(soundFileMap[key], {
             shouldPlay: false,
-            isLooping: false
+            isLooping: false,
+            volume: 1.0,
           });
 
           if (!isMounted) {
@@ -95,8 +96,9 @@ const useGameSounds = () => {
     }
 
     try {
-      await sound.setPositionAsync(0); // Reset position
-      await sound.setStatusAsync({ shouldPlay: true }); // Play without waiting for unload
+      await sound.stopAsync(); // Ensure the sound is fully stopped before playing
+      await sound.setPositionAsync(0); // Reset position to avoid conflicts
+      await sound.playFromPositionAsync(0); // Plays instantly from the start
     } catch (error) {
       log.error(`Error playing sound ${soundKey}:`, error);
     }
