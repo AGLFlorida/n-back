@@ -303,9 +303,8 @@ export default function Play() {
     const isFirstGame = (playHistory.getValue(currentGameMode) === undefined);
     if (gameWon || isFirstGame) {
       // Persist today's game scores.
-      const currentGameScore: SingleScoreType = gameModeScore(posResult, soundResult, buzzResult);
+      const currentGameScore: SingleScoreType = gameModeScore(defaultN, posResult, soundResult, buzzResult);
       playHistory.setValue(currentGameMode, currentGameScore);
-      // TODO there's a bug in save here. n, score, and error rate are set to 1.
       playHistory.save();
     }
   }

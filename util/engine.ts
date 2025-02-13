@@ -24,11 +24,12 @@ export function whichGameMode(isDualMode: boolean, isSilentMode: boolean = false
     return GameModeEnum.SilentDualN;
   }
 }
-export function gameModeScore(pScore: Result, sScore?: Result, bScore?: Result): SingleScoreType {
+export function gameModeScore(n: number, pScore: Result, sScore?: Result, bScore?: Result): SingleScoreType {
+  const {accuracy: pAcc, errorRate: pErr} = pScore;
   const card: SingleScoreType = {
-    n: 1,
-    score: 1,
-    errorRate: 1
+    n: n,
+    score: pAcc,
+    errorRate: pErr
   }
 
   let accuracy;
