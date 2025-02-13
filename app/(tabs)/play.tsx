@@ -9,7 +9,7 @@ import { Audio } from "expo-av";
 import Square from "@/components/Square";
 import PlayButton from "@/components/PlayButton";
 import StatusButton from "@/components/StatusButton";
-import { ScoreCard, ScoresType, SingleScoreType } from "@/util/ScoreCard";
+import { ScoreCard, ScoresType, SingleScoreType, scoreKey } from "@/util/ScoreCard";
 import useGameSounds, { SoundKey } from "@/hooks/sounds";
 
 import { showCustomAlert } from "@/util/alert";
@@ -277,6 +277,7 @@ export default function Play() {
 
     // TODO we need separate level tracking between the three game mode combinations.
     // TODO need to save player level between instances of game.
+    let gameWon = false;
     if (playerWon(
       posResult,
       getPlayerLevel(),
@@ -289,17 +290,23 @@ export default function Play() {
         doLevelUp();
       }
 
-      // Persist game scores.
-      const currentGameMode = whichGameMode(isDualMode, isSilentMode);
-      const currentGameScore: SingleScoreType = gameModeScore(posResult, soundResult, buzzResult);
-      playHistory.setValue(currentGameMode, currentGameScore);
-      playHistory.save();
+      gameWon = true;
     } else {
       const failures = getFailCount() + 1;
       setFailCount(failures);
       if (failures > 3) {
         showCustomAlert("Try an easier level?", "Would you like to decrease the difficulty? There's no penalty for taking a moment to reset.", doLevelDown, true);
       }
+    }
+
+    const currentGameMode = whichGameMode(isDualMode, isSilentMode);
+    const isFirstGame = (playHistory.getValue(currentGameMode) === undefined);
+    if (gameWon || isFirstGame) {
+      // Persist today's game scores.
+      const currentGameScore: SingleScoreType = gameModeScore(posResult, soundResult, buzzResult);
+      playHistory.setValue(currentGameMode, currentGameScore);
+      // TODO there's a bug in save here. n, score, and error rate are set to 1.
+      playHistory.save();
     }
   }
 

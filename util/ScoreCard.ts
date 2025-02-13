@@ -36,19 +36,21 @@ export class ScoreCard {
     this._value = newScore;
   }
 
-  getValue(key: string): SingleScoreType {
+  getValue(key: string): SingleScoreType | undefined {
     const current: string = scoreKey();
     try {
       return this._value[current][key];
     } catch (e) {
-      log.error(ERROR_PREFIX + "getValue.", e);
-      throw e;
+      // log.warn(ERROR_PREFIX + "getValue.", e);
+    } finally {
+      return undefined;
     }
   }
 
   setValue(key: string, value: SingleScoreType): void {
     const current: string = scoreKey();
     try {
+      if (!this._value[current]) this._value[current] = {};
       this._value[current][key] = value;
     } catch (e) {
       log.error(ERROR_PREFIX + "setBlock.", e);

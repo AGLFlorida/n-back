@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { Audio } from "expo-av";
 
+import log from "@/util/logger";
+
 import C from "@/assets/audio/C.m4a";
 import G from "@/assets/audio/G.m4a";
 import H from "@/assets/audio/H.m4a";
@@ -29,14 +31,14 @@ const soundFileMap: Record<string, number> = {
 
 const useGameSounds = () => {
   const soundRefs = useRef<Record<SoundKey, Audio.Sound | null>>({
-    C: null, 
-    G: null, 
+    C: null,
+    G: null,
     H: null,
-    K: null, 
-    P: null, 
+    K: null,
+    P: null,
     Q: null,
-    T: null, 
-    W: null, 
+    T: null,
+    W: null,
     swap: null,
     yay: null,
   });
@@ -48,17 +50,30 @@ const useGameSounds = () => {
 
     const loadAllSounds = async () => {
       try {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          staysActiveInBackground: false,
+          playsInSilentModeIOS: true,
+          shouldDuckAndroid: false,
+          playThroughEarpieceAndroid: false,
+        });
+
         for (const key of Object.keys(soundFileMap) as SoundKey[]) {
-          const { sound } = await Audio.Sound.createAsync(soundFileMap[key], { shouldPlay: false });
+          const { sound } = await Audio.Sound.createAsync(soundFileMap[key], {
+            shouldPlay: false,
+            isLooping: false
+          });
+
           if (!isMounted) {
             await sound.unloadAsync();
             return;
           }
+
           soundRefs.current[key] = sound;
         }
         setIsLoaded(true);
       } catch (error) {
-        console.error("Error loading sounds:", error);
+        log.error("Error loading sounds:", error);
       }
     };
 
@@ -74,10 +89,16 @@ const useGameSounds = () => {
 
   const playSound = async (soundKey: SoundKey) => {
     const sound = soundRefs.current[soundKey];
-    if (sound && isLoaded) {
-      await sound.replayAsync();
-    } else {
-      console.warn(`Sound ${soundKey} not loaded yet.`);
+    if (!sound || !isLoaded) {
+      log.warn(`Sound ${soundKey} not loaded yet.`);
+      return;
+    }
+
+    try {
+      await sound.setPositionAsync(0); // Reset position
+      await sound.setStatusAsync({ shouldPlay: true }); // Play without waiting for unload
+    } catch (error) {
+      log.error(`Error playing sound ${soundKey}:`, error);
     }
   };
 

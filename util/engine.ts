@@ -245,7 +245,7 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
 
     if (matchRate > 1) {
       log.error("Match rate  was greater than 100% while generating pattern. Defaulting to 50%");
-      matchRate = .5; // override match rate on error.
+      matchRate = 50; // override match rate on error.
     }
 
     for (let i = 0; i < gameLen; i++) {
