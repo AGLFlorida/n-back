@@ -22,6 +22,8 @@ import log from "@/util/logger";
 
 type N = number | undefined
 
+// TODO there is a bug where resetting data doesn't reset dark mode.
+
 const systemTheme = Appearance.getColorScheme();
 
 export default function Settings() {
@@ -52,13 +54,13 @@ export default function Settings() {
       const isSystemDark = (systemTheme === "dark") ? true : false;
       await security.set("defaultN", 2);
       await security.set("dualMode", false);
-      await security.set("darkMode", isSystemDark);
+      // await security.set("darkMode", isSystemDark);
       await security.set("silentMode", false);
       await security.set("termsAccepted", false);
       await security.set("records", {});
       setDefaultN(2);
       toggleDualMode(false);
-      toggleDarkMode(isSystemDark);
+      // toggleDarkMode(isSystemDark);
       toggleSilentMode(false);
       router.push('/terms');
     }
@@ -97,25 +99,13 @@ export default function Settings() {
     fetchSettings();
   }, []);
 
-  // useEffect(() => {
-  //   if (silentMode && !dualMode) {
-  //     setError("Silent mode requires Dual N-back to be 'on'.")
-  //   } else {
-  //     setError(undefined);
-  //   }
-
-  // }, [silentMode, dualMode])
-
   const handleSaved = async () => {
     if (error) {
       alert("Please correct all errors before saving.");
       return;
     }
 
-    const startingLevel = getStartLevel(3);
-    console.log("startingLevel", startingLevel);
-    console.log("defaultN", defaultN);
-    console.log("MINN", MINN);
+    const startingLevel = getStartLevel(defaultN || MINN);
 
     await Promise.all([
       security.set("defaultN", defaultN || MINN),
