@@ -39,10 +39,12 @@ export class ScoreCard {
   getValue(key: string): SingleScoreType | undefined {
     const current: string = scoreKey();
     try {
-      return this._value[current][key];
+      if (this._value[current] && this._value[current][key]) {
+        return this._value[current][key];
+      }
+      return undefined;
     } catch (e) {
-      // log.warn(ERROR_PREFIX + "getValue.", e);
-    } finally {
+      log.warn(ERROR_PREFIX + "getValue.", e);
       return undefined;
     }
   }

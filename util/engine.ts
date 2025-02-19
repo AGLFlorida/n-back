@@ -66,7 +66,7 @@ interface Engine {
 type Round = {
   next: Grid;
   triggerVibration: () => void;
-  letter: string
+  letter: string;
 }
 
 type Answers = {
@@ -182,42 +182,43 @@ const shouldLevelUp = (winStreak: number): boolean => (winStreak > 2);
  * @param {Result} [bScore] - The player's buzz score (optional).
  * @returns {boolean} - True if the player should level up, false otherwise.
  */
-export const MAX_ERROR_RATE = 40;
-const playerWon = (pScore: Result, level: number = 1, sScore?: Result, bScore?: Result): boolean => {
-  // Error rate and accuracy are passed in as a whole number (i.e. a percentage) rather than a decimal;
-  // const accuracyThresholds = [0, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45]; // index corresponds to N-1
-  const accuracyThresholds = [0, 80, 75, 70, 65, 60, 55, 50, 45]; // index corresponds to N-1
-  // const maxErrorRate = 0.4; 
-  const maxErrorRate = MAX_ERROR_RATE;
-
-  // min accuracy threshold
-  const requiredAccuracy = accuracyThresholds[Math.min(level, accuracyThresholds.length - 1)];
-
-  const passedPos = (): boolean => {
-
-    const { accuracy, errorRate } = pScore;
-
-    return accuracy >= requiredAccuracy && errorRate <= maxErrorRate;
-  };
-
-  const passedSound = (): boolean => {
-    if (!sScore) return true;
-
-    const { accuracy, errorRate } = sScore;
-
-    return accuracy >= requiredAccuracy && errorRate <= maxErrorRate;
-  };
-
-  const passedBuzz = (): boolean => {
-    if (!bScore) return true;
-
-    const { accuracy, errorRate } = bScore;
-
-    return accuracy >= requiredAccuracy && errorRate <= maxErrorRate;
-  };
-
-  return passedPos() && passedBuzz() && passedSound();
-}
+export const MAX_ERROR_RATE = 25;
+export const MIN_ACCURACY = 45;
+export const BASE_ACCURACY = 80;
+const playerWon = (
+  posResult: Result,
+  level: number,
+  soundResult?: Result,
+  buzzResult?: Result
+): boolean => {
+  if (level < 1) level = 1;
+  
+  // For level-down mechanics (level 4 and below)
+  if (level <= 4) {
+    const lowLevelThreshold = 35; // Allow up to 35% error rate at low levels
+    const lowLevelAccuracy = 60;  // Require only 60% accuracy at low levels
+    
+    // Check each result against easier thresholds
+    if (posResult.errorRate > lowLevelThreshold || posResult.accuracy < lowLevelAccuracy) return false;
+    if (soundResult && (soundResult.errorRate > lowLevelThreshold || soundResult.accuracy < lowLevelAccuracy)) return false;
+    if (buzzResult && (buzzResult.errorRate > lowLevelThreshold || buzzResult.accuracy < lowLevelAccuracy)) return false;
+    
+    return true;
+  }
+  
+  // For higher levels, be strict about error rates
+  if (posResult.errorRate > MAX_ERROR_RATE) return false;
+  if (soundResult && soundResult.errorRate > MAX_ERROR_RATE) return false;
+  if (buzzResult && buzzResult.errorRate > MAX_ERROR_RATE) return false;
+  
+  // Accuracy requirements scale with level
+  const requiredAccuracy = Math.max(MIN_ACCURACY, BASE_ACCURACY - (level * 5));
+  if (posResult.accuracy < requiredAccuracy) return false;
+  if (soundResult && soundResult.accuracy < requiredAccuracy) return false;
+  if (buzzResult && buzzResult.accuracy < requiredAccuracy) return false;
+  
+  return true;
+};
 
 const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningEngine => {
 
@@ -239,10 +240,10 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
     const possibleGridPositions = [1, 2, 3, 4, 5, 6, 7, 8, 9]; // 9 grid positions
     const possibleLetterSounds = ["C", "G", "H", "K", "P", "Q", "T", "W"]; // 8 sounds
 
-    if (matchRate > 1) {
-      log.error("Match rate  was greater than 100% while generating pattern. Defaulting to 50%");
-      matchRate = 50; // override match rate on error.
-    }
+  if (matchRate > 1) {
+    log.error("Match rate was greater than 1 while generating pattern. Defaulting to 0.5");
+    matchRate = 0.5;
+  }
 
     for (let i = 0; i < gameLen; i++) {
       // Grid Positions Logic
@@ -375,6 +376,24 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
 
 //   return `${year}-${monthAbbr}-${day}`;
 // };
+
+export interface GameLevels {
+  [GameModeEnum.SingleN]: number;
+  [GameModeEnum.DualN]: number;
+  [GameModeEnum.SilentDualN]: number;
+}
+
+export const DEFAULT_LEVELS: GameLevels = {
+  [GameModeEnum.SingleN]: 1,
+  [GameModeEnum.DualN]: 1,
+  [GameModeEnum.SilentDualN]: 1,
+};
+
+export const GAME_MODE_NAMES = {
+  [GameModeEnum.SingleN]: "Single",
+  [GameModeEnum.DualN]: "Dual",
+  [GameModeEnum.SilentDualN]: "Silent"
+};
 
 export {
   calculateScore,

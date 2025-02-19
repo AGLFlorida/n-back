@@ -25,7 +25,10 @@ import engine, {
   playerWon,
   whichGameMode,
   gameModeScore,
-  GameModeEnum
+  GameModeEnum,
+  GameLevels,
+  DEFAULT_LEVELS,
+  GAME_MODE_NAMES
 } from "@/util/engine";
 
 import { height, useGlobalStyles } from "@/styles/globalStyles";
@@ -115,20 +118,50 @@ export default function Play() {
     setGameLen(g);
   }
 
-  const playerLevel = useRef<number>(1);
-  const doLevelUp = () => {
-    playerLevel.current += 1;
+  const [gameLevels, setGameLevels] = useState<GameLevels>(DEFAULT_LEVELS);
+  
+  const playerLevel = useRef<GameLevels>(DEFAULT_LEVELS);
+  const setPlayerLevel = (mode: GameModeEnum, level: number) => {
+    playerLevel.current = {
+      ...playerLevel.current,
+      [mode]: level
+    };
+    // Persist the levels
+    security.set('gameLevels', playerLevel.current);
+  };
+  
+  const getPlayerLevel = (mode: GameModeEnum): number => {
+    return playerLevel.current[mode] || 1;
+  };
+
+  const [didLevelUp, setDidLevelUp] = useState(false);
+
+  const doLevelUp = (mode: GameModeEnum) => {
+    setDidLevelUp(true);
+    const currentLevel = getPlayerLevel(mode);
+    setPlayerLevel(mode, currentLevel + 1);
     setFailCount(0);
     setSuccessCount(0);
-  }
-  const doLevelDown = () => {
-    playerLevel.current -= 1;
-    setFailCount(0);
-    setSuccessCount(0);
-  }
-  const getPlayerLevel = (): number => {
-    return playerLevel.current || 1;
-  }
+    
+    // Update navigation title
+    navigation.setOptions({
+      title: `Level ${currentLevel + 1} (${GAME_MODE_NAMES[mode]})`
+    });
+  };
+
+  const doLevelDown = (mode: GameModeEnum) => {
+    const currentLevel = getPlayerLevel(mode);
+    if (currentLevel > 1) {
+      setPlayerLevel(mode, currentLevel - 1);
+      setFailCount(0);
+      setSuccessCount(0);
+      
+      // Update navigation title
+      navigation.setOptions({
+        title: `Level ${currentLevel - 1} (${GAME_MODE_NAMES[mode]})`
+      });
+    }
+  };
 
   // Make button transitions less abrupt
   const playButtonFadeAnim = useRef(new Animated.Value(0)).current;
@@ -238,6 +271,7 @@ export default function Play() {
   // TODO auto-progression based on score and error rate.
   // TODO achievements
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
+    setDidLevelUp(false);
     const answers = getEngine().answers();
     const posResult = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
     const { accuracy: posScore, errorRate: posError } = posResult;
@@ -269,38 +303,35 @@ export default function Play() {
     setShowScoreOverlay(true);
     playSound("yay");
 
-    // TODO we need separate level tracking between the three game mode combinations.
-    // TODO need to save player level between instances of game.
-    let gameWon = false;
+    const currentGameMode = whichGameMode(isDualMode, isSilentMode);
+    
     if (playerWon(
       posResult,
-      getPlayerLevel(),
+      getPlayerLevel(currentGameMode as GameModeEnum),
       (isDualMode && !isSilentMode) ? soundResult : undefined,
       (isDualMode && isSilentMode) ? buzzResult : undefined
     )) {
       const successes = getSuccessCount() + 1;
       setSuccessCount(successes);
       if (shouldLevelUp(successes)) {
-        doLevelUp();
+        doLevelUp(currentGameMode as GameModeEnum);
       }
-
-      gameWon = true;
     } else {
       const failures = getFailCount() + 1;
       setFailCount(failures);
       if (failures > 3) {
-        showCustomAlert("Try an easier level?", "Would you like to decrease the difficulty? There's no penalty for taking a moment to reset.", doLevelDown, true);
+        showCustomAlert(
+          "Try an easier level?", 
+          "Would you like to decrease the difficulty? There's no penalty for taking a moment to reset.", 
+          () => doLevelDown(currentGameMode as GameModeEnum),
+          true
+        );
       }
     }
 
-    const currentGameMode = whichGameMode(isDualMode, isSilentMode);
-    const isFirstGame = (playHistory.getValue(currentGameMode) === undefined);
-    if (gameWon || isFirstGame) {
-      // Persist today's game scores.
-      const currentGameScore: SingleScoreType = gameModeScore(defaultN, posResult, soundResult, buzzResult);
-      playHistory.setValue(currentGameMode, currentGameScore);
-      playHistory.save();
-    }
+    const currentGameScore: SingleScoreType = gameModeScore(defaultN, posResult, soundResult, buzzResult);
+    playHistory.setValue(currentGameMode, currentGameScore);
+    playHistory.save();
   }
 
   useFocusEffect(
@@ -339,21 +370,19 @@ export default function Play() {
     React.useCallback(() => {
       const initGame = async () => {
         try {
+          const isDualMode: boolean = await getDualMode();
+          const isSilentMode: boolean = await getSilentMode();
           let n: number = await getN();
-          emptyGuessCards();
-
-          if (n === null) n = defaultN; // (android only?) first install, this is always null.
+          
+          setDualMode(isDualMode);
+          setSilenMode(isSilentMode);
+          
+          if (n === null) n = defaultN;
 
           navigation.setOptions({
-            title: `Level ${getPlayerLevel()}`
+            title: `Level ${getPlayerLevel(whichGameMode(isDualMode, isSilentMode) as GameModeEnum)} (${GAME_MODE_NAMES[whichGameMode(isDualMode, isSilentMode) as GameModeEnum]})`
           });
           setDefaultN(n);
-
-          const isDualMode: boolean = await getDualMode();
-          setDualMode(isDualMode);
-
-          const isSilentMode: boolean = await getSilentMode();
-          setSilenMode(isSilentMode);
 
           setEngine(
             engine({
@@ -367,6 +396,22 @@ export default function Play() {
           getEngine().createNewGame();
 
           await loadRecords();
+
+          // Load saved game levels
+          const savedLevels = await security.get('gameLevels');
+          if (savedLevels && typeof savedLevels === 'object') {
+            const typedLevels = savedLevels as unknown as GameLevels;
+            if (
+              GameModeEnum.SingleN in typedLevels && 
+              GameModeEnum.DualN in typedLevels && 
+              GameModeEnum.SilentDualN in typedLevels
+            ) {
+              playerLevel.current = typedLevels;
+              navigation.setOptions({
+                title: `Level ${getPlayerLevel(whichGameMode(isDualMode, isSilentMode) as GameModeEnum)} (${GAME_MODE_NAMES[whichGameMode(isDualMode, isSilentMode) as GameModeEnum]})`
+              });
+            }
+          }
 
           setIsLoading(false);
         } catch (e) {
@@ -455,13 +500,6 @@ export default function Play() {
     };
   }, []);
 
-  // Add this effect to update the header when player level changes
-  useEffect(() => {
-    navigation.setOptions({
-      title: `Level ${getPlayerLevel()}`
-    });
-  }, [playerLevel.current]); // This will update whenever playerLevel changes
-
   return (
     <Display>
       <View style={styles.container}>
@@ -491,6 +529,7 @@ export default function Play() {
           isVisible={showScoreOverlay}
           onClose={() => setShowScoreOverlay(false)}
           scores={gameScores}
+          didLevelUp={didLevelUp}
         />
         <TutorialOverlay
           isVisible={showTutorial}
