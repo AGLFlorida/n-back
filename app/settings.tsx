@@ -17,7 +17,8 @@ import security from "@/util/security";
 import { useGlobalStyles } from "@/styles/globalStyles";
 import { useTheme } from "@/contexts/ThemeContext"
 import { showCustomAlert } from "@/util/alert";
-import { MAXN, MINN } from "@/util/engine";
+import { MAXN, MINN, getStartLevel, GameModeEnum } from "@/util/engine";
+import log from "@/util/logger";
 
 type N = number | undefined
 
@@ -111,15 +112,29 @@ export default function Settings() {
       return;
     }
 
+    const startingLevel = getStartLevel(3);
+    console.log("startingLevel", startingLevel);
+    console.log("defaultN", defaultN);
+    console.log("MINN", MINN);
+
     await Promise.all([
-      security.set("defaultN", defaultN),
+      security.set("defaultN", defaultN || MINN),
       security.set("dualMode", dualMode),
       security.set("darkMode", darkMode),
       security.set("silentMode", silentMode),
-    ]).then(([x, y, z, shh]) => {
-      if (x === true && y === true && z === true && shh === true) showCustomAlert("Success!", "Settings saved.");
-    }).catch(e => e
-    ).finally(() => {
+      // Save new starting level for all modes
+      security.set("gameLevels", {
+        [GameModeEnum.SingleN]: startingLevel,
+        [GameModeEnum.DualN]: startingLevel,
+        [GameModeEnum.SilentDualN]: startingLevel,
+      }),
+    ]).then(([x, y, z, shh, levels]) => {
+      if (x && y && z && shh && levels) {
+        showCustomAlert("Success!", "Settings saved. Game levels have been adjusted to match the new N value.");
+      }
+    }).catch(e => {
+      log.error("Error saving settings", e);
+    }).finally(() => {
       toggleTheme(darkMode);
     });
   }

@@ -5,6 +5,8 @@ import security from './security';
 import log from "./logger";
 import { SingleScoreType } from "./ScoreCard";
 
+export const accuracyThresholds = [0, 80, 75, 70, 65, 60, 55, 50, 45];
+
 export enum GameModeEnum {
   SingleN = "SingleN",
   DualN = "DualN",
@@ -182,43 +184,51 @@ const shouldLevelUp = (winStreak: number): boolean => (winStreak > 2);
  * @param {Result} [bScore] - The player's buzz score (optional).
  * @returns {boolean} - True if the player should level up, false otherwise.
  */
-export const MAX_ERROR_RATE = 25;
-export const MIN_ACCURACY = 45;
-export const BASE_ACCURACY = 80;
-const playerWon = (
-  posResult: Result,
-  level: number,
-  soundResult?: Result,
-  buzzResult?: Result
-): boolean => {
-  if (level < 1) level = 1;
-  
-  // For level-down mechanics (level 4 and below)
-  if (level <= 4) {
-    const lowLevelThreshold = 35; // Allow up to 35% error rate at low levels
-    const lowLevelAccuracy = 60;  // Require only 60% accuracy at low levels
-    
-    // Check each result against easier thresholds
-    if (posResult.errorRate > lowLevelThreshold || posResult.accuracy < lowLevelAccuracy) return false;
-    if (soundResult && (soundResult.errorRate > lowLevelThreshold || soundResult.accuracy < lowLevelAccuracy)) return false;
-    if (buzzResult && (buzzResult.errorRate > lowLevelThreshold || buzzResult.accuracy < lowLevelAccuracy)) return false;
-    
-    return true;
-  }
-  
-  // For higher levels, be strict about error rates
-  if (posResult.errorRate > MAX_ERROR_RATE) return false;
-  if (soundResult && soundResult.errorRate > MAX_ERROR_RATE) return false;
-  if (buzzResult && buzzResult.errorRate > MAX_ERROR_RATE) return false;
-  
-  // Accuracy requirements scale with level
-  const requiredAccuracy = Math.max(MIN_ACCURACY, BASE_ACCURACY - (level * 5));
-  if (posResult.accuracy < requiredAccuracy) return false;
-  if (soundResult && soundResult.accuracy < requiredAccuracy) return false;
-  if (buzzResult && buzzResult.accuracy < requiredAccuracy) return false;
-  
-  return true;
-};
+/**
+ * Determines if the player won the game based on their performance scores. This assumes
+ * that if you don't pass a sound or buzz Score, then the player can proceed.
+ * 
+ * @param {Result} pScore - The player's position score.
+ * @param {number} [n=2] - The current N-back value.
+ * @param {Result} [sScore] - The player's sound score (optional).
+ * @param {Result} [bScore] - The player's buzz score (optional).
+ * @returns {boolean} - True if the player should level up, false otherwise.
+ */
+const playerWon = (pScore: Result, n: number = 2, sScore?: Result, bScore?: Result): boolean => {
+  // Error rate and accuracy are passed in as a whole number (i.e. a percentage) rather than a decimal;
+  // const accuracyThresholds = [0, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45]; // index corresponds to N-1
+  // const accuracyThresholds = [0, 80, 75, 70, 65, 60, 55, 50, 45]; // index corresponds to N-1
+  // const maxErrorRate = 0.4; 
+  const maxErrorRate = 40;
+
+  // min accuracy threshold
+  const requiredAccuracy = accuracyThresholds[n - 2];
+
+  const passedPos = (): boolean => {
+
+    const { accuracy, errorRate } = pScore;
+
+    return accuracy >= requiredAccuracy && errorRate <= maxErrorRate;
+  };
+
+  const passedSound = (): boolean => {
+    if (!sScore) return true;
+
+    const { accuracy, errorRate } = sScore;
+
+    return accuracy >= requiredAccuracy && errorRate <= maxErrorRate;
+  };
+
+  const passedBuzz = (): boolean => {
+    if (!bScore) return true;
+
+    const { accuracy, errorRate } = bScore;
+
+    return accuracy >= requiredAccuracy && errorRate <= maxErrorRate;
+  };
+
+  return passedPos() && passedBuzz() && passedSound();
+}
 
 const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningEngine => {
 
@@ -394,6 +404,8 @@ export const GAME_MODE_NAMES = {
   [GameModeEnum.DualN]: "Dual",
   [GameModeEnum.SilentDualN]: "Silent"
 };
+
+export const getStartLevel = (n: number) => Math.max(1, ((n - 2) * 4 + 1));
 
 export {
   calculateScore,

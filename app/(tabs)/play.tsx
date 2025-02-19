@@ -28,7 +28,9 @@ import engine, {
   GameModeEnum,
   GameLevels,
   DEFAULT_LEVELS,
-  GAME_MODE_NAMES
+  GAME_MODE_NAMES,
+  MAXN,
+  MINN
 } from "@/util/engine";
 
 import { height, useGlobalStyles } from "@/styles/globalStyles";
@@ -137,16 +139,26 @@ export default function Play() {
 
   const [didLevelUp, setDidLevelUp] = useState(false);
 
+  const syncNWithLevel = (level: number) => {
+    const newN = Math.min(MAXN, Math.max(MINN, Math.floor(level/3) + 1));
+    security.set("defaultN", newN);
+    setDefaultN(newN);
+  };
+
   const doLevelUp = (mode: GameModeEnum) => {
     setDidLevelUp(true);
     const currentLevel = getPlayerLevel(mode);
-    setPlayerLevel(mode, currentLevel + 1);
+    const newLevel = currentLevel + 1;
+    setPlayerLevel(mode, newLevel);
     setFailCount(0);
     setSuccessCount(0);
     
+    // Sync N with new level
+    syncNWithLevel(newLevel);
+    
     // Update navigation title
     navigation.setOptions({
-      title: `Level ${currentLevel + 1} (${GAME_MODE_NAMES[mode]})`
+      title: `Level ${newLevel} (${GAME_MODE_NAMES[mode]})`
     });
   };
 
@@ -273,7 +285,6 @@ export default function Play() {
   const [winsToNextLevel, setWinsToNextLevel] = useState(0);
   const [totalWinsNeeded, setTotalWinsNeeded] = useState(3); // Adjust this value as needed
 
-  // TODO auto-progression based on score and error rate.
   // TODO achievements
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
     setDidLevelUp(false);
@@ -291,11 +302,9 @@ export default function Play() {
 
     if (isDualMode) {
       if (isSilentMode) {
-        // In silent mode, use buzz answers instead of sound answers
         buzzResult = calculateScore({ answers: answers?.buzz as boolean[], guesses: soundGuesses as boolean[] });
         ({ accuracy: buzzScore, errorRate: buzzError } = buzzResult);
       } else {
-        // In normal dual mode, use sound answers
         soundResult = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
         ({ accuracy: soundScore, errorRate: soundError } = soundResult);
       }
@@ -316,7 +325,7 @@ export default function Play() {
     
     if (playerWon(
       posResult,
-      getPlayerLevel(currentGameMode as GameModeEnum),
+      defaultN,
       (isDualMode && !isSilentMode) ? soundResult : undefined,
       (isDualMode && isSilentMode) ? buzzResult : undefined
     )) {
@@ -516,6 +525,33 @@ export default function Play() {
       resetGame();
     };
   }, []);
+
+  // Add effect to handle N changes from settings
+  useEffect(() => {
+    const handleNChange = async () => {
+      try {
+        const n = await security.get("defaultN") as number;
+        if (n !== defaultN) {
+          setDefaultN(n);
+          // Reset all modes to appropriate starting level for this N
+          const startingLevel = ((n - 1) * 3) + 1;
+          Object.values(GameModeEnum).forEach(mode => {
+            setPlayerLevel(mode, startingLevel);
+          });
+          
+          // Update navigation title for current mode
+          const currentMode = whichGameMode(isDualMode, isSilentMode) as GameModeEnum;
+          navigation.setOptions({
+            title: `Level ${startingLevel} (${GAME_MODE_NAMES[currentMode]})`
+          });
+        }
+      } catch (e) {
+        log.error("Error syncing N value", e);
+      }
+    };
+
+    handleNChange();
+  }, []); // Run on mount to catch any settings changes
 
   return (
     <Display>
