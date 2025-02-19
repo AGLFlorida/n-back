@@ -3,10 +3,6 @@ import React from "react";
 import { View } from "react-native";
 import Svg, { Line, Polyline, Circle, Text } from "react-native-svg";
 
-// TODO limit the number of vectors to what fits on the viewable screen
-// TODO add charts for the other 2 game modes
-// TODO add highest score to top of screen
-
 export type DataPointType = {
   x: number,
   y: number
@@ -25,6 +21,7 @@ const Chart = ({ data, data2, data3, xLabels = [] }: Props) => {
 
   const chartWidth = 300;
   const chartHeight = 300;
+  const labelHeight = 140; 
   const maxY = 110;
   const xOffset = 30;
   const yAxisX = 20;
@@ -61,8 +58,12 @@ const Chart = ({ data, data2, data3, xLabels = [] }: Props) => {
   const points2 = scaledData2.map(d => `${d.x},${d.y}`).join(" ");
   const points3 = scaledData3.map(d => `${d.x},${d.y}`).join(" ");
   return (
-    <View style={{ alignItems: "center", marginTop: 50 }}>
-      <Svg width={chartWidth + 100} height={chartHeight + 200} viewBox={`-30 0 ${chartWidth + 100} ${chartHeight + 200}`}>
+    <View style={{ alignItems: "center" }}>
+      <Svg 
+        width={chartWidth + 100} 
+        height={chartHeight + labelHeight}  // Only add what we need for labels
+        viewBox={`-30 0 ${chartWidth + 100} ${chartHeight + labelHeight}`}
+      >
         {/* Y-Axis */}
         <Line x1="20" y1="10" x2="20" y2={chartHeight} stroke={theme.textColor} strokeWidth="2" />
 
