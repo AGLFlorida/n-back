@@ -15,10 +15,12 @@ export type DataPointType = {
 type Props = {
   data: DataPointType[]
   xLabels?: string[]
+  data2?: DataPointType[]
+  data3?: DataPointType[]
 }
 
 
-const Chart = ({ data, xLabels = [] }: Props) => {
+const Chart = ({ data, data2, data3, xLabels = [] }: Props) => {
   const { theme } = useTheme();
 
   const chartWidth = 300;
@@ -35,12 +37,29 @@ const Chart = ({ data, xLabels = [] }: Props) => {
   }));
 
   const scaledData = data.map((d, index) => ({
-    x: yAxisX + xOffset + (spacing * index/2),
+    x: yAxisX + xOffset + (spacing * index / 2),
     y: chartHeight - (d.y / maxY) * chartHeight,
   }));
 
-  const points = scaledData.map(d => `${d.x},${d.y}`).join(" ");
+  let scaledData2: DataPointType[] = [];
+  if (data2) {
+    scaledData2 = data2.map((d, index) => ({
+      x: yAxisX + xOffset + (spacing * index / 2),
+      y: chartHeight - (d.y / maxY) * chartHeight,
+    }));
+  }
 
+  let scaledData3: DataPointType[] = [];
+  if (data3) {
+    scaledData3 = data3.map((d, index) => ({
+      x: yAxisX + xOffset + (spacing * index / 2),
+      y: chartHeight - (d.y / maxY) * chartHeight,
+    }));
+  }
+
+  const points = scaledData.map(d => `${d.x},${d.y}`).join(" ");
+  const points2 = scaledData2.map(d => `${d.x},${d.y}`).join(" ");
+  const points3 = scaledData3.map(d => `${d.x},${d.y}`).join(" ");
   return (
     <View style={{ alignItems: "center", marginTop: 50 }}>
       <Svg width={chartWidth + 100} height={chartHeight + 200} viewBox={`-30 0 ${chartWidth + 100} ${chartHeight + 200}`}>
@@ -50,12 +69,28 @@ const Chart = ({ data, xLabels = [] }: Props) => {
         {/* X-Axis */}
         <Line x1="20" y1={chartHeight} x2={chartWidth + 50} y2={chartHeight} stroke={theme.textColor} strokeWidth="2" />
 
-        {/* Line Chart */}
+        {/* Line Chart: Data 1 */}
         {data.length > 1 && <Polyline points={points} fill="none" stroke="blue" strokeWidth="2" />}
 
-        {/* Data Points */}
+        {/* Data Points: Data 1 */}
         {scaledData.map((point, index) => (
           <Circle key={index} cx={point.x} cy={point.y} r="4" fill="red" />
+        ))}
+
+        {/* Line Chart: Data 2 */}
+        {data2 && data2.length > 1 && <Polyline points={points2} fill="none" stroke="green" strokeWidth="2" />}
+
+        {/* Data Points: Data 2 */}
+        {scaledData2 && scaledData2.map((point, index) => (
+          <Circle key={index} cx={point.x} cy={point.y} r="4" fill="orange" />
+        ))}
+
+        {/* Line Chart: Data 3 */}
+        {data3 && data3.length > 1 && <Polyline points={points3} fill="none" stroke="purple" strokeWidth="2" />}
+
+        {/* Data Points: Data 3 */}
+        {scaledData3 && scaledData3.map((point, index) => (
+          <Circle key={index} cx={point.x} cy={point.y} r="4" fill="pink" />
         ))}
 
         {/* X-Axis Labels */}
