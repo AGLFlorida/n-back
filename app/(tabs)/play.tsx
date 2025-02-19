@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect, useRef, ReactNode } from "react";
 import { View, Animated, Alert, Text, ScrollView } from "react-native";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
@@ -348,7 +345,7 @@ export default function Play() {
           if (n === null) n = defaultN; // (android only?) first install, this is always null.
 
           navigation.setOptions({
-            title: `Play (${n}-back)`,
+            title: `Level ${getPlayerLevel()}`
           });
           setDefaultN(n);
 
@@ -458,6 +455,13 @@ export default function Play() {
     };
   }, []);
 
+  // Add this effect to update the header when player level changes
+  useEffect(() => {
+    navigation.setOptions({
+      title: `Level ${getPlayerLevel()}`
+    });
+  }, [playerLevel.current]); // This will update whenever playerLevel changes
+
   return (
     <Display>
       <View style={styles.container}>
@@ -479,10 +483,10 @@ export default function Play() {
           <PlayButton soundGuess={soundGuess} posGuess={posGuess} dualMode={isDualMode} silentMode={isSilentMode} />
         </Animated.View>
         <StatusButton onPress={() => { resetGame(); startGame(true) }} isLoading={isLoading} playing={shouldStartGame} onTutorial={() => setShowTutorial(!showTutorial)} />
-        <View>
+        {/* <View>
           <Text style={{ color: 'white' }}>Level: {getPlayerLevel()}</Text>
           <Text style={{ color: 'white' }}>Wins: {getSuccessCount()}</Text>
-        </View>
+        </View> */}
         <ScoreOverlay
           isVisible={showScoreOverlay}
           onClose={() => setShowScoreOverlay(false)}

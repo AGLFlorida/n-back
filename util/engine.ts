@@ -5,11 +5,6 @@ import security from './security';
 import log from "./logger";
 import { SingleScoreType } from "./ScoreCard";
 
-/*
-TODO ANDROID(?)
- (NOBRIDGE) LOG  5:38:51 PM | ERROR : AVPlayerItem failed: The AVPlayerItem instance has failed with the error code -11819 and domain "AVFoundationErrorDomain".
-*/
-
 export enum GameModeEnum {
   SingleN = "SingleN",
   DualN = "DualN",
