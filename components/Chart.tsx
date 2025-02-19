@@ -28,46 +28,61 @@ const Chart = ({ data, data2, data3, data4, data5, xLabels = [] }: Props) => {
   const xOffset = 30;
   const yAxisX = 20;
   const yAxisLabelX = 10;
-  const spacing = (data.length > 1) ? ((chartWidth - 40) / (data.length - 1)) : 0;
+
+  // Take last 10 points from each dataset
+  const limitData = (d: DataPointType[]) => d.slice(Math.max(d.length - 10, 0));
+  
+  const limitedData = limitData(data);
+  const limitedData2 = data2 ? limitData(data2) : [];
+  const limitedData3 = data3 ? limitData(data3) : [];
+  const limitedData4 = data4 ? limitData(data4) : [];
+  const limitedData5 = data5 ? limitData(data5) : [];
+  
+  // Also limit labels
+  const limitedLabels = xLabels.slice(Math.max(xLabels.length - 10, 0));
+
+  // Use limited data for spacing calculation
+  const spacing = (limitedData.length > 1) ? 
+    ((chartWidth - yAxisX - xOffset) / (limitedData.length - 1)) : 0;
 
   const yLabels = Array.from({ length: 6 }, (_, i) => ({
     label: (i * 20).toString(),
     yPos: chartHeight - ((i * 20) / maxY) * chartHeight,
   }));
 
-  const scaledData = data.map((d, index) => ({
-    x: yAxisX + xOffset + (spacing * index / 2),
+  const scaledData = limitedData.map((d, index) => ({
+    x: yAxisX + xOffset + (spacing * index),
     y: chartHeight - (d.y / maxY) * chartHeight,
   }));
 
   let scaledData2: DataPointType[] = [];
   if (data2) {
-    scaledData2 = data2.map((d, index) => ({
-      x: yAxisX + xOffset + (spacing * index / 2),
+    scaledData2 = limitedData2.map((d, index) => ({
+      x: yAxisX + xOffset + (spacing * index),
       y: chartHeight - (d.y / maxY) * chartHeight,
     }));
   }
 
   let scaledData3: DataPointType[] = [];
   if (data3) {
-    scaledData3 = data3.map((d, index) => ({
-      x: yAxisX + xOffset + (spacing * index / 2),
+    scaledData3 = limitedData3.map((d, index) => ({
+      x: yAxisX + xOffset + (spacing * index),
       y: chartHeight - (d.y / maxY) * chartHeight,
     }));
   }
 
   let scaledData4: DataPointType[] = [];
   if (data4) {
-    scaledData4 = data4.map((d, index) => ({
-      x: yAxisX + xOffset + (spacing * index / 2),
+    scaledData4 = limitedData4.map((d, index) => ({
+      x: yAxisX + xOffset + (spacing * index),
       y: chartHeight - (d.y / maxY) * chartHeight,
     }));
   }
 
   let scaledData5: DataPointType[] = [];
   if (data5) {
-    scaledData5 = data5.map((d, index) => ({
-      x: yAxisX + xOffset + (spacing * index / 2),
+    scaledData5 = limitedData5.map((d, index) => ({
+      x: yAxisX + xOffset + (spacing * index),
       y: chartHeight - (d.y / maxY) * chartHeight,
     }));
   }
@@ -142,7 +157,7 @@ const Chart = ({ data, data2, data3, data4, data5, xLabels = [] }: Props) => {
             transform={`rotate(75, ${point.x}, ${chartHeight + 25})`}
             fill={theme.textColor}
           >
-            {xLabels[index] || ""}
+            {limitedLabels[index] || ""}
           </Text>
         ))}
 
