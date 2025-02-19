@@ -54,7 +54,7 @@ export default function Play() {
   const [isDualMode, setDualMode] = useState<boolean>(true);
   const [isSilentMode, setSilenMode] = useState<boolean>(false);
   const [showScoreOverlay, setShowScoreOverlay] = useState(false);
-  const [showTutorial, setShowTutorial] = useState(true);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   type GameScores = {
     positions: number;
@@ -284,17 +284,21 @@ export default function Play() {
     let soundScore: number = 0;
     let soundError: number = 0;
     let soundResult;
-    if (soundGuesses) {
-      soundResult = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
-      ({ accuracy: soundScore, errorRate: soundError } = soundResult);
-    }
-
+    
     let buzzScore: number = 0;
     let buzzError: number = 0;
     let buzzResult;
-    if (buzzGuesses) {
-      buzzResult = calculateScore({ answers: answers?.buzz as boolean[], guesses: buzzGuesses as boolean[] });
-      ({ accuracy: buzzScore, errorRate: buzzError } = buzzResult);
+
+    if (isDualMode) {
+      if (isSilentMode) {
+        // In silent mode, use buzz answers instead of sound answers
+        buzzResult = calculateScore({ answers: answers?.buzz as boolean[], guesses: soundGuesses as boolean[] });
+        ({ accuracy: buzzScore, errorRate: buzzError } = buzzResult);
+      } else {
+        // In normal dual mode, use sound answers
+        soundResult = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
+        ({ accuracy: soundScore, errorRate: soundError } = soundResult);
+      }
     }
 
     setGameScores({
