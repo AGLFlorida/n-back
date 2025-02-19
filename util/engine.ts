@@ -65,7 +65,7 @@ interface Engine {
 
 type Round = {
   next: Grid;
-  triggerVibration: () => void;
+  triggerVibration: (override?: boolean) => void;
   letter: string;
 }
 
@@ -326,8 +326,8 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
       }
     }
 
-    const triggerVibration = () => {
-      if (buzzPatterns[turn] === 1)
+    const triggerVibration = (override: boolean = false) => {
+      if (buzzPatterns[turn] === 1 || override)
         Haptics.notificationAsync(
           Haptics.NotificationFeedbackType.Success
         );

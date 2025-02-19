@@ -96,14 +96,14 @@ export default function Settings() {
     fetchSettings();
   }, []);
 
-  useEffect(() => {
-    if (silentMode && !dualMode) {
-      setError("Silent mode requires Dual N-back to be 'on'.")
-    } else {
-      setError(undefined);
-    }
+  // useEffect(() => {
+  //   if (silentMode && !dualMode) {
+  //     setError("Silent mode requires Dual N-back to be 'on'.")
+  //   } else {
+  //     setError(undefined);
+  //   }
 
-  }, [silentMode, dualMode])
+  // }, [silentMode, dualMode])
 
   const handleSaved = async () => {
     if (error) {
@@ -169,7 +169,7 @@ export default function Settings() {
               />
             </View>
             <View style={styles.settingsCell}>
-              <Text style={styles.label}>Silent Mode (Experimental, Requires Dual)</Text>
+              <Text style={styles.label}>Silent Mode (Experimental)</Text>
             </View>
           </View>
 

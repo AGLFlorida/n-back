@@ -34,6 +34,7 @@ import engine, {
 import { height, useGlobalStyles } from "@/styles/globalStyles";
 import ScoreOverlay from '@/components/ScoreOverlay';
 import TutorialOverlay from '@/components/TutorialOverlay';
+import ProgressBar from '@/components/ProgressBar';
 
 const fillGuessCard = (len: number): boolean[] => Array(len).fill(false);
 const newCard = new ScoreCard({});
@@ -268,6 +269,10 @@ export default function Play() {
     buzzGuesses?: boolean[];
   }
 
+  // Add state for tracking wins
+  const [winsToNextLevel, setWinsToNextLevel] = useState(0);
+  const [totalWinsNeeded, setTotalWinsNeeded] = useState(3); // Adjust this value as needed
+
   // TODO auto-progression based on score and error rate.
   // TODO achievements
   const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
@@ -301,7 +306,7 @@ export default function Play() {
       bError: buzzError
     });
     setShowScoreOverlay(true);
-    playSound("yay");
+    if (!isSilentMode) playSound("yay");
 
     const currentGameMode = whichGameMode(isDualMode, isSilentMode);
     
@@ -316,6 +321,11 @@ export default function Play() {
       if (shouldLevelUp(successes)) {
         doLevelUp(currentGameMode as GameModeEnum);
       }
+      setWinsToNextLevel(prev => prev + 1);
+      if (winsToNextLevel + 1 >= totalWinsNeeded) {
+        doLevelUp(currentGameMode as GameModeEnum);
+        setWinsToNextLevel(0);
+      }
     } else {
       const failures = getFailCount() + 1;
       setFailCount(failures);
@@ -327,6 +337,7 @@ export default function Play() {
           true
         );
       }
+      setWinsToNextLevel(0);
     }
 
     const currentGameScore: SingleScoreType = gameModeScore(defaultN, posResult, soundResult, buzzResult);
@@ -358,10 +369,12 @@ export default function Play() {
     // reset win count when game mode changes.
     setFailCount(0);
     setSuccessCount(0);
+    setWinsToNextLevel(0);  // Reset progress bar
 
     return () => {
       setFailCount(0);
       setSuccessCount(0);
+      setWinsToNextLevel(0);  // Reset progress bar on cleanup
     }
   }, [isDualMode, isSilentMode]);
 
@@ -478,7 +491,7 @@ export default function Play() {
           }, 200);
 
           if (isSilentMode) {
-            round?.triggerVibration();
+            round?.triggerVibration((isSilentMode && !isDualMode));
           } else {
             playSound(round?.letter as SoundKey);
           }
@@ -520,7 +533,13 @@ export default function Play() {
         <Animated.View style={{ opacity: playButtonFadeAnim }}>
           <PlayButton soundGuess={soundGuess} posGuess={posGuess} dualMode={isDualMode} silentMode={isSilentMode} />
         </Animated.View>
-        <StatusButton onPress={() => { resetGame(); startGame(true) }} isLoading={isLoading} playing={shouldStartGame} onTutorial={() => setShowTutorial(!showTutorial)} />
+        <StatusButton 
+          onPress={() => { resetGame(); startGame(true) }} 
+          isLoading={isLoading} 
+          playing={shouldStartGame} 
+          onTutorial={() => setShowTutorial(!showTutorial)} 
+        />
+        <ProgressBar progress={winsToNextLevel / totalWinsNeeded} />
         {/* <View>
           <Text style={{ color: 'white' }}>Level: {getPlayerLevel()}</Text>
           <Text style={{ color: 'white' }}>Wins: {getSuccessCount()}</Text>

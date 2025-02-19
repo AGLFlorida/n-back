@@ -106,7 +106,7 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores,
           )}
           {scores.sError !== undefined && scores.sError > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
-              Position Error Rate: {scores.sError}%
+              Sound Error Rate: {scores.sError}%
             </Text>
           )}
           {scores.buzz !== undefined && scores.buzz > 0 && (
@@ -116,7 +116,7 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores,
           )}
           {scores.bError !== undefined && scores.bError > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
-              Position Error Rate: {scores.bError}%
+              Haptic Error Rate: {scores.bError}%
             </Text>
           )}
         </View>
