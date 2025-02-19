@@ -13,9 +13,10 @@ type ScoreOverlayProps = {
     sError?: number;
     bError?: number;
   };
+  didLevelUp?: boolean;
 };
 
-const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores }) => {
+const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores, didLevelUp }) => {
   const { theme } = useTheme();
   const slideAnim = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -81,7 +82,14 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores 
           }
         ]}
       >
-        <Text style={[styles.title, { color: theme.textColor }]}>Game Score</Text>
+        <Text style={[styles.title, { color: theme.textColor }]}>
+          Results
+        </Text>
+        {didLevelUp && (
+          <Text style={[styles.levelUp, { color: theme.screenOptions.tabBarActiveTintColor }]}>
+            You leveled up!
+          </Text>
+        )}
         <View style={styles.scoresContainer}>
           <Text style={[styles.score, { color: theme.textColor }]}>
             Position Score: {scores.positions}%
@@ -98,7 +106,7 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores 
           )}
           {scores.sError !== undefined && scores.sError > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
-              Position Error Rate: {scores.sError}%
+              Sound Error Rate: {scores.sError}%
             </Text>
           )}
           {scores.buzz !== undefined && scores.buzz > 0 && (
@@ -108,7 +116,7 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores 
           )}
           {scores.bError !== undefined && scores.bError > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
-              Position Error Rate: {scores.bError}%
+              Haptic Error Rate: {scores.bError}%
             </Text>
           )}
         </View>
@@ -163,6 +171,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+  },
+  levelUp: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 15,
   },
 });
 

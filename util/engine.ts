@@ -3,34 +3,45 @@ import * as Haptics from "expo-haptics";
 
 import security from './security';
 import log from "./logger";
+import { SingleScoreType } from "./ScoreCard";
 
-const soundFiles: SoundFile[] = [
-  { key: "C", file: require("../assets/audio/C.m4a") as AVPlaybackSource },
-  { key: "G", file: require("../assets/audio/G.m4a") as AVPlaybackSource },
-  { key: "H", file: require("../assets/audio/H.m4a") as AVPlaybackSource },
-  { key: "K", file: require("../assets/audio/K.m4a") as AVPlaybackSource },
-  { key: "P", file: require("../assets/audio/P.m4a") as AVPlaybackSource },
-  { key: "Q", file: require("../assets/audio/Q.m4a") as AVPlaybackSource },
-  { key: "T", file: require("../assets/audio/T.m4a") as AVPlaybackSource },
-  { key: "W", file: require("../assets/audio/W.m4a") as AVPlaybackSource },
-];
+export const accuracyThresholds = [0, 80, 75, 70, 65, 60, 55, 50, 45];
 
-const soloSound: SoundFile = {
-  key: "NOISE",
-  file: require("../assets/audio/swap.m4a")
+export enum GameModeEnum {
+  SingleN = "SingleN",
+  DualN = "DualN",
+  SilentDualN = "SilentDualN"
 }
-
-const celebration: SoundFile = {
-  key: "CELEBRATE",
-  file: require("../assets/audio/fanfare.m4a")
+export function whichGameMode(isDualMode: boolean, isSilentMode: boolean = false): string {
+  if (!isDualMode) {
+    return GameModeEnum.SingleN;
+  } else if (isDualMode && !isSilentMode) {
+    return GameModeEnum.DualN;
+  } else {
+    return GameModeEnum.SilentDualN;
+  }
 }
+export function gameModeScore(n: number, pScore: Result, sScore?: Result, bScore?: Result): SingleScoreType {
+  const {accuracy: pAcc, errorRate: pErr} = pScore;
+  const card: SingleScoreType = {
+    n: n,
+    score: pAcc,
+    errorRate: pErr
+  }
 
-type AVPlaybackSource = Parameters<typeof Audio.Sound.createAsync>[0];
+  let accuracy;
+  let errorRate;
+  if (sScore !== undefined) {
+    ({accuracy, errorRate} = sScore);
+  } else if (bScore !== undefined) {
+    ({accuracy, errorRate} = bScore);
+  }
 
-type SoundFile = {
-  key: string;
-  file: AVPlaybackSource;
-};
+  card.score2 = accuracy;
+  card.errotRate2 = errorRate;
+
+  return card;
+}
 
 export type Grid = boolean[][];
 export type MultiType = number | ((arg0: number) => number);
@@ -56,8 +67,8 @@ interface Engine {
 
 type Round = {
   next: Grid;
-  playSound: () => Promise<void>
-  triggerVibration: () => void
+  triggerVibration: (override?: boolean) => void;
+  letter: string;
 }
 
 type Answers = {
@@ -82,23 +93,6 @@ const getDualMode = async (): Promise<boolean> => {
     throw e;
   }
 };
-
-const loadSounds = async (): Promise<SoundState> => {
-  const loadedSounds: SoundState = {};
-
-  for (const { key, file } of soundFiles) {
-    const { sound } = await Audio.Sound.createAsync(file);
-    loadedSounds[key] = sound;
-  }
-
-  return loadedSounds;
-}
-
-const loadSound = async (): Promise<Audio.Sound> => {
-  const { sound } = await Audio.Sound.createAsync(soloSound.file);
-
-  return sound;
-}
 
 const gridIndexes: Array<[number, number]> = (() => {
   const allCells: Array<[number, number]> = [];
@@ -190,15 +184,25 @@ const shouldLevelUp = (winStreak: number): boolean => (winStreak > 2);
  * @param {Result} [bScore] - The player's buzz score (optional).
  * @returns {boolean} - True if the player should level up, false otherwise.
  */
-const playerWon = (pScore: Result, level: number = 1, sScore?: Result, bScore?: Result): boolean => {
+/**
+ * Determines if the player won the game based on their performance scores. This assumes
+ * that if you don't pass a sound or buzz Score, then the player can proceed.
+ * 
+ * @param {Result} pScore - The player's position score.
+ * @param {number} [n=2] - The current N-back value.
+ * @param {Result} [sScore] - The player's sound score (optional).
+ * @param {Result} [bScore] - The player's buzz score (optional).
+ * @returns {boolean} - True if the player should level up, false otherwise.
+ */
+const playerWon = (pScore: Result, n: number = 2, sScore?: Result, bScore?: Result): boolean => {
   // Error rate and accuracy are passed in as a whole number (i.e. a percentage) rather than a decimal;
   // const accuracyThresholds = [0, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45]; // index corresponds to N-1
-  const accuracyThresholds = [0, 80, 75, 70, 65, 60, 55, 50, 45]; // index corresponds to N-1
+  // const accuracyThresholds = [0, 80, 75, 70, 65, 60, 55, 50, 45]; // index corresponds to N-1
   // const maxErrorRate = 0.4; 
   const maxErrorRate = 40;
 
   // min accuracy threshold
-  const requiredAccuracy = accuracyThresholds[Math.min(level, accuracyThresholds.length - 1)];
+  const requiredAccuracy = accuracyThresholds[n - 2];
 
   const passedPos = (): boolean => {
 
@@ -226,25 +230,6 @@ const playerWon = (pScore: Result, level: number = 1, sScore?: Result, bScore?: 
   return passedPos() && passedBuzz() && passedSound();
 }
 
-// TODO doesn't always play.
-const loadCelebrate = async (): Promise<Audio.Sound> => {
-
-  await Audio.setAudioModeAsync({
-    allowsRecordingIOS: false,
-    staysActiveInBackground: false,
-    playsInSilentModeIOS: true,
-    shouldDuckAndroid: false,
-    playThroughEarpieceAndroid: false,
-  });
-
-  const { sound } = await Audio.Sound.createAsync(
-    celebration.file
-  );
-
-
-  return sound
-}
-
 const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningEngine => {
 
   interface Patterns {
@@ -265,10 +250,10 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
     const possibleGridPositions = [1, 2, 3, 4, 5, 6, 7, 8, 9]; // 9 grid positions
     const possibleLetterSounds = ["C", "G", "H", "K", "P", "Q", "T", "W"]; // 8 sounds
 
-    if (matchRate > 1) {
-      log.error("Match rate  was greater than 100% while generating pattern. Defaulting to 50%");
-      matchRate = .5; // override match rate on error.
-    }
+  if (matchRate > 1) {
+    log.error("Match rate was greater than 1 while generating pattern. Defaulting to 0.5");
+    matchRate = 0.5;
+  }
 
     for (let i = 0; i < gameLen; i++) {
       // Grid Positions Logic
@@ -335,44 +320,24 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
     }
   }
 
-  const chooseNextSound = (turn: number) => {
-    try {
-      const patternIndex = letterSounds[turn];
-      const nextIndex = soundFiles.findIndex((item) => item.key == patternIndex);
-      return soundFiles[nextIndex].file;
-    } catch (error) {
-      log.error("Error in chooseNextSound.");
-      throw error;
-    }
-  }
-
   const nextRound = (turn: number): Round => {
-    const playSound = async () => {
+    const chooseNextLetter = (turn: number) => {
       try {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          staysActiveInBackground: false,
-          playsInSilentModeIOS: true,
-          shouldDuckAndroid: false,
-          playThroughEarpieceAndroid: false,
-        });
-
+        let patternIndex;
         if (isDualMode) {
-          const nextSound = chooseNextSound(turn);
-          const { sound } = await Audio.Sound.createAsync(nextSound); // TODO we are running createAsync twice for each sound :P
-          await sound.playAsync();
+          patternIndex = letterSounds[turn];
         } else {
-          const { sound } = await Audio.Sound.createAsync(soloSound.file);
-          await sound.playAsync();
+          patternIndex = "swap";
         }
-      } catch (e) {
-        log.error("Error playing sound.", e);
-        throw e;
+        return patternIndex
+      } catch (error) {
+        log.error("Error in chooseNextSound.");
+        throw error;
       }
     }
 
-    const triggerVibration = () => {
-      if (buzzPatterns[turn] === 1)
+    const triggerVibration = (override: boolean = false) => {
+      if (buzzPatterns[turn] === 1 || override)
         Haptics.notificationAsync(
           Haptics.NotificationFeedbackType.Success
         );
@@ -393,8 +358,8 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
 
     return {
       next: nextGrid(),
-      playSound,
-      triggerVibration
+      triggerVibration,
+      letter: chooseNextLetter(turn)
     }
   }
 
@@ -410,26 +375,43 @@ const engine = ({ n, gameLen, matchRate, isDualMode = false }: Engine): RunningE
     createNewGame,
     nextRound,
     answers,
-    timeLimit: MAXTIME
+    timeLimit: MAXTIME,
   }
 }
 
-export const scoreKey = (date = new Date()) => {
-  const year = date.getFullYear();
-  const monthAbbr = date.toLocaleString("en-US", { month: "short" }); // "Jan", "Feb"
-  const day = String(date.getDate()).padStart(2, "0"); // Ensures two-digit day
+// export const scoreKey = (date = new Date()) => {
+//   const year = date.getFullYear();
+//   const monthAbbr = date.toLocaleString("en-US", { month: "short" }); // "Jan", "Feb"
+//   const day = String(date.getDate()).padStart(2, "0"); // Ensures two-digit day
 
-  return `${year}-${monthAbbr}-${day}`;
+//   return `${year}-${monthAbbr}-${day}`;
+// };
+
+export interface GameLevels {
+  [GameModeEnum.SingleN]: number;
+  [GameModeEnum.DualN]: number;
+  [GameModeEnum.SilentDualN]: number;
+}
+
+export const DEFAULT_LEVELS: GameLevels = {
+  [GameModeEnum.SingleN]: 1,
+  [GameModeEnum.DualN]: 1,
+  [GameModeEnum.SilentDualN]: 1,
 };
+
+export const GAME_MODE_NAMES = {
+  [GameModeEnum.SingleN]: "Single",
+  [GameModeEnum.DualN]: "Dual",
+  [GameModeEnum.SilentDualN]: "Silent"
+};
+
+export const getStartLevel = (n: number) => Math.max(1, ((n - 2) * 4 + 1));
 
 export {
   calculateScore,
   fillBoard,
   getDualMode,
-  loadSounds,
-  loadSound,
   defaults,
-  loadCelebrate,
   shouldLevelUp,
   playerWon
 };

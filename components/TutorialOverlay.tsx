@@ -32,6 +32,8 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
             animateToPage(currentPageRef.current - 1);
           } else if (gestureState.dx < 0 && currentPageRef.current < 2) {
             animateToPage(currentPageRef.current + 1);
+          } else if (gestureState.dx < 0 && currentPageRef.current === 2) {
+            onClose();
           } else {
             resetPosition();
           }
@@ -125,7 +127,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
         return (
           <Animated.View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor, alignContent: 'center'}]}>
             <Text style={[styles.text, { color: theme.textColor }]}>
-              Glad you're here! Let's do a brief overview of the game board.
+              Glad you're here! Win 3 games in a row to level up. Now, let's do a brief overview of the game board.
             </Text>
             {renderNavigationButtons()}
             {renderDots()}

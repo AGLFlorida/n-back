@@ -22,13 +22,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
           ),
-          headerTitle: ''
+          headerTitle: 'How to Play'
         }}
       />
       <Tabs.Screen
         name="play"
         options={{
           title: 'Play',
+          tabBarLabel: 'Play',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'play-back-circle-sharp' : 'play-back-circle-outline'} color={color} size={24} />
           ),

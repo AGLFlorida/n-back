@@ -17,9 +17,12 @@ import security from "@/util/security";
 import { useGlobalStyles } from "@/styles/globalStyles";
 import { useTheme } from "@/contexts/ThemeContext"
 import { showCustomAlert } from "@/util/alert";
-import { MAXN, MINN } from "@/util/engine";
+import { MAXN, MINN, getStartLevel, GameModeEnum } from "@/util/engine";
+import log from "@/util/logger";
 
 type N = number | undefined
+
+// TODO there is a bug where resetting data doesn't reset dark mode.
 
 const systemTheme = Appearance.getColorScheme();
 
@@ -51,13 +54,13 @@ export default function Settings() {
       const isSystemDark = (systemTheme === "dark") ? true : false;
       await security.set("defaultN", 2);
       await security.set("dualMode", false);
-      await security.set("darkMode", isSystemDark);
+      // await security.set("darkMode", isSystemDark);
       await security.set("silentMode", false);
       await security.set("termsAccepted", false);
       await security.set("records", {});
       setDefaultN(2);
       toggleDualMode(false);
-      toggleDarkMode(isSystemDark);
+      // toggleDarkMode(isSystemDark);
       toggleSilentMode(false);
       router.push('/terms');
     }
@@ -96,30 +99,32 @@ export default function Settings() {
     fetchSettings();
   }, []);
 
-  useEffect(() => {
-    if (silentMode && !dualMode) {
-      setError("Silent mode requires Dual N-back to be 'on'.")
-    } else {
-      setError(undefined);
-    }
-
-  }, [silentMode, dualMode])
-
   const handleSaved = async () => {
     if (error) {
       alert("Please correct all errors before saving.");
       return;
     }
 
+    const startingLevel = getStartLevel(defaultN || MINN);
+
     await Promise.all([
-      security.set("defaultN", defaultN),
+      security.set("defaultN", defaultN || MINN),
       security.set("dualMode", dualMode),
       security.set("darkMode", darkMode),
       security.set("silentMode", silentMode),
-    ]).then(([x, y, z, shh]) => {
-      if (x === true && y === true && z === true && shh === true) showCustomAlert("Success!", "Settings saved.");
-    }).catch(e => e
-    ).finally(() => {
+      // Save new starting level for all modes
+      security.set("gameLevels", {
+        [GameModeEnum.SingleN]: startingLevel,
+        [GameModeEnum.DualN]: startingLevel,
+        [GameModeEnum.SilentDualN]: startingLevel,
+      }),
+    ]).then(([x, y, z, shh, levels]) => {
+      if (x && y && z && shh && levels) {
+        showCustomAlert("Success!", "Settings saved. Game levels have been adjusted to match the new N value.");
+      }
+    }).catch(e => {
+      log.error("Error saving settings", e);
+    }).finally(() => {
       toggleTheme(darkMode);
     });
   }
@@ -169,7 +174,7 @@ export default function Settings() {
               />
             </View>
             <View style={styles.settingsCell}>
-              <Text style={styles.label}>Silent Mode (Experimental, Requires Dual)</Text>
+              <Text style={styles.label}>Silent Mode (Experimental)</Text>
             </View>
           </View>
 
