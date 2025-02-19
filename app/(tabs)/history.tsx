@@ -30,6 +30,11 @@ export default function History() {
   const [lineData8, setLineData8] = useState<DataPointType[]>([]);
   const [lineData9, setLineData9] = useState<DataPointType[]>([]);
 
+  const [lineData10, setLineData10] = useState<DataPointType[]>([]);
+  const [lineData11, setLineData11] = useState<DataPointType[]>([]);
+  const [lineData12, setLineData12] = useState<DataPointType[]>([]);
+  const [lineData13, setLineData13] = useState<DataPointType[]>([]);
+
   const [playHistory, setPlayHistory] = useState<ScoresType>();
 
   const showChart = useRef<boolean>(false);
@@ -73,6 +78,11 @@ export default function History() {
       const dataSet8: DataPointType[] = [];
       const dataSet9: DataPointType[] = [];
 
+      const dataSet10: DataPointType[] = [];
+      const dataSet11: DataPointType[] = [];
+      const dataSet12: DataPointType[] = [];
+      const dataSet13: DataPointType[] = [];
+
       for (const [key, value] of Object.entries(playHistory)) {
         const idx = labels.indexOf(key);
         const yValue1 = value.SingleN.score;
@@ -86,6 +96,25 @@ export default function History() {
         const yValue7 = value.SilentDualN?.score || 0;
         const yValue8 = value.SilentDualN?.errorRate || 0;
         const yValue9 = value.SilentDualN?.n || 0;
+
+        let yValue10 = 0;
+        if (value.DualN && value.DualN.score2) {
+          yValue10 = value.DualN.score2;
+        }
+        let yValue11 = 0;
+        if (value.DualN && value.DualN.errotRate2) {
+          yValue11 = value.DualN.errotRate2;
+        }
+
+        let yValue12 = 0;
+        if (value.DualN && value.SilentDualN.score2) {
+          yValue12 = value.SilentDualN.score2;
+        }
+
+        let yValue13 = 0;
+        if (value.SilentDualN && value.SilentDualN.errotRate2) {
+          yValue13 = value.SilentDualN.errotRate2;
+        }
 
         const data1: DataPointType = {
           x: idx,
@@ -132,6 +161,39 @@ export default function History() {
           y: yValue9
         }
 
+        // if (yValue10) {
+          const data10: DataPointType = {
+            x: idx,
+            y: yValue10
+          }
+          dataSet10.push(data10);
+        // }
+
+
+        // if (yValue11) {
+          const data11: DataPointType = {
+            x: idx,
+            y: yValue11
+          }
+          dataSet11.push(data11);
+        // }
+
+        // if (yValue12) {
+          const data12: DataPointType = {
+            x: idx,
+            y: yValue12
+          }
+          dataSet12.push(data12);
+        // }
+
+        // if (yValue13) {
+          const data13: DataPointType = {
+            x: idx,
+            y: yValue13
+          }
+          dataSet13.push(data13);
+        // }
+
         dataSet1.push(data1);
         dataSet2.push(data2);
         dataSet3.push(data3);
@@ -157,6 +219,11 @@ export default function History() {
       setLineData8(dataSet8);
       setLineData9(dataSet9);
 
+      setLineData10(dataSet10);
+      setLineData11(dataSet11);
+      setLineData12(dataSet12);
+      setLineData13(dataSet13);
+
       dataLabels.current = labels;
     }
 
@@ -174,11 +241,11 @@ export default function History() {
           </View>
           <View>
             <Text style={[styles.h1, { margin: 10 }]}>Dual</Text>
-            <Chart data={lineData4} data2={lineData5} data3={lineData6} xLabels={dataLabels.current} />
+            <Chart data={lineData4} data2={lineData5} data3={lineData6} data4={lineData10} data5={lineData11} xLabels={dataLabels.current} />
           </View>
           <View>
             <Text style={[styles.h1, { margin: 10 }]}>Silent</Text>
-            <Chart data={lineData7} data2={lineData8} data3={lineData9} xLabels={dataLabels.current} />
+            <Chart data={lineData7} data2={lineData8} data3={lineData9} data4={lineData12} data5={lineData13} xLabels={dataLabels.current} />
           </View>
         </>
       }

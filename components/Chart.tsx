@@ -13,10 +13,12 @@ type Props = {
   xLabels?: string[]
   data2?: DataPointType[]
   data3?: DataPointType[]
+  data4?: DataPointType[]
+  data5?: DataPointType[]
 }
 
 
-const Chart = ({ data, data2, data3, xLabels = [] }: Props) => {
+const Chart = ({ data, data2, data3, data4, data5, xLabels = [] }: Props) => {
   const { theme } = useTheme();
 
   const chartWidth = 300;
@@ -54,9 +56,28 @@ const Chart = ({ data, data2, data3, xLabels = [] }: Props) => {
     }));
   }
 
+  let scaledData4: DataPointType[] = [];
+  if (data4) {
+    scaledData4 = data4.map((d, index) => ({
+      x: yAxisX + xOffset + (spacing * index / 2),
+      y: chartHeight - (d.y / maxY) * chartHeight,
+    }));
+  }
+
+  let scaledData5: DataPointType[] = [];
+  if (data5) {
+    scaledData5 = data5.map((d, index) => ({
+      x: yAxisX + xOffset + (spacing * index / 2),
+      y: chartHeight - (d.y / maxY) * chartHeight,
+    }));
+  }
+
   const points = scaledData.map(d => `${d.x},${d.y}`).join(" ");
   const points2 = scaledData2.map(d => `${d.x},${d.y}`).join(" ");
   const points3 = scaledData3.map(d => `${d.x},${d.y}`).join(" ");
+  const points4 = scaledData4.map(d => `${d.x},${d.y}`).join(" ");
+  const points5 = scaledData5.map(d => `${d.x},${d.y}`).join(" ");
+
   return (
     <View style={{ alignItems: "center" }}>
       <Svg 
@@ -92,6 +113,22 @@ const Chart = ({ data, data2, data3, xLabels = [] }: Props) => {
         {/* Data Points: Data 3 */}
         {scaledData3 && scaledData3.map((point, index) => (
           <Circle key={index} cx={point.x} cy={point.y} r="4" fill="pink" />
+        ))}
+
+        {/* Line Chart: Data 4 */}
+        {data4 && data4.length > 1 && <Polyline points={points4} fill="none" stroke="cyan" strokeWidth="2" />}
+
+        {/* Data Points: Data 4 */}
+        {scaledData4 && scaledData4.map((point, index) => (
+          <Circle key={index} cx={point.x} cy={point.y} r="4" fill="magenta" />
+        ))}
+
+        {/* Line Chart: Data 5 */}
+        {data5 && data5.length > 1 && <Polyline points={points5} fill="none" stroke="brown" strokeWidth="2" />}
+
+        {/* Data Points: Data 5 */}
+        {scaledData5 && scaledData5.map((point, index) => (
+          <Circle key={index} cx={point.x} cy={point.y} r="4" fill="yellow" />
         ))}
 
         {/* X-Axis Labels */}
