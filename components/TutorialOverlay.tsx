@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Animated, StyleSheet, Dimensions, PanResponder, PanResponderGestureState, Pressable, ViewStyle } from 'react-native';
 import { useTheme } from "@/contexts/ThemeContext";
+import { useTranslation } from 'react-i18next';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -14,6 +15,7 @@ type TutorialOverlayProps = {
 
 const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(0);
   const currentPageRef = useRef<number>(currentPage);
   const slideAnim = useRef(new Animated.Value(0)).current;
@@ -127,7 +129,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
         return (
           <Animated.View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor, alignContent: 'center'}]}>
             <Text style={[styles.text, { color: theme.textColor }]}>
-              Glad you're here! Win 3 games in a row to level up. Now, let's do a brief overview of the game board.
+              {t('tutorial.welcome')}
             </Text>
             {renderNavigationButtons()}
             {renderDots()}
