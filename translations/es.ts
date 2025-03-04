@@ -14,6 +14,11 @@ export default {
     unlock: "Desbloquear",
     errorMessage: "Por favor, corrija todos los errores antes de guardar."
   },
+  gameModes: {
+    single: "Simple",
+    dual: "Doble",
+    silent: "Silencioso"
+  },
   alerts: {
     resetTitle: "¿Restablecer Datos?",
     resetMessage: "Todos los datos se restablecerán a los valores predeterminados y deberá volver a aceptar los términos.",

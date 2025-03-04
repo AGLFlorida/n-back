@@ -44,7 +44,6 @@ const newCard = new ScoreCard({});
 export default function Play() {
   const { t } = useTranslation();
   const GAME_MODE_NAMES = getGameModeNames(t);
-  const level = t('play.level');
   const styles = useGlobalStyles();
   const navigation = useNavigation();
   const router = useRouter();
@@ -60,6 +59,7 @@ export default function Play() {
   const [isSilentMode, setSilenMode] = useState<boolean>(false);
   const [showScoreOverlay, setShowScoreOverlay] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [levelText, setLevelText] = useState<string>(t('play.level'));
 
   type GameScores = {
     positions: number;
@@ -161,7 +161,7 @@ export default function Play() {
     
     // Update navigation title
     navigation.setOptions({
-      title: `${level} ${newLevel} (${GAME_MODE_NAMES[mode]})`
+      title: `${levelText} ${newLevel} (${GAME_MODE_NAMES[mode]})`
     });
   };
 
@@ -174,7 +174,7 @@ export default function Play() {
       
       // Update navigation title
       navigation.setOptions({
-        title: `${level} ${currentLevel - 1} (${GAME_MODE_NAMES[mode]})`
+        title: `${levelText} ${currentLevel - 1} (${GAME_MODE_NAMES[mode]})`
       });
     }
   };
@@ -395,6 +395,12 @@ export default function Play() {
     }
   }, [isDualMode, isSilentMode]);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      setLevelText(t('play.level'));
+    }, [t])
+  );
+
   // Main Gameplay Loop
   useFocusEffect(
     React.useCallback(() => {
@@ -410,7 +416,7 @@ export default function Play() {
           if (n === null) n = defaultN;
 
           navigation.setOptions({
-            title: `${level} ${getPlayerLevel(whichGameMode(isDualMode, isSilentMode) as GameModeEnum)} (${GAME_MODE_NAMES[whichGameMode(isDualMode, isSilentMode) as GameModeEnum]})`
+            title: `${levelText} ${getPlayerLevel(whichGameMode(isDualMode, isSilentMode) as GameModeEnum)} (${GAME_MODE_NAMES[whichGameMode(isDualMode, isSilentMode) as GameModeEnum]})`
           });
           setDefaultN(n);
 
@@ -438,7 +444,7 @@ export default function Play() {
             ) {
               playerLevel.current = typedLevels;
               navigation.setOptions({
-                title: `${level} ${getPlayerLevel(whichGameMode(isDualMode, isSilentMode) as GameModeEnum)} (${GAME_MODE_NAMES[whichGameMode(isDualMode, isSilentMode) as GameModeEnum]})`
+                title: `${levelText} ${getPlayerLevel(whichGameMode(isDualMode, isSilentMode) as GameModeEnum)} (${GAME_MODE_NAMES[whichGameMode(isDualMode, isSilentMode) as GameModeEnum]})`
               });
             }
           }
@@ -546,7 +552,7 @@ export default function Play() {
           // Update navigation title for current mode
           const currentMode = whichGameMode(isDualMode, isSilentMode) as GameModeEnum;
           navigation.setOptions({
-            title: `${level} ${startingLevel} (${GAME_MODE_NAMES[currentMode]})`
+            title: `${levelText} ${startingLevel} (${GAME_MODE_NAMES[currentMode]})`
           });
         }
       } catch (e) {
