@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import { View, Text, ScrollView, SafeAreaView, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Clipboard from "expo-clipboard";
-import { POSTION, useToast } from "expo-toast";
+import { useToast } from "expo-toast";
 import { useTranslation } from 'react-i18next';
 
 

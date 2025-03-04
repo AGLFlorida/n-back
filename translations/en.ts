@@ -64,7 +64,14 @@ export default {
     compare: "You will see a sequence of squares on a grid.",
     match: "If they match, tap the match button. If they don't, don't tap anything.",
     singleCue: "The grid squares are the single cue mode. There are additional modes where you play with multiple cues. You have to track each queue separately but the idea is the same.",
-    keepPlaying: "Keep playing to challenge your working memory!"
+    keepPlaying: "Keep playing to challenge your working memory!",
+    overlay: {
+      next: "Next",
+      previous: "Previous",
+      gotIt: "Got it!",
+      grid: "This is the \"grid\". You will intermittently see blocks appear in random order on this part.",
+      controls: "These are your controls. They give you status updates and one or more buttons for play. If you see something you want to react to, these are the buttons you press. When you're ready to begin, just tap \"Play\".",
+    }
   },
   titles: {
     home: "Home",

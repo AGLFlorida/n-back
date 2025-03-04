@@ -317,7 +317,7 @@ describe('Engine Core Functions', () => {
 
 describe('level progression', () => {
   describe('single N mode', () => {
-    let tests = [];
+    const tests = [];
     for (let level = 1; level <= maxLevel; level++) {
       tests.push([level]);
     }
@@ -352,7 +352,7 @@ describe('level progression', () => {
   });
 
   describe('dual N mode', () => {
-    let tests = [];
+    const tests = [];
     for (let level = 1; level <= maxLevel; level++) {
       tests.push([level]);
     }

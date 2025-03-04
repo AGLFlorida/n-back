@@ -31,7 +31,14 @@ export default {
     compare: "Verás una secuencia de cuadrados en una cuadrícula.",
     match: "Si coinciden, toca el botón de coincidencia. Si no coinciden, no toques nada.",
     singleCue: "Los cuadrados de la cuadrícula son el modo de una sola cola. Hay modos adicionales donde juegas con múltiples colas. Tienes que rastrear cada cola por separado pero el concepto es el mismo.",
-    keepPlaying: "¡Continúa jugando para desafiar tu memoria de trabajo!"
+    keepPlaying: "¡Continúa jugando para desafiar tu memoria de trabajo!",
+    overlay: {
+      next: "Siguiente",
+      previous: "Anterior",
+      gotIt: "¡Entendido!",
+      grid: "Esta es la \"cuadrícula\". Verás que aparecen bloques de forma intermitente en un orden aleatorio en esta sección.",
+      controls: "Estos son tus controles. Te proporcionan actualizaciones de estado y uno o más botones para jugar. Si ves algo a lo que quieras reaccionar, estos son los botones que debes presionar. Cuando estés listo para comenzar, simplemente toca \"Jugar\"."
+    }
   },
   titles: {
     home: "Inicio",
