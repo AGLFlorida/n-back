@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, ReactNode } from "react";
-import { View, Animated, Alert, Text, ScrollView } from "react-native";
+import { View, Animated, Alert, ScrollView } from "react-native";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useTranslation } from 'react-i18next';
 
 import Square from "@/components/Square";
 import PlayButton from "@/components/PlayButton";
 import StatusButton from "@/components/StatusButton";
-import { ScoreCard, ScoresType, SingleScoreType, scoreKey } from "@/util/ScoreCard";
+import { ScoreCard, ScoresType, SingleScoreType } from "@/util/ScoreCard";
 import useGameSounds, { SoundKey } from "@/hooks/sounds";
 
 import { showCustomAlert } from "@/util/alert";
@@ -124,7 +124,7 @@ export default function Play() {
     setGameLen(g);
   }
 
-  const [gameLevels, setGameLevels] = useState<GameLevels>(DEFAULT_LEVELS);
+  // const [gameLevels, setGameLevels] = useState<GameLevels>(DEFAULT_LEVELS);
   
   const playerLevel = useRef<GameLevels>(DEFAULT_LEVELS);
   const setPlayerLevel = (mode: GameModeEnum, level: number) => {
@@ -204,7 +204,7 @@ export default function Play() {
   // Previous Scores
   const loadRecords = async () => {
     try {
-      let rec = await security.get("records");
+      const rec = await security.get("records");
       if (rec == null) {
         const initSingleN: SingleScoreType = {
           score: 0,

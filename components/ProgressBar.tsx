@@ -27,16 +27,11 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
 };
 
 const styles = StyleSheet.create({
-  wrapper: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 15,
-  },
   container: {
-    height: 16,
-    width: '80%',
     borderRadius: 8,
+    elevation: 5,
+    height: 16,
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -44,12 +39,17 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
-    overflow: 'hidden'
+    width: '80%'
   },
   fill: {
-    height: '100%',
     borderRadius: 8,
+    height: '100%',
+  },
+  wrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 15,
+    width: '100%',
   }
 });
 

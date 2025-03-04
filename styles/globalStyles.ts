@@ -48,6 +48,11 @@ export const useGlobalStyles = () => {
       textAlign: 'center',
       textDecorationLine: 'underline'
     },
+    indexContainer: { 
+      alignItems: 'center', 
+      paddingHorizontal: padding, 
+      paddingVertical: 10, 
+    },
     label: {
       color: theme.textColor,
     },
@@ -105,11 +110,6 @@ export const useGlobalStyles = () => {
       flex: 1,
       fontSize: 18,
       lineHeight: 26,
-    },
-    indexContainer: { 
-      alignItems: 'center', 
-      paddingHorizontal: padding, 
-      paddingVertical: 10, 
     }
   });
 };

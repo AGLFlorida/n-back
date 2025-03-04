@@ -209,7 +209,7 @@ export default function Settings() {
               <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>{t('settings.resetData')}</Text>
             </Pressable>
           </View>
-          {/* <View style={[styles.row, { margin: 10 }]}>
+          <View style={[styles.row, { margin: 10 }]}>
             <Pressable 
               style={{ marginTop: 10 }} 
               onPress={toggleSpanish}
@@ -218,7 +218,7 @@ export default function Settings() {
                 {i18n.language === 'es' ? 'English' : 'Español'}
               </Text>
             </Pressable>
-          </View> */}
+          </View>
           {error && (
             <View style={[styles.row, { margin: 10 }]}>
               <Text style={[styles.settingsCell, { color: 'red' }]}>{error}</Text>

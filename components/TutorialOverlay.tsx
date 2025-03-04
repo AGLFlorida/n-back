@@ -143,7 +143,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
             </Animated.View>
             <Animated.View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor }]}>
               <Text style={[styles.text, { color: theme.textColor }]}>
-                This is the "grid". You will intermittently see blocks appear in random order on this part.
+              {t('tutorial.overlay.grid')}
               </Text>
               {renderNavigationButtons()}
               {renderDots()}
@@ -155,7 +155,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
           <>
             <Animated.View style={[styles.modal, styles.contentContainer, { backgroundColor: theme.backgroundColor }]}>
               <Text style={[styles.text, { color: theme.textColor }]}>
-                These are your controls. They give you status updates and one or more buttons for play. If you see something you want to react to, these are the buttons you press. When you're ready to begin, just tap "Play".
+              {t('tutorial.overlay.controls')}
               </Text>
               {renderNavigationButtons()}
               {renderDots()}
@@ -175,7 +175,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
           onPress={() => animateToPage(currentPage - 1)}
           style={[styles.navButton, { backgroundColor: theme.accentColor }]}
         >
-          <Text style={[styles.navButtonText, { color: theme.textColor }]}>Previous</Text>
+          <Text style={[styles.navButtonText, { color: theme.textColor }]}>{t('tutorial.overlay.previous')}</Text>
         </Pressable>
       )}
       {currentPage < 2 && (
@@ -183,7 +183,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
           onPress={() => animateToPage(currentPage + 1)}
           style={[styles.navButton, { backgroundColor: theme.accentColor }]}
         >
-          <Text style={[styles.navButtonText, { color: theme.textColor }]}>Next</Text>
+          <Text style={[styles.navButtonText, { color: theme.textColor }]}>{t('tutorial.overlay.next')}</Text>
         </Pressable>
       )}
       {currentPage === 2 && (
@@ -191,7 +191,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ isVisible, onClose })
           onPress={onClose}
           style={[styles.navButton, { backgroundColor: theme.accentColor }]}
         >
-          <Text style={[styles.navButtonText, { color: theme.textColor }]}>Got it!</Text>
+          <Text style={[styles.navButtonText, { color: theme.textColor }]}>{t('tutorial.overlay.gotIt')}</Text>
         </Pressable>
       )}
     </View>
@@ -241,15 +241,12 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   buttonHighlight: {
-    width: 200,
-    // borderWidth: 4,
-    // borderColor: 'yellow',
-    // borderRadius: 100,
     paddingBottom: 100,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+    width: 200,
   },
   container: {
     ...StyleSheet.absoluteFillObject,
@@ -273,12 +270,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   gridHighlight: {
+    alignItems: 'center',
     margin: 'auto',
     minWidth: 200,
-    alignItems: 'center',
-    // borderWidth: 4,
-    // borderColor: 'yellow',
-    // borderRadius: 100,
     paddingTop: 100,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
