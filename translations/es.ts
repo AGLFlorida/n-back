@@ -89,7 +89,7 @@ export default {
     touch: "Tacto",
     position: "Posición",
     play: "Jugar",
-    tutorial: "Tutorial"
+    tutorial: "Guía"
   },
   history: {
     single: "Simple",
