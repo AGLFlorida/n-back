@@ -11,6 +11,7 @@ import {
   Appearance
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from 'react-i18next';
 
 import Button from "@/components/Button";
 import security from "@/util/security";
@@ -19,6 +20,7 @@ import { useTheme } from "@/contexts/ThemeContext"
 import { showCustomAlert } from "@/util/alert";
 import { MAXN, MINN, getStartLevel, GameModeEnum } from "@/util/engine";
 import log from "@/util/logger";
+import i18n from '@/util/i18n';
 
 type N = number | undefined
 
@@ -30,7 +32,7 @@ export default function Settings() {
   const styles = useGlobalStyles();
   const { toggleTheme, theme } = useTheme();
   const router = useRouter();
-
+  const { t } = useTranslation();
   const [defaultN, setDefaultN] = useState<N>(2);
   const [dualMode, toggleDualMode] = useState<boolean>(false);
   const [darkMode, toggleDarkMode] = useState<boolean>(false);
@@ -65,7 +67,7 @@ export default function Settings() {
       router.push('/terms');
     }
 
-    showCustomAlert("Reset Data?", "All data will be reset to defaults and you will need to re-accept the terms.", clear, true);
+    showCustomAlert(t('settings.resetData'), t('settings.resetDataMessage'), clear, true, { ok: t('ok'), cancel: t('cancel') });
   }
 
   const fetchSettings = async () => {
@@ -101,7 +103,7 @@ export default function Settings() {
 
   const handleSaved = async () => {
     if (error) {
-      alert("Please correct all errors before saving.");
+      alert(t('settings.errorMessage'));
       return;
     }
 
@@ -120,7 +122,7 @@ export default function Settings() {
       }),
     ]).then(([x, y, z, shh, levels]) => {
       if (x && y && z && shh && levels) {
-        showCustomAlert("Success!", "Settings saved. Game levels have been adjusted to match the new N value.");
+        showCustomAlert(t('alerts.success'), t('alerts.settingsSaved'), undefined, false, { ok: t('ok'), cancel: t('cancel') });
       }
     }).catch(e => {
       log.error("Error saving settings", e);
@@ -128,6 +130,11 @@ export default function Settings() {
       toggleTheme(darkMode);
     });
   }
+
+  const toggleSpanish = () => {
+    const newLang = i18n.language === 'es' ? 'en' : 'es';
+    i18n.changeLanguage(newLang);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -138,7 +145,7 @@ export default function Settings() {
         <View style={[styles.grid, { alignItems: "flex-start" }]}>
           <View style={[styles.row, { margin: 5 }]}>
             <View style={styles.settingsCell}>
-              <Text style={styles.h1}>Basic Settings:</Text>
+              <Text style={styles.h1}>{t('settings.title')}</Text>
             </View>
           </View>
           <View style={[styles.row, { margin: 5 }]}>
@@ -146,7 +153,7 @@ export default function Settings() {
               <Button label={JSON.stringify(defaultN)} style={{ width: 50, textAlign: "center" }} onPress={handleTapN} onLongPress={handleLongPressN} />
             </View>
             <View style={styles.settingsCell}>
-              <Text style={styles.label}>Default N</Text>
+              <Text style={styles.label}>{t('settings.defaultN')}</Text>
             </View>
           </View>
 
@@ -160,7 +167,7 @@ export default function Settings() {
               />
             </View>
             <View style={styles.settingsCell}>
-              <Text style={styles.label}>Dual N-back</Text>
+              <Text style={styles.label}>{t('settings.dualMode')}</Text>
             </View>
           </View>
 
@@ -174,7 +181,7 @@ export default function Settings() {
               />
             </View>
             <View style={styles.settingsCell}>
-              <Text style={styles.label}>Silent Mode (Experimental)</Text>
+              <Text style={styles.label}>{t('settings.silentMode')}</Text>
             </View>
           </View>
 
@@ -188,22 +195,30 @@ export default function Settings() {
               />
             </View>
             <View style={styles.settingsCell}>
-              <Text style={styles.label}>Dark Mode (Defaults to system)</Text>
+              <Text style={styles.label}>{t('settings.darkMode')}</Text>
             </View>
           </View>
-          <View style={[styles.row, { margin: 5 }]}>
-            <Button label="Save" onPress={() => handleSaved()} style={{ width: 60, textAlign: 'center' }} />
-          </View>
+          <Button label={t('settings.save')} onPress={() => handleSaved()} />
           <View style={[styles.row, { margin: 5 }]}>
             <View style={styles.settingsCell}>
-              <Text style={styles.h1}>Danger Zone:</Text>
+              <Text style={styles.h1}>{t('settings.dangerZone')}</Text>
             </View>
           </View>
           <View style={[styles.row, { margin: 5 }]}>
             <Pressable style={{ marginTop: 'auto', alignSelf: 'flex-end', marginBottom: 20, marginRight: 10 }} onPress={clearSettings}>
-              <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>Reset Data</Text>
+              <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>{t('settings.resetData')}</Text>
             </Pressable>
           </View>
+          {/* <View style={[styles.row, { margin: 10 }]}>
+            <Pressable 
+              style={{ marginTop: 10 }} 
+              onPress={toggleSpanish}
+            >
+              <Text style={styles.label}>
+                {i18n.language === 'es' ? 'English' : 'Español'}
+              </Text>
+            </Pressable>
+          </View> */}
           {error && (
             <View style={[styles.row, { margin: 10 }]}>
               <Text style={[styles.settingsCell, { color: 'red' }]}>{error}</Text>
@@ -211,9 +226,10 @@ export default function Settings() {
           )}
         </View>
         <Pressable style={{ alignSelf: 'flex-end', marginTop: 20, marginRight: 10 }} onPress={() => router.push('/learn')}>
-          <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>Learn More</Text>
+          <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>{t('settings.learnMore')}</Text>
         </Pressable>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback >
   );
 }
+

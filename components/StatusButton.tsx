@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, Animated } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { useGlobalStyles, height } from '@/styles/globalStyles';
 import Button from './Button';
@@ -15,6 +16,7 @@ export default function PlayButton({ onPress, isLoading, playing, onTutorial = (
   const styles = useGlobalStyles();
   const [shouldShowButton, setShowButton] = useState<boolean>((!isLoading && !playing));
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const { t } = useTranslation();
 
   const padding = Math.floor(40 * Math.pow(height / 1000, 8));
   useEffect(() => {
@@ -37,10 +39,10 @@ export default function PlayButton({ onPress, isLoading, playing, onTutorial = (
       {shouldShowButton &&
         <>
           <Animated.View style={[styles.cell, styles.clearBorder, { opacity: fadeAnim }]}>
-            <Button label=" Play " onPress={onPress} />
+            <Button label={t('buttons.play')} onPress={onPress} />
           </Animated.View>
           <Animated.View style={[styles.cell, styles.clearBorder, { opacity: fadeAnim }]}>
-            <Button label=" Tutorial " onPress={onTutorial} />
+            <Button label={t('buttons.tutorial')} onPress={onTutorial} />
           </Animated.View>
         </>
       }{!shouldShowButton &&

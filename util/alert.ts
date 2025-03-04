@@ -1,11 +1,17 @@
 import { Alert } from 'react-native';
 
 
-const showCustomAlert = (title: string, message: string, okHandler?: () => void, cancel?: boolean) => {
-  const buttons: Array<object> = [{ text: "OK", onPress: (okHandler) ? okHandler : () => { } }];
+type alertButtons = {
+  ok: string;
+  cancel: string;
+}
+
+
+const showCustomAlert = (title: string, message: string, okHandler?: () => void, cancel?: boolean, text?: alertButtons) => {
+  const buttons: Array<object> = [{ text: text?.ok || 'OK', onPress: (okHandler) ? okHandler : () => { } }];
   if (cancel) {
     buttons.push(
-      { text: "Cancel", onPress: () => {} }
+      { text: text?.cancel || 'cancel', onPress: () => {} }
     )
   }
 

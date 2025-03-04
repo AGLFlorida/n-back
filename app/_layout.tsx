@@ -1,6 +1,7 @@
 import React from 'react';
 import { Drawer } from "expo-router/drawer";
 import { ToastProvider } from "expo-toast";
+import { useTranslation } from 'react-i18next';
 
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import Menu from "@/components/Menu";
@@ -20,6 +21,7 @@ export default function RootLayout() {
 
 function RootNav() {
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <Drawer
@@ -41,17 +43,17 @@ function RootNav() {
     >
       <Drawer.Screen name="(tabs)" options={{
         headerShown: false,
-        title: "Home",
+        title: t('titles.home'),
         drawerIcon: HomeIcon
       }} />
-      <Drawer.Screen name="+not-found" options={{ title: "Not Found", drawerItemStyle: { display: "none" } }} />
+      <Drawer.Screen name="+not-found" options={{ title: t('titles.notFound'), drawerItemStyle: { display: "none" } }} />
       <Drawer.Screen name="learn" options={{ title: "", drawerItemStyle: { display: "none" } }} />
       <Drawer.Screen name="terms" options={{
-        title: "Terms and Conditions",
+        title: t('titles.terms'),
         drawerIcon: TermsIcon
       }} />
       <Drawer.Screen name="settings" options={{
-        title: "Settings",
+        title: t('titles.settings'),
         drawerIcon: SettingsIcon
       }} />
     </Drawer>

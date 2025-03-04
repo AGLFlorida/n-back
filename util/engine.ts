@@ -399,11 +399,17 @@ export const DEFAULT_LEVELS: GameLevels = {
   [GameModeEnum.SilentDualN]: 1,
 };
 
-export const GAME_MODE_NAMES = {
-  [GameModeEnum.SingleN]: "Single",
-  [GameModeEnum.DualN]: "Dual",
-  [GameModeEnum.SilentDualN]: "Silent"
-};
+// export const GAME_MODE_NAMES = {
+//   [GameModeEnum.SingleN]: "Single",
+//   [GameModeEnum.DualN]: "Dual",
+//   [GameModeEnum.SilentDualN]: "Silent"
+// };
+
+export const getGameModeNames = (t: (key: string) => string) => ({
+  [GameModeEnum.SingleN]: t('gameModes.single'),
+  [GameModeEnum.DualN]: t('gameModes.dual'),
+  [GameModeEnum.SilentDualN]: t('gameModes.silent')
+});
 
 export const getStartLevel = (n: number) => Math.max(1, ((n - 2) * 4 + 1));
 
