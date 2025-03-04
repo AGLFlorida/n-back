@@ -18,7 +18,7 @@ function BackButton({color}: BackButtonProps) {
         if (navigation.canGoBack()) {
           navigation.goBack();
         } else {
-          router.push("/"); // 🏠 Go to home (or any safe fallback)
+          router.push("/");
         }
       }}
       style={{ marginLeft: 15 }}

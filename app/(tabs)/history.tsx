@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { useFocusEffect } from "expo-router";
 import { ScrollView, View, Text } from "react-native";
+import { useTranslation } from 'react-i18next';
 
 import { useGlobalStyles } from "@/styles/globalStyles";
 
@@ -14,7 +15,7 @@ import log from '@/util/logger';
 
 export default function History() {
   const styles = useGlobalStyles();
-
+  const { t } = useTranslation();
   // Single Mode
   const [lineData, setLineData] = useState<DataPointType[]>([]);
   const [lineData2, setLineData2] = useState<DataPointType[]>([]);
@@ -236,15 +237,15 @@ export default function History() {
       {showChart.current &&
         <>
           <View>
-            <Text style={[styles.h1, { margin: 10 }]}>Single</Text>
+            <Text style={[styles.h1, { margin: 10 }]}>{t('history.single')}</Text>
             <Chart data={lineData} data2={lineData2} data3={lineData3} xLabels={dataLabels.current} />
           </View>
           <View>
-            <Text style={[styles.h1, { margin: 10 }]}>Dual</Text>
+            <Text style={[styles.h1, { margin: 10 }]}>{t('history.dual')}</Text>
             <Chart data={lineData4} data2={lineData5} data3={lineData6} data4={lineData10} data5={lineData11} xLabels={dataLabels.current} />
           </View>
           <View>
-            <Text style={[styles.h1, { margin: 10 }]}>Silent</Text>
+            <Text style={[styles.h1, { margin: 10 }]}>{t('history.silent')}</Text>
             <Chart data={lineData7} data2={lineData8} data3={lineData9} data4={lineData12} data5={lineData13} xLabels={dataLabels.current} />
           </View>
         </>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { useGlobalStyles } from '@/styles/globalStyles';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -8,7 +9,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 export default function Learn() {
   const styles = useGlobalStyles();
   const { theme } = useTheme();
-
+  const { t } = useTranslation();
   const router = useRouter();
 
   return (
@@ -20,13 +21,11 @@ export default function Learn() {
           {/* 1 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
             <Text style={styles.number}>1.</Text>
-            <Text style={[styles.text, { fontWeight: '700' }]}>Dual N-back Mode</Text>
+            <Text style={[styles.text, { fontWeight: '700' }]}>{t('learn.dualNback')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <Text style={{ color: theme.textColor }}>
-              The Dual N-back setting adds a second layer to the game. Instead of only tracking position prompts, you will be tasked with tracking either sound or haptic (vibration) patterns.
-              These additional patterns are meant to increase the difficulty of the game. The default setting for the second prompt will be a series of spoken letters:
-              C, G, H, K, P, Q, T, or W.
+              {t('learn.dualNbackDescription')}
             </Text>
           </View>
 
@@ -37,7 +36,7 @@ export default function Learn() {
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <Text style={{ color: theme.textColor }}>
-              Silent mode changes the default &quot;letter&quot; sound to a pattern of vibrations. The standard celebratory sounds remain the same.
+              {t('learn.silentModeDescription')}
             </Text>
           </View>
         </View>

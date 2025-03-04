@@ -3,6 +3,7 @@ import { View, Text, ScrollView, SafeAreaView, Pressable, Platform } from 'react
 import { useRouter } from 'expo-router';
 import * as Clipboard from "expo-clipboard";
 import { POSTION, useToast } from "expo-toast";
+import { useTranslation } from 'react-i18next';
 
 
 import { useGlobalStyles } from '@/styles/globalStyles';
@@ -14,7 +15,7 @@ import security from '@/util/security';
 export default function Terms() {
   const styles = useGlobalStyles();
   const { theme } = useTheme();
-
+  const { t } = useTranslation();
   const router = useRouter();
 
   const acceptTerms = async () => {
@@ -26,48 +27,48 @@ export default function Terms() {
     <SafeAreaView style={{ backgroundColor: theme.backgroundColor }}>
       <ScrollView>
         <View style={[styles.container, { alignItems: 'center', marginHorizontal: 30, marginVertical: 10, }]}>
-          <Text style={styles.heading}>Terms of Use & Privacy Disclaimer</Text>
+          <Text style={styles.heading}>{t('terms.header')}</Text>
           <View style={{ alignSelf: 'flex-start', marginBottom: 5 }}>
-            <Text style={{ color: theme.textColor, fontStyle: 'italic' }}>Last Updated: [ 29-January-2025 ]</Text>
+            <Text style={{ color: theme.textColor, fontStyle: 'italic' }}>{t('terms.lastUpdated')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>By downloading, installing, and/or using this app (“App”), you agree to the following terms:</Text>
+            <Text style={{ color: theme.textColor }}>{t('terms.headerMessage')}</Text>
           </View>
 
           {/* 1 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
             <Text style={styles.number}>1.</Text>
-            <Text style={[styles.text, { fontWeight: '700' }]}>No Guarantees or Warranties</Text>
+            <Text style={[styles.text, { fontWeight: '700' }]}>{t('terms.noGuarantees')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>This App is provided “as is” without any warranties, express or implied. The developer makes no guarantees about the availability, accuracy, or functionality of the App.</Text>
+            <Text style={{ color: theme.textColor }}>{t('terms.noGuaranteesMessage')}</Text>
           </View>
 
           {/* 2 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
             <Text style={styles.number}>2.</Text>
-            <Text style={[styles.text, { fontWeight: '700' }]}>Use at Your Own Risk</Text>
+            <Text style={[styles.text, { fontWeight: '700' }]}>{t('terms.useAtYourOwnRisk')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>You assume all risk when using the App. The developer is not responsible for any damages, data loss, or other issues that may arise from using the App.</Text>
+            <Text style={{ color: theme.textColor }}>{t('terms.useAtYourOwnRiskMessage')}</Text>
           </View>
 
           {/* 3 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
             <Text style={styles.number}>3.</Text>
-            <Text style={[styles.text, { fontWeight: '700' }]}>No Liability</Text>
+            <Text style={[styles.text, { fontWeight: '700' }]}>{t('terms.noLiability')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>To the fullest extent permitted by law, the developer is not liable for any direct, indirect, incidental, or consequential damages related to your use of the App.</Text>
+            <Text style={{ color: theme.textColor }}>{t('terms.noLiabilityMessage')}</Text>
           </View>
 
           {/* 4 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
             <Text style={styles.number}>4.</Text>
-            <Text style={[styles.text, { fontWeight: '700' }]}>Privacy Disclaimer</Text>
+            <Text style={[styles.text, { fontWeight: '700' }]}>{t('terms.privacyDisclaimer')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>This App does not collect, store, or share any personal data. All settings and app-related data are stored locally on your device and are not transmitted to the developer or any third parties.</Text>
+            <Text style={{ color: theme.textColor }}>{t('terms.privacyDisclaimerMessage')}</Text>
           </View>
 
           {/* 5 */}
@@ -76,7 +77,7 @@ export default function Terms() {
             <Text style={[styles.text, { fontWeight: '700' }]}>Updates and Termination</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>The developer may update, modify, or discontinue the App at any time without notice.</Text>
+            <Text style={{ color: theme.textColor }}>{t('terms.updatedAndTerminationMessage')}</Text>
           </View>
 
           {/* 6 */}
@@ -85,61 +86,61 @@ export default function Terms() {
             <Text style={[styles.text, { fontWeight: '700' }]}>Changes to Terms</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>These terms may be updated from time to time. Your continued use of the App means you accept any changes.</Text>
+            <Text style={{ color: theme.textColor }}>{t('terms.changesToTermsMessage')}</Text>
           </View>
 
           {/* 7 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
             <Text style={styles.number}>7.</Text>
-            <Text style={[styles.text, { fontWeight: '700' }]}>Governing Law</Text>
+            <Text style={[styles.text, { fontWeight: '700' }]}>{t('terms.governingLaw')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>These terms are governed by the laws of the state of Florida, USA.</Text>
+            <Text style={{ color: theme.textColor }}>{t('terms.governingLawMessage')}</Text>
           </View>
 
           {/* 8 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
             <Text style={styles.number}>8.</Text>
-            <Text style={[styles.text, { fontWeight: '700' }]}>Purchase Agreement</Text>
+            <Text style={[styles.text, { fontWeight: '700' }]}>{t('terms.purchaseAgreement')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>By making a purchase, you are paying for a limited, non-transferable, revocable license to access additional features within the App. This access is subject to compliance with the Terms of Service, and may be revoked if you violate these terms. All payments are final and non-refundable, except where required by law.</Text>
+            <Text style={{ color: theme.textColor }}>{t('terms.purchaseAgreementMessage')}</Text>
           </View>
 
           {/* 9 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
             <Text style={styles.number}>9.</Text>
-            <Text style={[styles.text, { fontWeight: '700' }]}>Additional Attribution</Text>
+            <Text style={[styles.text, { fontWeight: '700' }]}>{t('terms.additionalAddtribution')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <CustomLink textToCopy="https://psycnet.apa.org/record/1959-07784-001">
-              <Text style={{ color: theme.textColor }}>n-back task by Wayne Kirchner in 1958. https://psycnet.apa.org/record/1959-07784-001</Text>
+              <Text style={{ color: theme.textColor }}>{t('terms.additionalAddtributionMessage')}</Text>
             </CustomLink>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <CustomLink textToCopy="https://www.sciencedirect.com/science/article/abs/pii/S1053811903000983">
-              <Text style={{ color: theme.textColor }}>dual n-back by Susanne Jaeggi et al. in 2003. https://www.sciencedirect.com/science/article/abs/pii/S1053811903000983</Text>
+              <Text style={{ color: theme.textColor }}>{t('terms.additionalAddtributionMessage2')}</Text>
             </CustomLink>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>Some sounds provided by freesound.org and licenced under Creative Commons 0 and others.</Text>
+            <Text style={{ color: theme.textColor }}>{t('terms.additionalAddtributionMessage3')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <CustomLink textToCopy="https://freesound.org/s/705174/">
-              <Text style={{ color: theme.textColor }}>&quot;Single mode&quot; tile movement provided by Game Menu Select Sound 2 by digimistic -- https://freesound.org/s/705174/ -- License: Creative Commons 0.</Text>
+              <Text style={{ color: theme.textColor }}>{t('terms.additionalAddtributionMessage4')}</Text>
             </CustomLink>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <CustomLink textToCopy="https://freesound.org/s/400163/">
-              <Text style={{ color: theme.textColor }}>&quot;Game Complete&quot; fanfare provided by Fanfare short.wav by vitovsky1 -- https://freesound.org/s/400163/ -- License: Attribution 3.0</Text>
+              <Text style={{ color: theme.textColor }}>{t('terms.additionalAddtributionMessage5')}</Text>
             </CustomLink>
           </View>
 
           <View style={{ alignSelf: 'flex-start', marginBottom: 20, marginTop: 20 }}>
-            <Text style={{ color: theme.textColor }}>If you do not agree to these terms, uninstall and/or do not use the App.</Text>
+            <Text style={{ color: theme.textColor }}>{t('terms.noAgreementMessage')}</Text>
           </View>
           <View style={{ marginBottom: 20 }}>
-            <Button label=" Accept Terms " onPress={acceptTerms} />
+            <Button label={t('buttons.acceptTerms')} onPress={acceptTerms} />
           </View>
         </View>
       </ScrollView>
