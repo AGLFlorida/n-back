@@ -74,7 +74,7 @@ export default function Terms() {
           {/* 5 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
             <Text style={styles.number}>5.</Text>
-            <Text style={[styles.text, { fontWeight: '700' }]}>Updates and Termination</Text>
+            <Text style={[styles.text, { fontWeight: '700' }]}>{t('terms.updatesAndTermination')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <Text style={{ color: theme.textColor }}>{t('terms.updatedAndTerminationMessage')}</Text>
@@ -83,7 +83,7 @@ export default function Terms() {
           {/* 6 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
             <Text style={styles.number}>6.</Text>
-            <Text style={[styles.text, { fontWeight: '700' }]}>Changes to Terms</Text>
+            <Text style={[styles.text, { fontWeight: '700' }]}>{t('terms.changesToTerms')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <Text style={{ color: theme.textColor }}>{t('terms.changesToTermsMessage')}</Text>
@@ -110,29 +110,29 @@ export default function Terms() {
           {/* 9 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
             <Text style={styles.number}>9.</Text>
-            <Text style={[styles.text, { fontWeight: '700' }]}>{t('terms.additionalAddtribution')}</Text>
+            <Text style={[styles.text, { fontWeight: '700' }]}>{t('terms.additionalAttribution')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <CustomLink textToCopy="https://psycnet.apa.org/record/1959-07784-001">
-              <Text style={{ color: theme.textColor }}>{t('terms.additionalAddtributionMessage')}</Text>
+              <Text style={{ color: theme.textColor }}>{t('terms.additionalAttributionMessage')}</Text>
             </CustomLink>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <CustomLink textToCopy="https://www.sciencedirect.com/science/article/abs/pii/S1053811903000983">
-              <Text style={{ color: theme.textColor }}>{t('terms.additionalAddtributionMessage2')}</Text>
+              <Text style={{ color: theme.textColor }}>{t('terms.additionalAttributionMessage2')}</Text>
             </CustomLink>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
-            <Text style={{ color: theme.textColor }}>{t('terms.additionalAddtributionMessage3')}</Text>
+            <Text style={{ color: theme.textColor }}>{t('terms.additionalAttributionMessage3')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <CustomLink textToCopy="https://freesound.org/s/705174/">
-              <Text style={{ color: theme.textColor }}>{t('terms.additionalAddtributionMessage4')}</Text>
+              <Text style={{ color: theme.textColor }}>{t('terms.additionalAttributionMessage4')}</Text>
             </CustomLink>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <CustomLink textToCopy="https://freesound.org/s/400163/">
-              <Text style={{ color: theme.textColor }}>{t('terms.additionalAddtributionMessage5')}</Text>
+              <Text style={{ color: theme.textColor }}>{t('terms.additionalAttributionMessage5')}</Text>
             </CustomLink>
           </View>
 

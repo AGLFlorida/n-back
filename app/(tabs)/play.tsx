@@ -350,7 +350,8 @@ export default function Play() {
           t('play.tryEasier'), 
           t('play.tryEasierMessage'), 
           () => doLevelDown(currentGameMode as GameModeEnum),
-          true
+          true,
+          { ok: t('ok'), cancel: t('cancel') }
         );
       }
       setWinsToNextLevel(0);

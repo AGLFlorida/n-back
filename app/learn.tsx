@@ -16,7 +16,7 @@ export default function Learn() {
     <SafeAreaView style={{ backgroundColor: theme.backgroundColor, flex: 1 }}>
       <ScrollView>
         <View style={[styles.container, { alignItems: 'center', marginHorizontal: 30, marginVertical: 10, }]}>
-          <Text style={styles.heading}>About Settings</Text>
+          <Text style={styles.heading}>{t('learn.about')}</Text>
 
           {/* 1 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
@@ -32,7 +32,7 @@ export default function Learn() {
           {/* 2 */}
           <View style={[styles.listItem, { marginBottom: 3 }]}>
             <Text style={styles.number}>2.</Text>
-            <Text style={[styles.text, { fontWeight: '700' }]}>Silent Mode</Text>
+            <Text style={[styles.text, { fontWeight: '700' }]}>{t('learn.silentMode')}</Text>
           </View>
           <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
             <Text style={{ color: theme.textColor }}>

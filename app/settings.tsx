@@ -67,7 +67,7 @@ export default function Settings() {
       router.push('/terms');
     }
 
-    showCustomAlert(t('settings.resetData'), t('settings.resetDataMessage'), clear, true);
+    showCustomAlert(t('settings.resetData'), t('settings.resetDataMessage'), clear, true, { ok: t('ok'), cancel: t('cancel') });
   }
 
   const fetchSettings = async () => {
@@ -122,7 +122,7 @@ export default function Settings() {
       }),
     ]).then(([x, y, z, shh, levels]) => {
       if (x && y && z && shh && levels) {
-        showCustomAlert(t('alerts.success'), t('alerts.settingsSaved'));
+        showCustomAlert(t('alerts.success'), t('alerts.settingsSaved'), undefined, false, { ok: t('ok'), cancel: t('cancel') });
       }
     }).catch(e => {
       log.error("Error saving settings", e);
@@ -209,7 +209,7 @@ export default function Settings() {
               <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>{t('settings.resetData')}</Text>
             </Pressable>
           </View>
-          {/* <View style={[styles.row, { margin: 10 }]}>
+          <View style={[styles.row, { margin: 10 }]}>
             <Pressable 
               style={{ marginTop: 10 }} 
               onPress={toggleSpanish}
@@ -218,7 +218,7 @@ export default function Settings() {
                 {i18n.language === 'es' ? 'English' : 'Español'}
               </Text>
             </Pressable>
-          </View> */}
+          </View>
           {error && (
             <View style={[styles.row, { margin: 10 }]}>
               <Text style={[styles.settingsCell, { color: 'red' }]}>{error}</Text>
