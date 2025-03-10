@@ -52,6 +52,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "076a74e9-3f64-4d30-be3d-0a7654d508ac"
+      }
+    },
+    "owner": "shooperman"
   }
 }
