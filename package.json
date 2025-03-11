@@ -11,7 +11,9 @@
     "test:watch": "jest --watchAll",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "doctor": "npx expo-doctor && npx expo install --check"
+    "doctor": "npx expo-doctor && npx expo install --check",
+    "build:ios": "eas build --platform ios",
+    "build:android": "eas build --platform android"
   },
   "jest": {
     "preset": "jest-expo"
