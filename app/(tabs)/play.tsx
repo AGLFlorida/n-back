@@ -38,8 +38,9 @@ import ScoreOverlay from '@/components/ScoreOverlay';
 import TutorialOverlay from '@/components/TutorialOverlay';
 import ProgressBar from '@/components/ProgressBar';
 
+
 const fillGuessCard = (len: number): boolean[] => Array(len).fill(false);
-const newCard = new ScoreCard({});
+const newCard = ScoreCard.getInstance();
 
 export default function Play() {
   const { t } = useTranslation();

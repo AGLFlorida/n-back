@@ -22,10 +22,18 @@ export const scoreKey = (date = new Date()) => {
 };
 
 export class ScoreCard {
-  private _value: ScoresType
+  private static instance: ScoreCard;
+  private _value: ScoresType;
 
-  constructor(initialValue: ScoresType = {}) {
+  private constructor(initialValue: ScoresType = {}) {
     this._value = initialValue;
+  }
+
+  public static getInstance(): ScoreCard {
+    if (!ScoreCard.instance) {
+      ScoreCard.instance = new ScoreCard();
+    }
+    return ScoreCard.instance;
   }
 
   get scores(): ScoresType {
@@ -52,11 +60,23 @@ export class ScoreCard {
   setValue(key: string, value: SingleScoreType): void {
     const current: string = scoreKey();
     try {
-      if (!this._value[current]) this._value[current] = {};
+      // Reset _value if it's null or undefined
+      if (this._value === null || this._value === undefined) {
+        this._value = {};
+      }
+
+      // Ensure the current date object exists
+      if (!this._value[current]) {
+        this._value[current] = {};
+      }
+
+      // Set the value
       this._value[current][key] = value;
+      
     } catch (e) {
-      log.error(ERROR_PREFIX + "setBlock.", e);
-      throw e;
+      log.error(ERROR_PREFIX + "setValue. Key: " + key + ", Current: " + current, e);
+      this._value = { [current]: { [key]: value } };
+      log.info(ERROR_PREFIX + "setValue recovered. New state:", this._value);
     }
   }
 
