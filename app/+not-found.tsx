@@ -1,7 +1,7 @@
 import { SafeAreaView } from 'react-native';
 // import { Stack } from 'expo-router';
 
-import { useTheme } from '@/contexts/ThemeContext';
+// import { useTheme } from '@/contexts/ThemeContext';
 import FourOhFour from '@/components/FourOhFour';
 
 export default function NotFoundScreen() {

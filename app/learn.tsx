@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, ScrollView, SafeAreaView } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { useGlobalStyles } from '@/styles/globalStyles';
@@ -10,7 +9,6 @@ export default function Learn() {
   const styles = useGlobalStyles();
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
 
   return (
     <SafeAreaView style={{ backgroundColor: theme.backgroundColor, flex: 1 }}>

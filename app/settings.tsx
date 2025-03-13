@@ -8,7 +8,7 @@ import {
   Text,
   Switch,
   Pressable,
-  Appearance
+  // Appearance
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from 'react-i18next';
@@ -26,7 +26,7 @@ type N = number | undefined
 
 // TODO there is a bug where resetting data doesn't reset dark mode.
 
-const systemTheme = Appearance.getColorScheme();
+// const systemTheme = Appearance.getColorScheme();
 
 export default function Settings() {
   const styles = useGlobalStyles();
@@ -37,7 +37,7 @@ export default function Settings() {
   const [dualMode, toggleDualMode] = useState<boolean>(false);
   const [darkMode, toggleDarkMode] = useState<boolean>(false);
   const [silentMode, toggleSilentMode] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
+  const [error, ] = useState<string>();
   const originalN = useRef<number>();
   const originalDual = useRef<boolean>();
   const originalDark = useRef<boolean>();
@@ -53,7 +53,7 @@ export default function Settings() {
 
   const clearSettings = () => {
     const clear = async () => {
-      const isSystemDark = (systemTheme === "dark") ? true : false;
+      // const isSystemDark = (systemTheme === "dark") ? true : false;
       await security.set("defaultN", 2);
       await security.set("dualMode", false);
       // await security.set("darkMode", isSystemDark);

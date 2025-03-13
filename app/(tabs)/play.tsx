@@ -286,10 +286,10 @@ export default function Play() {
 
   // Add state for tracking wins
   const [winsToNextLevel, setWinsToNextLevel] = useState(0);
-  const [totalWinsNeeded, setTotalWinsNeeded] = useState(3); // Adjust this value as needed
+  const [totalWinsNeeded, ] = useState(3); // Adjust this value as needed
 
   // TODO achievements
-  const scoreGame = ({ soundGuesses, posGuesses, buzzGuesses }: ScoreCard) => {
+  const scoreGame = ({ soundGuesses, posGuesses }: ScoreCard) => {
     setDidLevelUp(false);
     const answers = getEngine().answers();
     const posResult = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
