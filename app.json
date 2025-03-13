@@ -50,12 +50,22 @@
         }
       ],
       "expo-localization",
-      "sentry-expo"
+      [
+        "sentry-expo",
+        {
+          "organization": "agl-consulting",
+          "project": "n-back"
+        }
+      ]
     ],
     "hooks": {
       "postPublish": [
         {
-          "file": "sentry-expo/upload-sourcemaps"
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "agl-consulting",
+            "project": "n-back"
+          }
         }
       ]
     },
