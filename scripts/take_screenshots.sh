@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# TODO: this is way too manual but it works for now. Fastlane would be better but I got
+# tired of fighting with it (for now).
+
 # Array of device IDs
 DEVICE_IDS=(
     "D0BA153C-122D-4DF2-875A-095B2B5A29DA"  

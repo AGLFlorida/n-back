@@ -63,21 +63,22 @@ ffmpeg -i "$source_path" -vf "scale=96:96" -y "assets/images/notification-icon.p
 
 echo "Generating favicon series..."
 
-# Standard favicon sizes
-declare -A favicon_sizes=(
-    ["16"]="favicon-16x16.png"
-    ["32"]="favicon-32x32.png"
-    ["48"]="favicon-48x48.png"
-    ["96"]="favicon-96x96.png"
-    ["128"]="favicon-128x128.png"
-    ["196"]="favicon-196x196.png"
-    ["256"]="favicon-256x256.png"
+# Standard favicon sizes and names (as array of "size:filename" pairs)
+favicon_pairs=(
+    "16:favicon-16x16.png"
+    "32:favicon-32x32.png"
+    "48:favicon-48x48.png"
+    "96:favicon-96x96.png"
+    "128:favicon-128x128.png"
+    "196:favicon-196x196.png"
+    "256:favicon-256x256.png"
 )
 
 # Generate each favicon size
-for size in "${!favicon_sizes[@]}"; do
-    output_name="${favicon_sizes[$size]}"
-    ffmpeg -i "$source_path" -vf "scale=${size}:${size}" -y "assets/favicon/$output_name" 2>/dev/null
+for pair in "${favicon_pairs[@]}"; do
+    size="${pair%%:*}"
+    filename="${pair#*:}"
+    ffmpeg -i "$source_path" -vf "scale=${size}:${size}" -y "assets/favicon/$filename" 2>/dev/null
 done
 
 # Generate .ico file with multiple sizes
@@ -86,15 +87,17 @@ ffmpeg -i "$source_path" -vf "scale=256:256,scale=16:16" -y "assets/favicon/favi
 echo "Done! Assets generated:"
 echo ""
 echo "App Icons (in assets/images/):"
-echo "✓ app-icon.png (1024x1024) - iOS App Store"
-echo "✓ adaptive-icon.png (1024x1024) - Android Adaptive Icon"
-echo "✓ notification-icon.png (96x96) - Android Notifications"
+echo " app-icon.png (1024x1024) - iOS App Store"
+echo " adaptive-icon.png (1024x1024) - Android Adaptive Icon"
+echo " notification-icon.png (96x96) - Android Notifications"
 echo ""
 echo "Favicons (in assets/favicon/):"
-for size in "${!favicon_sizes[@]}"; do
-    echo "✓ ${favicon_sizes[$size]} (${size}x${size}px)"
+for pair in "${favicon_pairs[@]}"; do
+    size="${pair%%:*}"
+    filename="${pair#*:}"
+    echo " $filename (${size}x${size}px)"
 done
-echo "✓ favicon.ico (multi-size)"
+echo " favicon.ico (multi-size)"
 echo ""
 echo "Next steps:"
 echo "1. Update app.json to reference the app icons"

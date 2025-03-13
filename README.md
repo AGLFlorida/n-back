@@ -1,6 +1,9 @@
 # Dual N-Back
+![Logo](assets/images/favicon-96x96.png)
 
 Dual N-Back is a cognitive training game designed to improve your working memory and fluid intelligence. The game involves remembering a sequence of spoken letters and positions of a square on a grid, and identifying when a letter or position matches the one from a certain number of steps earlier.
+
+Checkout the [screenshots](scripts/screenshots) for a preview of the game.
 
 ## How to Play
 
