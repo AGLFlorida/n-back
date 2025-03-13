@@ -39,3 +39,4 @@ app-example
 
 
 scripts/assets/
+*.crash

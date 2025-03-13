@@ -6,16 +6,19 @@ import { useTranslation } from 'react-i18next';
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import Menu from "@/components/Menu";
 import BackButton from "@/components/BackButton";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function RootLayout() {
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <RootNav />
-      </ToastProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <ToastProvider>
+          <RootNav />
+        </ToastProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 
