@@ -444,10 +444,12 @@ export default function Play() {
               GameModeEnum.SilentDualN in typedLevels
             ) {
               playerLevel.current = typedLevels;
-              navigation.setOptions({
-                title: `${levelText} ${getPlayerLevel(whichGameMode(isDualMode, isSilentMode) as GameModeEnum)} (${GAME_MODE_NAMES[whichGameMode(isDualMode, isSilentMode) as GameModeEnum]})`
-              });
+            } else {
+              playerLevel.current = DEFAULT_LEVELS;
             }
+            navigation.setOptions({
+              title: `${levelText} ${getPlayerLevel(whichGameMode(isDualMode, isSilentMode) as GameModeEnum)} (${GAME_MODE_NAMES[whichGameMode(isDualMode, isSilentMode) as GameModeEnum]})`
+            });
           }
 
           setIsLoading(false);
