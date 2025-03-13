@@ -3,8 +3,8 @@ import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
 import { Platform } from 'react-native';
 
-import en from '@/translations/en';
-import es from '@/translations/es';
+import en from '@/assets/translations/en';
+import es from '@/assets/translations/es';
 
 const getLang = () => {
   if (Platform.OS === "web") {
