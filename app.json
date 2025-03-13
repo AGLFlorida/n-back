@@ -49,8 +49,16 @@
           "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "sentry-expo"
     ],
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps"
+        }
+      ]
+    },
     "experiments": {
       "typedRoutes": true
     },

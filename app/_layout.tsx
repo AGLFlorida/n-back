@@ -2,6 +2,7 @@ import React from 'react';
 import { Drawer } from "expo-router/drawer";
 import { ToastProvider } from "expo-toast";
 import { useTranslation } from 'react-i18next';
+import * as Sentry from 'sentry-expo';
 
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import Menu from "@/components/Menu";
@@ -9,6 +10,12 @@ import BackButton from "@/components/BackButton";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
+
+Sentry.init({
+  dsn: 'https://525f96c29deaeaf7f4966a9105a66b67@o4508971465179136.ingest.us.sentry.io/4508971478220800',
+  enableInExpoDevelopment: true,
+  debug: __DEV__
+});
 
 export default function RootLayout() {
   return (
