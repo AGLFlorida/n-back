@@ -17,7 +17,13 @@
       "infoPlist": {
         "UIUserInterfaceStyle": "automatic",
         "CFBundleAllowMixedLocalizations": true
-      }
+      },
+      "buildPhases": [
+        {
+          "name": "Generate Hermes dSYM",
+          "shellScript": "if [ \"$CONFIGURATION\" == \"Release\" ]; then\n  HERMES_PATH=\"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/hermes.framework\"\n  if [ -f \"${HERMES_PATH}/hermes\" ]; then\n    echo \"Generating Hermes dSYM...\"\n    dsymutil \"${HERMES_PATH}/hermes\" -o \"${BUILT_PRODUCTS_DIR}/hermes.framework.dSYM\"\n  else\n    echo \"Hermes binary not found at ${HERMES_PATH}/hermes\"\n  fi\nfi"
+        }
+      ]
     },
     "android": {
       "adaptiveIcon": {
