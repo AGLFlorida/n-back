@@ -40,3 +40,6 @@ app-example
 
 scripts/assets/
 *.crash
+
+ios/
+android/

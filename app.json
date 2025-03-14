@@ -13,7 +13,11 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.shooperman.nback"
+      "bundleIdentifier": "com.shooperman.nback",
+      "infoPlist": {
+        "UIUserInterfaceStyle": "automatic",
+        "CFBundleAllowMixedLocalizations": true
+      }
     },
     "android": {
       "adaptiveIcon": {

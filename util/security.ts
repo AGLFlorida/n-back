@@ -46,12 +46,23 @@ async function set(key: string, value: string | number | boolean | ScoresType | 
 async function get(key: string): Promise<number | boolean | ScoresType | null> {
   let ret: string | null = null;
   try {
+    // This issue only popped up in compiled apps. 
+    // -2 is an os level error code. 
     ret = await storage.getItemAsync(key);
+    if (ret === "-2") return null;
+    const parsed = ret ? JSON.parse(ret) : null;
+    
+    if (parsed && typeof parsed === 'object') {
+      const allNegativeTwo = Object.values(parsed).every(v => v === -2);
+      if (allNegativeTwo) return null;
+    }
+    
+    return parsed;
   } catch (e) {
     log.error(`Error retrieving setting: ${key}`, e);
   }
 
-  return ret ? JSON.parse(ret) : null;
+  return null;
 }
 
 export default {
