@@ -7,38 +7,42 @@ import { ThemeContextType } from "./types";
 import lightMode from "./light";
 import darkMode from "./dark";
 
+const systemTheme = Appearance.getColorScheme();
+const initialTheme = systemTheme === "dark" ? darkMode : lightMode;
+const initialThemeMode = systemTheme || "light";
+
 const ThemeContext = createContext<ThemeContextType>({
-  theme: lightMode, 
-  themeMode: "light",
+  theme: initialTheme,
+  themeMode: initialThemeMode,
   toggleTheme: () => {}
 });
-
-const systemTheme = Appearance.getColorScheme();
 
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState((systemTheme === "dark") ? darkMode : lightMode); // default to system theme on first load.
-  const [themeMode, setThemeMode] = useState<"light" | "dark">(systemTheme || "light"); // default to system theme.
-
-  const toggleTheme = (dark: boolean) => {
-    setThemeMode((dark) ? "dark" : "light"); // trigger a re-render
-  }
+  const [theme, setTheme] = useState(initialTheme);
+  const [themeMode, setThemeMode] = useState<"light" | "dark">(initialThemeMode);
 
   useEffect(() => {
     const loadTheme = async () => {
-      const storedTheme = await security.get("darkMode") as boolean;
+      const storedTheme = await security.get("darkMode");
+      
       if (storedTheme === true) {
         setThemeMode("dark");
         setTheme(darkMode);
-      } else {
+      } else if (storedTheme === false) {
         setThemeMode("light");
         setTheme(lightMode);
       }
     };
 
     loadTheme();
-  }, [themeMode]);
+  }, []);
+
+  const toggleTheme = (dark: boolean) => {
+    setThemeMode((dark) ? "dark" : "light");
+    setTheme(dark ? darkMode : lightMode);
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, themeMode, toggleTheme }}>

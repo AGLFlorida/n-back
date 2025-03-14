@@ -1,30 +1,42 @@
-import i18n, { InitOptions } from 'i18next';
+import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
 import { Platform } from 'react-native';
+import log from './logger';
 
 import en from '@/assets/translations/en';
 import es from '@/assets/translations/es';
 
 const getLang = () => {
-  if (Platform.OS === "web") {
-    return navigator.language;
-  }
-  return Localization.getLocales()[0].languageCode || 'en';
-}
-
-const config: InitOptions = {
-  resources: {
-    en: { translation: en },
-    es: { translation: es }
-  },
-  lng: getLang(), // Use device language
-  fallbackLng: 'en',
-  interpolation: {
-    escapeValue: false
+  try {
+    if (Platform.OS === "web") {
+      return navigator.language;
+    }
+    const locale = Localization.getLocales()[0].languageCode;
+    return locale || 'en';
+  } catch (e) {
+    log.warn("Error getting locale, defaulting to en:", e);
+    return 'en';
   }
 }
 
-i18n.use(initReactI18next).init(config);
+const resources = {
+  en: { translation: en },
+  es: { translation: es }
+};
+
+// Initialize synchronously
+i18n
+  .use(initReactI18next)
+  .init({
+    resources,
+    lng: getLang(),
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false
+    },
+    debug: false,
+    initImmediate: false
+  });
 
 export default i18n; 

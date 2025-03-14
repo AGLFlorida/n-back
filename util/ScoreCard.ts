@@ -76,7 +76,6 @@ export class ScoreCard {
     } catch (e) {
       log.error(ERROR_PREFIX + "setValue. Key: " + key + ", Current: " + current, e);
       this._value = { [current]: { [key]: value } };
-      log.info(ERROR_PREFIX + "setValue recovered. New state:", this._value);
     }
   }
 

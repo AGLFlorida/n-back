@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Drawer } from "expo-router/drawer";
 import { ToastProvider } from "expo-toast";
 import { useTranslation } from 'react-i18next';
@@ -7,10 +7,27 @@ import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import Menu from "@/components/Menu";
 import BackButton from "@/components/BackButton";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import i18n from '@/util/i18n';
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function RootLayout() {
+  const [isI18nInitialized, setIsI18nInitialized] = useState(false);
+
+  useEffect(() => {
+    if (!i18n.isInitialized) {
+      i18n.init().then(() => {
+        setIsI18nInitialized(true);
+      });
+    } else {
+      setIsI18nInitialized(true);
+    }
+  }, []);
+
+  if (!isI18nInitialized) {
+    return null;
+  }
+
   return (
     <ErrorBoundary>
       <ThemeProvider>
