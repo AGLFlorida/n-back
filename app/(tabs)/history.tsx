@@ -38,8 +38,7 @@ export default function History() {
 
   const [playHistory, setPlayHistory] = useState<ScoresType>();
 
-  const showChart = useRef<boolean>(false);
-  const setShowChart = (p: boolean) => showChart.current = p;
+  const [showChart, setShowChart] = useState(false);
 
   const dataLabels = useRef<string[]>([]);
 
@@ -227,14 +226,11 @@ export default function History() {
 
       dataLabels.current = labels;
     }
-
-
-
   }, [playHistory])
 
   return (
     <ScrollView style={styles.container}>
-      {showChart.current &&
+      {showChart &&
         <>
           <View>
             <Text style={[styles.h1, { margin: 10 }]}>{t('history.single')}</Text>
