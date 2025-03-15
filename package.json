@@ -20,7 +20,7 @@
     "build:android": "eas build --platform android",
     "generate:icons": "bash scripts/generate_icons.sh -p ./nback-logo.png && echo '\u001b[1;31mMove generated icons to assets/images/\u001b[0m'",
     "generate:screenshots": "bash scripts/take_screenshots.sh",
-    "build:clean": "rm -rf dist .expo ios android && npx expo export && npx expo prebuild && npm run check-versions"
+    "build:clean": "rm -rf dist .expo ios android && npx expo export && npx expo prebuild --clean && ts-node scripts/update-versions.ts && npm run check-versions"
   },
   "jest": {
     "preset": "jest-expo"
