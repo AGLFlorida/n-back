@@ -31,7 +31,16 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundImage": "./assets/images/adaptive-icon-background.png"
       },
-      "package": "com.shooperman.nback"
+      "versionCode": 6,
+      "package": "com.shooperman.nback",
+      "buildType": "app-bundle",
+      "keystore": {
+        "keystorePath": "android/app/release.keystore",
+        "keystoreType": "pkcs12"
+      },
+      "compileSdkVersion": 35,
+      "targetSdkVersion": 35,
+      "minSdkVersion": 21
     },
     "web": {
       "bundler": "metro",

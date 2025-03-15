@@ -17,9 +17,15 @@ pbxproj = pbxproj.replace(/CURRENT_PROJECT_VERSION = [\d.]+;/g, `CURRENT_PROJECT
 fs.writeFileSync(pbxprojPath, pbxproj);
 console.log(`Updated iOS version to ${version} (${buildNumber})`);
 
-// Update Android
+// Check and update Android if needed
 let gradle = fs.readFileSync(gradlePath, 'utf8');
-gradle = gradle.replace(/versionCode \d+/g, `versionCode ${buildNumber}`);
-gradle = gradle.replace(/versionName "[\d.]+"/g, `versionName "${version}"`);
-fs.writeFileSync(gradlePath, gradle);
-console.log(`Updated Android version to ${version} (${buildNumber})`); 
+const currentVersionCode = gradle.match(/versionCode\s+(\d+)/)?.[1];
+
+if (currentVersionCode !== buildNumber) {
+    gradle = gradle.replace(/versionCode \d+/g, `versionCode ${buildNumber}`);
+    gradle = gradle.replace(/versionName "[\d.]+"/g, `versionName "${version}"`);
+    fs.writeFileSync(gradlePath, gradle);
+    console.log(`Updated Android version to ${version} (${buildNumber})`);
+} else {
+    console.log(`Android version code ${buildNumber} already up to date`);
+} 

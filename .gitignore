@@ -43,3 +43,8 @@ scripts/assets/
 
 ios/
 android/
+
+*.p12
+*.keystore
+.env
+credentials.json
