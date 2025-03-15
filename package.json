@@ -1,7 +1,8 @@
 {
   "name": "n-back",
   "main": "expo-router/entry",
-  "version": "1.0.1",
+  "version": "1.0.2",
+  "build": "6",
   "scripts": {
     "check-versions": "ts-node scripts/check-versions.ts",
     "start": "expo start",
@@ -87,6 +88,5 @@
         "listUnknownPackages": false
       }
     }
-  },
-  "build": "5"
+  }
 }

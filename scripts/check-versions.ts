@@ -1,8 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
 
-// Add this at the top to get the project root
 const projectRoot = path.resolve(__dirname, '..');
 
 interface PackageJson {
@@ -102,7 +100,7 @@ function checkVersions() {
       source: 'package.json',
       version: packageJson.version,
       buildNumber: packageJson.build,
-      versionCode: packageJson.androidVersionCode
+      versionCode: parseInt(packageJson.build || '0')
     });
   }
 
