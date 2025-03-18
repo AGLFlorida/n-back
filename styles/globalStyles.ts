@@ -93,7 +93,7 @@ export const useGlobalStyles = () => {
     playLabel: {
       color: theme.screenOptions.tabBarActiveTintColor,
       fontSize: 24,
-      margin: 20,
+      margin: 17,
     },
     row: {
       flexDirection: "row",

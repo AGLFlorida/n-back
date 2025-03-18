@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from 'react-i18next';
+import * as Updates from 'expo-updates';
 
 import Button from "@/components/Button";
 import security from "@/util/security";
@@ -37,7 +38,7 @@ export default function Settings() {
   const [dualMode, toggleDualMode] = useState<boolean>(false);
   const [darkMode, toggleDarkMode] = useState<boolean>(false);
   const [silentMode, toggleSilentMode] = useState<boolean>(false);
-  const [error, ] = useState<string>();
+  const [error,] = useState<string>();
   const originalN = useRef<number>();
   const originalDual = useRef<boolean>();
   const originalDark = useRef<boolean>();
@@ -69,6 +70,14 @@ export default function Settings() {
 
     showCustomAlert(t('settings.resetData'), t('settings.resetDataMessage'), clear, true, { ok: t('ok'), cancel: t('cancel') });
   }
+
+  const handleRestart = async () => {
+    try {
+      await Updates.reloadAsync();
+    } catch (error) {
+      log.error('Failed to reload app (Settings): ', error);
+    }
+  };
 
   const fetchSettings = async () => {
     await Promise.all([
@@ -134,6 +143,7 @@ export default function Settings() {
   const toggleSpanish = () => {
     const newLang = i18n.language === 'es' ? 'en' : 'es';
     i18n.changeLanguage(newLang);
+    if (!__DEV__) handleRestart();
   };
 
   return (
@@ -210,8 +220,8 @@ export default function Settings() {
             </Pressable>
           </View>
           <View style={[styles.row, { margin: 10 }]}>
-            <Pressable 
-              style={{ marginTop: 10 }} 
+            <Pressable
+              style={{ marginTop: 10 }}
               onPress={toggleSpanish}
             >
               <Text style={styles.label}>

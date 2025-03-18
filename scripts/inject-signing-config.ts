@@ -3,7 +3,6 @@ import path from 'path';
 
 const projectRoot = path.resolve(__dirname, '..');
 const gradlePath = path.join(projectRoot, 'android/app/build.gradle');
-const keystorePropsPath = path.join(projectRoot, 'android/keystore.properties');
 
 let gradleContent = fs.readFileSync(gradlePath, 'utf8');
 

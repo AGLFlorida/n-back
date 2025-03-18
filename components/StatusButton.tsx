@@ -12,7 +12,7 @@ type Props = {
   onTutorial?: () => void;
 }
 
-export default function PlayButton({ onPress, isLoading, playing, onTutorial = () => { } }: Props) {
+export default function StatusButton({ onPress, isLoading, playing, onTutorial = () => { } }: Props) {
   const styles = useGlobalStyles();
   const [shouldShowButton, setShowButton] = useState<boolean>((!isLoading && !playing));
   const fadeAnim = useRef(new Animated.Value(0)).current;

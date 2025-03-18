@@ -16,7 +16,7 @@
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "doctor": "npx expo-doctor && npx expo install --check",
     "doctor:fix": "yes | npx expo install --check",
-    "build:ios": "eas build --platform ios",
+    "build:ios": "echo 'DONTUSE' && return && eas build --platform ios",
     "build:android": "echo 'DONTUSE' && return && eas build --platform android",
     "generate:icons": "bash scripts/generate_icons.sh -p ./nback-logo.png && echo '\u001b[1;31mMove generated icons to assets/images/\u001b[0m'",
     "generate:screenshots": "bash scripts/take_screenshots.sh",
