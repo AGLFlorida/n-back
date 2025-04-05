@@ -193,9 +193,9 @@ function checkVersions() {
   });
 
   if (!hasDiscrepancy) {
-    console.log('\n✅ All versions match!');
+    console.log('\nAll versions match!');
   } else {
-    console.log('\n❌ Version discrepancies found!');
+    console.log('\nVersion discrepancies found!');
     console.log('\nRequired updates:');
     console.log('----------------');
     updates.forEach(update => console.log(`- ${update}`));
