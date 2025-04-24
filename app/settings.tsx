@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import {
   View,
   KeyboardAvoidingView,
@@ -8,41 +8,50 @@ import {
   Text,
   Switch,
   Pressable,
-  // Appearance
 } from "react-native";
+
 import { useRouter } from "expo-router";
 import { useTranslation } from 'react-i18next';
 import * as Updates from 'expo-updates';
 
 import Button from "@/components/Button";
-import security from "@/util/security";
+
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { useHistoryStore } from "@/store/useHistoryStore";
+
 import { useGlobalStyles } from "@/styles/globalStyles";
 import { useTheme } from "@/contexts/ThemeContext"
 import { showCustomAlert } from "@/util/alert";
-import { MAXN, MINN, getStartLevel, GameModeEnum } from "@/util/engine";
+
+import { MAXN, MINN } from "@/util/engine";
+
 import log from "@/util/logger";
 import i18n from '@/util/i18n';
 
 type N = number | undefined
 
-// TODO there is a bug where resetting data doesn't reset dark mode.
-
-// const systemTheme = Appearance.getColorScheme();
-
 export default function Settings() {
   const styles = useGlobalStyles();
-  const { toggleTheme, theme } = useTheme();
+  const { theme } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
-  const [defaultN, setDefaultN] = useState<N>(2);
-  const [dualMode, toggleDualMode] = useState<boolean>(false);
-  const [darkMode, toggleDarkMode] = useState<boolean>(false);
-  const [silentMode, toggleSilentMode] = useState<boolean>(false);
+
+  const { 
+    setN, N, 
+    saveDarkMode, darkMode: storedDarkMode, 
+    saveDualMode, dualMode: storedDualMode, 
+    saveSilentMode, silentMode: storedSilentMode, 
+    setTermsAccepted, termsAccepted: storedTermsAccepted
+  } = useSettingsStore();
+
+  const { setRecords } = useHistoryStore();
+
+  const [defaultN, setDefaultN] = useState<N>(N);
+  const [dualMode, toggleDualMode] = useState<boolean>(storedDualMode);
+  const [darkMode, toggleDarkMode] = useState<boolean>(storedDarkMode);
+  const [silentMode, toggleSilentMode] = useState<boolean>(storedSilentMode);
+
   const [error,] = useState<string>();
-  const originalN = useRef<number>();
-  const originalDual = useRef<boolean>();
-  const originalDark = useRef<boolean>();
-  const originalSilent = useRef<boolean>();
 
   const handleTapN = () => {
     setDefaultN((prev) => ((prev || MINN) < MAXN ? (prev || MINN) + 1 : MINN));
@@ -54,16 +63,16 @@ export default function Settings() {
 
   const clearSettings = () => {
     const clear = async () => {
-      // const isSystemDark = (systemTheme === "dark") ? true : false;
-      await security.set("defaultN", 2);
-      await security.set("dualMode", false);
-      // await security.set("darkMode", isSystemDark);
-      await security.set("silentMode", false);
-      await security.set("termsAccepted", false);
-      await security.set("records", {});
+      setN();
+      saveDualMode(false);
+      saveDarkMode(false);
+      saveSilentMode(false);
+      setTermsAccepted(false);
+      setRecords({});
+      
+      // TODO might not need this. I think saving to zustand store causes a rerender.
       setDefaultN(2);
       toggleDualMode(false);
-      // toggleDarkMode(isSystemDark);
       toggleSilentMode(false);
       router.push('/terms');
     }
@@ -79,65 +88,17 @@ export default function Settings() {
     }
   };
 
-  const fetchSettings = async () => {
-    await Promise.all([
-      security.get("defaultN"),
-      security.get("dualMode"),
-      security.get("darkMode"),
-      security.get("silentMode")
-    ]).then(([N, T, D, Shhh]) => {
-      if (N) {
-        setDefaultN(N as number);
-        originalN.current = defaultN as number;
-      }
-      if (T) {
-        toggleDualMode(T as boolean);
-        originalDual.current = dualMode;
-      }
-      if (D) {
-        toggleDarkMode(D as boolean);
-        originalDark.current = darkMode;
-      }
-      if (Shhh) {
-        toggleSilentMode(Shhh as boolean);
-        originalSilent.current = silentMode;
-      }
-    }).catch(e => e
-    );
-  };
-
-  useEffect(() => {
-    fetchSettings();
-  }, []);
-
   const handleSaved = async () => {
     if (error) {
       alert(t('settings.errorMessage'));
       return;
     }
 
-    const startingLevel = getStartLevel(defaultN || MINN);
+    saveDarkMode(darkMode);
+    saveDualMode(dualMode);
+    saveSilentMode(silentMode);
 
-    await Promise.all([
-      security.set("defaultN", defaultN || MINN),
-      security.set("dualMode", dualMode),
-      security.set("darkMode", darkMode),
-      security.set("silentMode", silentMode),
-      // Save new starting level for all modes
-      security.set("gameLevels", {
-        [GameModeEnum.SingleN]: startingLevel,
-        [GameModeEnum.DualN]: startingLevel,
-        [GameModeEnum.SilentDualN]: startingLevel,
-      }),
-    ]).then(([x, y, z, shh, levels]) => {
-      if (x && y && z && shh && levels) {
-        showCustomAlert(t('alerts.success'), t('alerts.settingsSaved'), undefined, false, { ok: t('ok'), cancel: t('cancel') });
-      }
-    }).catch(e => {
-      log.error("Error saving settings", e);
-    }).finally(() => {
-      toggleTheme(darkMode);
-    });
+    showCustomAlert(t('alerts.success'), t('alerts.settingsSaved'), undefined, false, { ok: t('ok'), cancel: t('cancel') });
   }
 
   const toggleSpanish = () => {
