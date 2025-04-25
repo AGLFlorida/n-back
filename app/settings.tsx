@@ -96,17 +96,14 @@ export default function Settings() {
   };
 
   useEffect(() => {
-    console.log('darkMode', darkMode);
     saveDarkMode(darkMode)
   }, [darkMode]);
 
   useEffect(() => {
-    console.log('dualMode', dualMode);
     saveDualMode(dualMode)
   }, [dualMode]);
 
   useEffect(() => {
-    console.log('silentMode', silentMode);
     saveSilentMode(silentMode)
   }, [silentMode]);
 

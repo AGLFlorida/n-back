@@ -53,24 +53,24 @@ export default function Play() {
 
   const { playSound } = useGameSounds();
 
+  const {
+    setN,
+    N: defaultN,
+    termsAccepted: storedTermsAccepted,
+    dualMode: isDualMode,
+    silentMode: isSilentMode
+  } = useSettingsStore();
+
   const [grid, setGrid] = useState<Grid>(fillBoard());
   const [shouldStartGame, startGame] = useState<boolean>(false);
   const [elapsedTime, setElapsedTime] = useState<number>(-1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [defaultN, setDefaultN] = useState<number>(2);
-  const [isDualMode, setDualMode] = useState<boolean>(true);
-  const [isSilentMode, setSilenMode] = useState<boolean>(false);
+  // const [defaultN, setDefaultN] = useState<number>(2);
+  // const [isDualMode, setDualMode] = useState<boolean>(dualMode);
+  // const [isSilentMode, setSilenMode] = useState<boolean>(silentMode);
   const [showScoreOverlay, setShowScoreOverlay] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [levelText, setLevelText] = useState<string>(t('play.level'));
-
-  const { 
-      setN, N, 
-      saveDarkMode, darkMode: storedDarkMode, 
-      saveDualMode, dualMode: storedDualMode, 
-      saveSilentMode, silentMode: storedSilentMode, 
-      setTermsAccepted, termsAccepted: storedTermsAccepted
-    } = useSettingsStore();
 
 
   const {
@@ -143,8 +143,6 @@ export default function Play() {
     setGameLen(g);
   }
 
-  // const [gameLevels, setGameLevels] = useState<GameLevels>(DEFAULT_LEVELS);
-  
   const playerLevel = useRef<GameLevels>(DEFAULT_LEVELS);
   const setPlayerLevel = (mode: GameModeEnum, level: number) => {
     playerLevel.current = {
@@ -158,7 +156,7 @@ export default function Play() {
     setDualLvl(DualN);
     setSilentLvl(SilentDualN);
   };
-  
+
   const getPlayerLevel = (mode: GameModeEnum): number => {
     return playerLevel.current[mode] || 1;
   };
@@ -166,9 +164,9 @@ export default function Play() {
   const [didLevelUp, setDidLevelUp] = useState(false);
 
   const syncNWithLevel = (level: number) => {
-    const newN = Math.min(MAXN, Math.max(MINN, Math.floor(level/3) + 1));
+    const newN = Math.min(MAXN, Math.max(MINN, Math.floor(level / 3) + 1));
     setN(newN);
-    setDefaultN(newN);
+    // setDefaultN(newN);
   };
 
   const doLevelUp = (mode: GameModeEnum) => {
@@ -178,10 +176,10 @@ export default function Play() {
     setPlayerLevel(mode, newLevel);
     setFailCount(0);
     setSuccessCount(0);
-    
+
     // Sync N with new level
     syncNWithLevel(newLevel);
-    
+
     // Update navigation title
     navigation.setOptions({
       title: `${levelText} ${newLevel} (${GAME_MODE_NAMES[mode]})`
@@ -194,7 +192,7 @@ export default function Play() {
       setPlayerLevel(mode, currentLevel - 1);
       setFailCount(0);
       setSuccessCount(0);
-      
+
       // Update navigation title
       navigation.setOptions({
         title: `${levelText} ${currentLevel - 1} (${GAME_MODE_NAMES[mode]})`
@@ -287,7 +285,7 @@ export default function Play() {
 
   // Add state for tracking wins
   const [winsToNextLevel, setWinsToNextLevel] = useState(0);
-  const [totalWinsNeeded, ] = useState(3); // Adjust this value as needed
+  const [totalWinsNeeded,] = useState(3); // Adjust this value as needed
 
   // TODO achievements
   const scoreGame = ({ soundGuesses, posGuesses }: ScoreCard) => {
@@ -299,7 +297,7 @@ export default function Play() {
     let soundScore: number = 0;
     let soundError: number = 0;
     let soundResult;
-    
+
     let buzzScore: number = 0;
     let buzzError: number = 0;
     let buzzResult;
@@ -326,7 +324,7 @@ export default function Play() {
     if (!isSilentMode) playSound("yay");
 
     const currentGameMode = whichGameMode(isDualMode, isSilentMode);
-    
+
     if (playerWon(
       posResult,
       defaultN,
@@ -348,8 +346,8 @@ export default function Play() {
       setFailCount(failures);
       if (failures > 3) {
         showCustomAlert(
-          t('play.tryEasier'), 
-          t('play.tryEasierMessage'), 
+          t('play.tryEasier'),
+          t('play.tryEasierMessage'),
           () => doLevelDown(currentGameMode as GameModeEnum),
           true,
           { ok: t('ok'), cancel: t('cancel') }
@@ -366,37 +364,48 @@ export default function Play() {
     });
   }
 
+  // useEffect(() => {
+  //   console.log("Dual Mode: ", dualMode, isDualMode);
+  //   console.log("Silent Mode: ", silentMode, isSilentMode);
+  //   console.log("N: ", N, "================");
+  //   setDualMode(dualMode);
+  //   setSilenMode(silentMode);
+  // }, [dualMode, silentMode]);
+
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     // reset win count when game mode changes.
+  //     setFailCount(0);
+  //     setSuccessCount(0);
+  //     setWinsToNextLevel(0);  // Reset progress bar
+
+
+
+  //     return () => {
+  //       setFailCount(0);
+  //       setSuccessCount(0);
+  //       setWinsToNextLevel(0);  // Reset progress bar on cleanup
+  //     }
+
+  //   }, [isDualMode, isSilentMode])
+  // );
+
+
   useFocusEffect(
     React.useCallback(() => {
-      const getTerms = async () => {
-        if (!storedTermsAccepted) {
-          Alert.alert(
-            t('terms.title'),
-            t('terms.message'),
-            [
-              { text: t('terms.seeTerms'), onPress: () => router.push('/terms') },
-            ],
-            { cancelable: false }
-          );
-        }
+      if (!storedTermsAccepted) {
+        Alert.alert(
+          t('terms.title'),
+          t('terms.message'),
+          [
+            { text: t('terms.seeTerms'), onPress: () => router.push('/terms') },
+          ],
+          { cancelable: false }
+        );
       }
-      getTerms();
 
     }, [router])
   );
-
-  useEffect(() => {
-    // reset win count when game mode changes.
-    setFailCount(0);
-    setSuccessCount(0);
-    setWinsToNextLevel(0);  // Reset progress bar
-
-    return () => {
-      setFailCount(0);
-      setSuccessCount(0);
-      setWinsToNextLevel(0);  // Reset progress bar on cleanup
-    }
-  }, [isDualMode, isSilentMode]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -409,21 +418,14 @@ export default function Play() {
     React.useCallback(() => {
       const initGame = async () => {
         try {
-          // const isDualMode: boolean = await getDualMode();
-          // const isSilentMode: boolean = await getSilentMode();
-          // let n: number = await getN();
-          
-          setDualMode(isDualMode);
-          setSilenMode(isSilentMode);
-
           navigation.setOptions({
             title: `${levelText} ${getPlayerLevel(whichGameMode(isDualMode, isSilentMode) as GameModeEnum)} (${GAME_MODE_NAMES[whichGameMode(isDualMode, isSilentMode) as GameModeEnum]})`
           });
-          setDefaultN(N);
+          // setDefaultN(N);
 
           setEngine(
             engine({
-              n: N,
+              n: defaultN,
               gameLen: getGameLen(),
               matchRate: getMatchRate(),
               isDualMode
@@ -443,8 +445,8 @@ export default function Play() {
           if (savedLevels && typeof savedLevels === 'object') {
             const typedLevels = savedLevels as unknown as GameLevels;
             if (
-              GameModeEnum.SingleN in typedLevels && 
-              GameModeEnum.DualN in typedLevels && 
+              GameModeEnum.SingleN in typedLevels &&
+              GameModeEnum.DualN in typedLevels &&
               GameModeEnum.SilentDualN in typedLevels
             ) {
               playerLevel.current = typedLevels;
@@ -474,7 +476,7 @@ export default function Play() {
         resetGame()
         hideButtons()
       } // Cleanup on unmount
-    }, [/* first run: initialize game */])
+    }, [isDualMode, isSilentMode, defaultN])
   );
 
   useEffect(() => {
@@ -514,7 +516,7 @@ export default function Play() {
           const round = getEngine().nextRound(turn);
 
           setGrid(fillBoard());
-          
+
           // fix for missing visual indicator when two turns have the same visible square.
           const redraw = setTimeout(() => {
             setGrid(round?.next as Grid);
@@ -545,30 +547,17 @@ export default function Play() {
 
   // Add effect to handle N changes from settings
   useEffect(() => {
-    const handleNChange = async () => {
-      try {
-        if (N !== defaultN) {
-          setDefaultN(N);
-          // Reset all modes to appropriate starting level for this N
-          // const startingLevel = ((N - 1) * 3) + 1; // TODO? need to fix this to use the ENGINE method
-          const startingLevel = getStartLevel(N);
-          Object.values(GameModeEnum).forEach(mode => {
-            setPlayerLevel(mode, startingLevel);
-          });
-          
-          // Update navigation title for current mode
-          const currentMode = whichGameMode(isDualMode, isSilentMode) as GameModeEnum;
-          navigation.setOptions({
-            title: `${levelText} ${startingLevel} (${GAME_MODE_NAMES[currentMode]})`
-          });
-        }
-      } catch (e) {
-        log.error("Error syncing N value", e);
-      }
-    };
+    const startingLevel = getStartLevel(defaultN);
+    Object.values(GameModeEnum).forEach(mode => {
+      setPlayerLevel(mode, startingLevel);
+    });
 
-    handleNChange();
-  }, []); // Run on mount to catch any settings changes
+    // Update navigation title for current mode
+    const currentMode = whichGameMode(isDualMode, isSilentMode) as GameModeEnum;
+    navigation.setOptions({
+      title: `${levelText} ${startingLevel} (${GAME_MODE_NAMES[currentMode]})`
+    });
+  }, [defaultN]); // Run on mount to catch any settings changes
 
   return (
     <Display>
@@ -590,11 +579,11 @@ export default function Play() {
         <Animated.View style={{ opacity: playButtonFadeAnim }}>
           <PlayButton soundGuess={soundGuess} posGuess={posGuess} dualMode={isDualMode} silentMode={isSilentMode} />
         </Animated.View>
-        <StatusButton 
-          onPress={() => { resetGame(); startGame(true) }} 
-          isLoading={isLoading} 
-          playing={shouldStartGame} 
-          onTutorial={() => setShowTutorial(!showTutorial)} 
+        <StatusButton
+          onPress={() => { resetGame(); startGame(true) }}
+          isLoading={isLoading}
+          playing={shouldStartGame}
+          onTutorial={() => setShowTutorial(!showTutorial)}
         />
         <ProgressBar progress={winsToNextLevel / totalWinsNeeded} />
         {/* <View>
