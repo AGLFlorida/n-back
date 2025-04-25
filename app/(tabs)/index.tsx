@@ -5,20 +5,19 @@ import { useTranslation } from 'react-i18next';
 import Button from "@/components/Button";
 import { useGlobalStyles } from "@/styles/globalStyles";
 
-import security from "@/util/security";
+import { useSettingsStore } from "@/store/useSettingsStore";
 
-//@TODO: instead of reading storage every time, 
-// we need to import storage once into global state and keep it until the app refreshes.
 export default function Index() {
   const router = useRouter();
   const styles = useGlobalStyles();
   const { t } = useTranslation();
 
+  const { termsAccepted } = useSettingsStore();
+
   useFocusEffect(
     React.useCallback(() => {
-      const getTerms = async () => {
-        const terms = await security.get("termsAccepted");
-        if (!terms) {
+
+        if (!termsAccepted) {
           Alert.alert(
             t('terms.title'),
             t('terms.message'),
@@ -28,12 +27,11 @@ export default function Index() {
             { cancelable: false }
           );
         }
-      }
-      getTerms();
+      
 
-    }, [router])
+    }, [router, termsAccepted])
   );
-
+ 
   return (
     <View style={[styles.container, styles.indexContainer]}>
       <View style={styles.listItem}>

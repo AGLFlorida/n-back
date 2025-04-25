@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   KeyboardAvoidingView,
@@ -9,6 +9,8 @@ import {
   Switch,
   Pressable,
 } from "react-native";
+
+// TODO forcing light mode does not work.
 
 import { useRouter } from "expo-router";
 import { useTranslation } from 'react-i18next';
@@ -41,7 +43,7 @@ export default function Settings() {
     saveDarkMode, darkMode: storedDarkMode, 
     saveDualMode, dualMode: storedDualMode, 
     saveSilentMode, silentMode: storedSilentMode, 
-    setTermsAccepted, termsAccepted: storedTermsAccepted
+    setTermsAccepted
   } = useSettingsStore();
 
   const { setRecords } = useHistoryStore();
@@ -70,7 +72,6 @@ export default function Settings() {
       setTermsAccepted(false);
       setRecords({});
       
-      // TODO might not need this. I think saving to zustand store causes a rerender.
       setDefaultN(2);
       toggleDualMode(false);
       toggleSilentMode(false);
@@ -88,24 +89,26 @@ export default function Settings() {
     }
   };
 
-  const handleSaved = async () => {
-    if (error) {
-      alert(t('settings.errorMessage'));
-      return;
-    }
-
-    saveDarkMode(darkMode);
-    saveDualMode(dualMode);
-    saveSilentMode(silentMode);
-
-    showCustomAlert(t('alerts.success'), t('alerts.settingsSaved'), undefined, false, { ok: t('ok'), cancel: t('cancel') });
-  }
-
   const toggleSpanish = () => {
     const newLang = i18n.language === 'es' ? 'en' : 'es';
     i18n.changeLanguage(newLang);
     if (!__DEV__) handleRestart();
   };
+
+  useEffect(() => {
+    console.log('darkMode', darkMode);
+    saveDarkMode(darkMode)
+  }, [darkMode]);
+
+  useEffect(() => {
+    console.log('dualMode', dualMode);
+    saveDualMode(dualMode)
+  }, [dualMode]);
+
+  useEffect(() => {
+    console.log('silentMode', silentMode);
+    saveSilentMode(silentMode)
+  }, [silentMode]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -169,7 +172,7 @@ export default function Settings() {
               <Text style={styles.label}>{t('settings.darkMode')}</Text>
             </View>
           </View>
-          <Button label={t('settings.save')} onPress={() => handleSaved()} />
+          {/* <Button label={t('settings.save')} onPress={() => handleSaved()} /> */}
           <View style={[styles.row, { margin: 5 }]}>
             <View style={styles.settingsCell}>
               <Text style={styles.h1}>{t('settings.dangerZone')}</Text>

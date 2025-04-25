@@ -10,7 +10,7 @@ import { useGlobalStyles } from '@/styles/globalStyles';
 import { useTheme } from '@/contexts/ThemeContext';
 import Button from '@/components/Button';
 
-import security from '@/util/security';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function Terms() {
   const styles = useGlobalStyles();
@@ -18,8 +18,11 @@ export default function Terms() {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const acceptTerms = async () => {
-    await security.set("termsAccepted", true);
+  const { setTermsAccepted } = useSettingsStore();
+
+  const acceptTerms = () => {
+    setTermsAccepted(true);
+
     router.push("/");
   }
 

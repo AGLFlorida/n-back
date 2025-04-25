@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Appearance } from "react-native";
 
-import security from "@/util/security";
+import  { useSettingsStore } from "@/store/useSettingsStore";
 
 import { ThemeContextType } from "./types";
 import lightMode from "./light";
@@ -23,10 +23,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [theme, setTheme] = useState(initialTheme);
   const [themeMode, setThemeMode] = useState<"light" | "dark">(initialThemeMode);
 
+  const { darkMode: storedTheme } = useSettingsStore();
+
   useEffect(() => {
     const loadTheme = async () => {
-      const storedTheme = await security.get("darkMode");
-      
       if (storedTheme === true) {
         setThemeMode("dark");
         setTheme(darkMode);
@@ -37,7 +37,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     loadTheme();
-  }, []);
+  }, [storedTheme]);
 
   const toggleTheme = (dark: boolean) => {
     setThemeMode((dark) ? "dark" : "light");

@@ -6,15 +6,13 @@ import { useTranslation } from 'react-i18next';
 import Square from "@/components/Square";
 import PlayButton from "@/components/PlayButton";
 import StatusButton from "@/components/StatusButton";
-import { ScoreCard, ScoresType, SingleScoreType } from "@/util/ScoreCard";
+import { ScoreCard, SingleScoreType } from "@/util/ScoreCard";
 import useGameSounds, { SoundKey } from "@/hooks/sounds";
 
 import { showCustomAlert } from "@/util/alert";
-import security from "@/util/security";
 import log from "@/util/logger";
 
 import engine, {
-  getDualMode,
   fillBoard,
   CustomTimer,
   RunningEngine,
@@ -30,13 +28,17 @@ import engine, {
   DEFAULT_LEVELS,
   getGameModeNames,
   MAXN,
-  MINN
+  MINN,
+  getStartLevel
 } from "@/util/engine";
 
 import { height, useGlobalStyles } from "@/styles/globalStyles";
 import ScoreOverlay from '@/components/ScoreOverlay';
 import TutorialOverlay from '@/components/TutorialOverlay';
 import ProgressBar from '@/components/ProgressBar';
+
+import { useHistoryStore } from "@/store/useHistoryStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 
 
 const fillGuessCard = (len: number): boolean[] => Array(len).fill(false);
@@ -61,6 +63,22 @@ export default function Play() {
   const [showScoreOverlay, setShowScoreOverlay] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [levelText, setLevelText] = useState<string>(t('play.level'));
+
+  const { 
+      setN, N, 
+      saveDarkMode, darkMode: storedDarkMode, 
+      saveDualMode, dualMode: storedDualMode, 
+      saveSilentMode, silentMode: storedSilentMode, 
+      setTermsAccepted, termsAccepted: storedTermsAccepted
+    } = useSettingsStore();
+
+
+  const {
+    singleLvl, setSingleLvl,
+    dualLvl, setDualLvl,
+    silentLvl, setSilentLvl,
+    records, setRecords,
+  } = useHistoryStore();
 
   type GameScores = {
     positions: number;
@@ -133,8 +151,12 @@ export default function Play() {
       ...playerLevel.current,
       [mode]: level
     };
-    // Persist the levels
-    security.set('gameLevels', playerLevel.current);
+
+    const { SingleN, DualN, SilentDualN } = playerLevel.current;
+
+    setSingleLvl(SingleN);
+    setDualLvl(DualN);
+    setSilentLvl(SilentDualN);
   };
   
   const getPlayerLevel = (mode: GameModeEnum): number => {
@@ -145,7 +167,7 @@ export default function Play() {
 
   const syncNWithLevel = (level: number) => {
     const newN = Math.min(MAXN, Math.max(MINN, Math.floor(level/3) + 1));
-    security.set("defaultN", newN);
+    setN(newN);
     setDefaultN(newN);
   };
 
@@ -205,8 +227,7 @@ export default function Play() {
   // Previous Scores
   const loadRecords = async () => {
     try {
-      const rec = await security.get("records");
-      if (rec == null) {
+      if (records == null) {
         const initSingleN: SingleScoreType = {
           score: 0,
           errorRate: 0,
@@ -223,30 +244,9 @@ export default function Play() {
         playHistory.setValue(GameModeEnum.DualN, initDualN);
         playHistory.setValue(GameModeEnum.SilentDualN, initDualN);
       }
-      playHistory.scores = rec as ScoresType;
+      playHistory.scores = records;
     } catch (e) {
       log.error("Error retrieving past scores.", e);
-    }
-  }
-
-  // Current N
-  const getN = async (): Promise<number> => {
-    try {
-      const n = await security.get("defaultN");
-      return n as number
-    } catch (e) {
-      log.error("Error in [getN]", e);
-      throw e;
-    }
-  };
-
-  const getSilentMode = async (): Promise<boolean> => {
-    try {
-      const n = await security.get("silentMode");
-      return n as boolean
-    } catch (e) {
-      log.error("Error in [getSilentMode]", e);
-      throw e;
     }
   }
 
@@ -360,14 +360,16 @@ export default function Play() {
 
     const currentGameScore: SingleScoreType = gameModeScore(defaultN, posResult, soundResult, buzzResult);
     playHistory.setValue(currentGameMode, currentGameScore);
-    playHistory.save();
+    setRecords({
+      ...records,
+      [currentGameMode]: currentGameScore // TODO this is some autocorrect/copilot BS. make sure to come back and look at it.
+    });
   }
 
   useFocusEffect(
     React.useCallback(() => {
       const getTerms = async () => {
-        const terms = await security.get("termsAccepted");
-        if (!terms) {
+        if (!storedTermsAccepted) {
           Alert.alert(
             t('terms.title'),
             t('terms.message'),
@@ -407,23 +409,21 @@ export default function Play() {
     React.useCallback(() => {
       const initGame = async () => {
         try {
-          const isDualMode: boolean = await getDualMode();
-          const isSilentMode: boolean = await getSilentMode();
-          let n: number = await getN();
+          // const isDualMode: boolean = await getDualMode();
+          // const isSilentMode: boolean = await getSilentMode();
+          // let n: number = await getN();
           
           setDualMode(isDualMode);
           setSilenMode(isSilentMode);
-          
-          if (n === null) n = defaultN;
 
           navigation.setOptions({
             title: `${levelText} ${getPlayerLevel(whichGameMode(isDualMode, isSilentMode) as GameModeEnum)} (${GAME_MODE_NAMES[whichGameMode(isDualMode, isSilentMode) as GameModeEnum]})`
           });
-          setDefaultN(n);
+          setDefaultN(N);
 
           setEngine(
             engine({
-              n,
+              n: N,
               gameLen: getGameLen(),
               matchRate: getMatchRate(),
               isDualMode
@@ -435,7 +435,11 @@ export default function Play() {
           await loadRecords();
 
           // Load saved game levels
-          const savedLevels = await security.get('gameLevels');
+          const savedLevels = {
+            [GameModeEnum.SingleN]: singleLvl,
+            [GameModeEnum.DualN]: dualLvl,
+            [GameModeEnum.SilentDualN]: silentLvl
+          }
           if (savedLevels && typeof savedLevels === 'object') {
             const typedLevels = savedLevels as unknown as GameLevels;
             if (
@@ -543,11 +547,11 @@ export default function Play() {
   useEffect(() => {
     const handleNChange = async () => {
       try {
-        const n = await security.get("defaultN") as number;
-        if (n !== defaultN) {
-          setDefaultN(n);
+        if (N !== defaultN) {
+          setDefaultN(N);
           // Reset all modes to appropriate starting level for this N
-          const startingLevel = ((n - 1) * 3) + 1;
+          // const startingLevel = ((N - 1) * 3) + 1; // TODO? need to fix this to use the ENGINE method
+          const startingLevel = getStartLevel(N);
           Object.values(GameModeEnum).forEach(mode => {
             setPlayerLevel(mode, startingLevel);
           });

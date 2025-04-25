@@ -1,5 +1,4 @@
 import log from "@/util/logger";
-import security from "./security";
 
 const ERROR_PREFIX = "Error in ScoreCard: ";
 
@@ -110,14 +109,14 @@ export class ScoreCard {
     }
   }
 
-  save(): void {
-    const saveScores = async () => {
-      try {
-        await security.set("records", this._value);
-      } catch (e) {
-        log.error("Error saving scores", e);
-      }
-    }
-    saveScores();
-  }
+  // save(): void {
+  //   const saveScores = async () => {
+  //     try {
+  //       await secur ity.set("records", this._value);
+  //     } catch (e) {
+  //       log.error("Error saving scores", e);
+  //     }
+  //   }
+  //   saveScores();
+  // }
 }

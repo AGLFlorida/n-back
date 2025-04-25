@@ -1,7 +1,6 @@
 import { Audio } from "expo-av";
 import * as Haptics from "expo-haptics";
 
-import security from './security';
 import log from "./logger";
 import { SingleScoreType } from "./ScoreCard";
 
@@ -83,16 +82,6 @@ export type RunningEngine = {
   answers: () => Answers;
   timeLimit: number;
 }
-
-const getDualMode = async (): Promise<boolean> => {
-  try {
-    const dual = await security.get("dualMode");
-    return dual as boolean;
-  } catch (e) {
-    log.error("Error in [getDualMode]", e);
-    throw e;
-  }
-};
 
 const gridIndexes: Array<[number, number]> = (() => {
   const allCells: Array<[number, number]> = [];
@@ -416,7 +405,6 @@ export const getStartLevel = (n: number) => Math.max(1, ((n - 2) * 4 + 1));
 export {
   calculateScore,
   fillBoard,
-  getDualMode,
   defaults,
   shouldLevelUp,
   playerWon
