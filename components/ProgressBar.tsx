@@ -1,25 +1,37 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, Animated } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 
 type ProgressBarProps = {
-  progress: number;  // Value between 0 and 1
+  progress: number; 
 };
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
+const ProgressBar = ({ progress }: ProgressBarProps) => {
   const { theme } = useTheme();
-  
+  const animatedWidth = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(animatedWidth, {
+      toValue: Math.min(100, Math.max(0, progress * 100)), 
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }, [progress]);
+
   return (
     <View style={styles.wrapper}>
       <View style={[styles.container, { backgroundColor: theme.accentColor }]}>
-        <View 
+        <Animated.View
           style={[
-            styles.fill, 
-            { 
+            styles.fill,
+            {
               backgroundColor: theme.screenOptions.tabBarActiveTintColor,
-              width: `${Math.min(100, Math.max(0, progress * 100))}%`
-            }
-          ]} 
+              width: animatedWidth.interpolate({
+                inputRange: [0, 100],
+                outputRange: ['0%', '100%'],
+              }),
+            },
+          ]}
         />
       </View>
     </View>
@@ -39,7 +51,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    width: '80%'
+    width: '80%',
   },
   fill: {
     borderRadius: 8,
@@ -53,4 +65,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ProgressBar; 
+export default ProgressBar;
