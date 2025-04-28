@@ -114,7 +114,7 @@ export default function Settings() {
   }, [silentMode]);
 
   useEffect(() => {
-    console.debug("dual | silent | dark > ", storedDualMode, storedSilentMode, storedDarkMode);
+    console.debug("[settings] dual | silent | dark > ", storedDualMode, storedSilentMode, storedDarkMode);
   }, [storedDualMode, storedSilentMode, storedDarkMode])
 
   return (

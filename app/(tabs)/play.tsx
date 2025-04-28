@@ -148,8 +148,6 @@ export default function Play() {
       [mode]: level
     };
 
-    console.log('set player level:', playerLevel.current)
-
     const { SingleN, DualN, SilentDualN } = playerLevel.current;
 
     setSingleLvl(SingleN);
@@ -158,7 +156,6 @@ export default function Play() {
   };
 
   const getPlayerLevel = (mode: GameModeEnum): number => {
-    console.warn("getPlayerLevel", playerLevel.current[mode] || 1);
     return playerLevel.current[mode] || 1;
   };
 
@@ -335,11 +332,8 @@ export default function Play() {
     )) {
       const successes = getSuccessCount() + 1;
       setSuccessCount(successes);
-      if (shouldLevelUp(successes)) {
-        doLevelUp(currentGameMode as GameModeEnum);
-      }
       setWinsToNextLevel(prev => prev + 1);
-      if (winsToNextLevel + 1 >= totalWinsNeeded) {
+      if (winsToNextLevel + 1 >= totalWinsNeeded && shouldLevelUp(successes)) {
         doLevelUp(currentGameMode as GameModeEnum);
         setWinsToNextLevel(0);
       }
@@ -577,7 +571,7 @@ export default function Play() {
   }, [defaultN]); // Run on mount to catch any settings changes
 
   useEffect(() => {
-    console.debug('dual, silent - ', isDualMode, isSilentMode);
+    console.debug('[play] dual, silent - ', isDualMode, isSilentMode);
   }, [isDualMode, isSilentMode])
 
   return (
