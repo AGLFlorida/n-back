@@ -4,7 +4,7 @@ import * as Haptics from "expo-haptics";
 import log from "./logger";
 import { SingleScoreType } from "./ScoreCard";
 
-export const accuracyThresholds = [0, 80, 75, 70, 65, 60, 55, 50, 45];
+export const accuracyThresholds = [90, 80, 75, 70, 65, 60, 55, 50, 45];
 
 export enum GameModeEnum {
   SingleN = "SingleN",
@@ -184,6 +184,7 @@ const shouldLevelUp = (winStreak: number): boolean => (winStreak > 2);
  * @returns {boolean} - True if the player should level up, false otherwise.
  */
 const playerWon = (pScore: Result, n: number = 2, sScore?: Result, bScore?: Result): boolean => {
+  console.log("player won?")
   // Error rate and accuracy are passed in as a whole number (i.e. a percentage) rather than a decimal;
   // const accuracyThresholds = [0, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45]; // index corresponds to N-1
   // const accuracyThresholds = [0, 80, 75, 70, 65, 60, 55, 50, 45]; // index corresponds to N-1

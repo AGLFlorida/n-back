@@ -138,6 +138,11 @@ export default function Terms() {
               <Text style={{ color: theme.textColor }}>{t('terms.additionalAttributionMessage5')}</Text>
             </CustomLink>
           </View>
+          <View style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
+            <CustomLink textToCopy="https://notificationsounds.com/message-tones/out-of-bounds-54">
+              <Text style={{ color: theme.textColor }}>{t('terms.additionalAttributionMessage6')}</Text>
+            </CustomLink>
+          </View>
 
           <View style={{ alignSelf: 'flex-start', marginBottom: 20, marginTop: 20 }}>
             <Text style={{ color: theme.textColor }}>{t('terms.noAgreementMessage')}</Text>

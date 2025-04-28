@@ -46,7 +46,6 @@ export default function History() {
   const [lineData13, setLineData13] = useState<DataPointType[]>([]);
 
   const { records, setRecords } = useHistoryStore();
-  // console.log("History records", records);
 
   // const [playHistory, setPlayHistory] = useState<ScoresType>();
 
@@ -94,6 +93,8 @@ export default function History() {
     const dataSet11: DataPointType[] = [];
     const dataSet12: DataPointType[] = [];
     const dataSet13: DataPointType[] = [];
+
+    console.log("History records", JSON.stringify(records, null, 2));
 
     for (const [key, value] of Object.entries(records)) {
       // console.log("fo: ", value);

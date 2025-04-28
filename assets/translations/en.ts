@@ -50,6 +50,7 @@ export default {
     additionalAttributionMessage3: "Some sounds provided by freesound.org and licenced under Creative Commons 0 and others.",
     additionalAttributionMessage4: "Single mode tile movement provided by Game Menu Select Sound 2 by digimistic -- https://freesound.org/s/705174/ -- License: Creative Commons 0.",
     additionalAttributionMessage5: "Game Complete fanfare provided by Fanfare short.wav by vitovsky1 -- https://freesound.org/s/400163/ -- License: Attribution 3.0",
+    additionalAttributionMessage6: "Out of bounds by notificationsounds.com -- https://notificationsounds.com/message-tones/out-of-bounds-54 --  License: Creative Commons",
     noAgreementMessage: "If you do not agree to these terms, uninstall and/or do not use the App.",
   },
   alerts: {

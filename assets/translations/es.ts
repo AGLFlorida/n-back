@@ -86,6 +86,7 @@ export default {
     "additionalAttributionMessage3": "Algunos sonidos proporcionados por freesound.org y licenciados bajo Creative Commons 0 y otros.",
     "additionalAttributionMessage4": "Movimiento de fichas en modo simple proporcionado por Game Menu Select Sound 2 de digimistic -- https://freesound.org/s/705174/ -- Licencia: Creative Commons 0.",
     "additionalAttributionMessage5": "Fanfarria de finalización de juego proporcionada por Fanfare short.wav de vitovsky1 -- https://freesound.org/s/400163/ -- Licencia: Attribution 3.0",
+    additionalAttributionMessage6: "Fuera de límites de notificationsounds.com -- https://notificationsounds.com/message-tones/out-of-bounds-54 --  Licencia: Creative Commons",
     "noAgreementMessage": "Si no estás de acuerdo con estos términos, desinstala y/o no uses la App."
   },
   buttons: {

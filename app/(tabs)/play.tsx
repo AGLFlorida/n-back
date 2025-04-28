@@ -70,7 +70,6 @@ export default function Play() {
   const [showTutorial, setShowTutorial] = useState(false);
   const [levelText, setLevelText] = useState<string>(t('play.level'));
 
-
   const {
     singleLvl, setSingleLvl,
     dualLvl, setDualLvl,
@@ -119,7 +118,7 @@ export default function Play() {
     engineRef.current = e;
   }
 
-  const { gameLen: DEFAULT_GAMELEN, matchRate: DEFAULT_MATCHRATE } = defaults(1)
+  const { gameLen: DEFAULT_GAMELEN, matchRate: DEFAULT_MATCHRATE } = defaults(1);
   const gameLen = useRef<number>();
   const setGameLen = (p: number) => {
     gameLen.current = p;
@@ -134,6 +133,10 @@ export default function Play() {
   const getMatchRate = (): number => {
     return matchRate.current || DEFAULT_MATCHRATE
   }
+
+  const turnsLeft = useRef<number>(gameLen.current || DEFAULT_GAMELEN);
+  const decrementTurns = () => turnsLeft.current--;
+  const resetTurns = () => turnsLeft.current = (gameLen.current || DEFAULT_GAMELEN);
 
   if (matchRate == undefined || gameLen == undefined) {
     const { gameLen: g, matchRate: m } = defaults();
@@ -254,6 +257,7 @@ export default function Play() {
     setGrid(fillBoard());
     setTurnRef(0);
     emptyGuessCards();
+    resetTurns();
   }
 
   const startGameLoop = () => {
@@ -320,16 +324,19 @@ export default function Play() {
       bError: buzzError
     });
     setShowScoreOverlay(true);
-    if (!isSilentMode) playSound("yay");
-
-    const currentGameMode = whichGameMode(isDualMode, isSilentMode);
-
-    if (playerWon(
+    const isWinner: boolean = playerWon(
       posResult,
       defaultN,
       (isDualMode && !isSilentMode) ? soundResult : undefined,
       (isDualMode && isSilentMode) ? buzzResult : undefined
-    )) {
+    );
+
+    if (!isSilentMode && isWinner) playSound("yay");
+    if (!isSilentMode && !isWinner) playSound("failure");
+
+    const currentGameMode = whichGameMode(isDualMode, isSilentMode);
+
+    if (isWinner) {
       const successes = getSuccessCount() + 1;
       setSuccessCount(successes);
       setWinsToNextLevel(prev => prev + 1);
@@ -354,10 +361,12 @@ export default function Play() {
 
     const currentGameScore: SingleScoreType = gameModeScore(defaultN, posResult, soundResult, buzzResult);
     playHistory.setValue(currentGameMode, currentGameScore);
-    setRecords({
-      ...records,
-      [currentGameMode]: currentGameScore // TODO this is some autocorrect/copilot BS. make sure to come back and look at it.
-    });
+    console.log("current game score", currentGameScore);
+    console.log("play history", playHistory);
+    // setRecords({
+    //   ...records,
+    //   [currentGameMode]: currentGameScore // TODO this is some autocorrect/copilot BS. make sure to come back and look at it.
+    // });
   }
 
   // useEffect(() => {
@@ -515,6 +524,7 @@ export default function Play() {
       if (elapsedTime % 2 === 0) {
         const turn = Math.floor(elapsedTime / 2);
         setTurnRef(turn);
+        decrementTurns();
         if (turn >= getGameLen()) { // exit condition 2: game is actually over.
           scoreGame({
             posGuesses: posClickRef.current,
@@ -601,6 +611,9 @@ export default function Play() {
           onTutorial={() => setShowTutorial(!showTutorial)}
         />
         <ProgressBar progress={winsToNextLevel / totalWinsNeeded} />
+        <View style={styles.indexContainer}>
+          <Text style={styles.label}>Turns Left: {turnsLeft.current}</Text>
+        </View>
         {/* <View>
           <Text style={{ color: 'white' }}>Level: {getPlayerLevel()}</Text>
           <Text style={{ color: 'white' }}>Wins: {getSuccessCount()}</Text>

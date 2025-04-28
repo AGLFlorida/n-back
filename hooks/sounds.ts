@@ -13,8 +13,9 @@ import T from "@/assets/audio/T.m4a";
 import W from "@/assets/audio/W.m4a";
 import swap from "@/assets/audio/swap.m4a";
 import fanfare from "@/assets/audio/fanfare.m4a";
+import failure from "@/assets/audio/out-of-bounds-54.mp3";
 
-export type SoundKey = "C" | "G" | "H" | "K" | "P" | "Q" | "T" | "W" | "swap" | "yay";
+export type SoundKey = "C" | "G" | "H" | "K" | "P" | "Q" | "T" | "W" | "swap" | "yay" | "failure";
 
 const soundFileMap: Record<string, number> = {
   C: C,
@@ -27,6 +28,7 @@ const soundFileMap: Record<string, number> = {
   W: W,
   swap: swap,
   yay: fanfare,
+  failure: failure
 }
 
 const useGameSounds = () => {
@@ -41,6 +43,7 @@ const useGameSounds = () => {
     W: null,
     swap: null,
     yay: null,
+    failure: null
   });
 
   const [isLoaded, setIsLoaded] = useState(false);
