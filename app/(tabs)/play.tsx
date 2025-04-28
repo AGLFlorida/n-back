@@ -344,12 +344,14 @@ export default function Play() {
         doLevelUp(currentGameMode as GameModeEnum);
         setWinsToNextLevel(0);
       }
+      setFailCount(0);
     } else {
       const failures = getFailCount() + 1;
       setFailCount(failures);
+      setSuccessCount(0);
       if (failures > 3) {
         showCustomAlert(
-          t('play.tryEasier'),
+          t('play.tryAgain'),
           t('play.tryEasierMessage'),
           () => doLevelDown(currentGameMode as GameModeEnum),
           true,
@@ -612,7 +614,7 @@ export default function Play() {
         />
         <ProgressBar progress={winsToNextLevel / totalWinsNeeded} />
         <View style={styles.indexContainer}>
-          <Text style={styles.label}>Turns Left: {turnsLeft.current}</Text>
+          <Text style={[styles.label, {fontSize: 24}]}>Turns Left: {turnsLeft.current}</Text>
         </View>
         {/* <View>
           <Text style={{ color: 'white' }}>Level: {getPlayerLevel()}</Text>
