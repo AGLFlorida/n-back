@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, ReactNode } from "react";
 import { View, Animated, Alert, ScrollView } from "react-native";
-import { useFocusEffect, useNavigation, useRouter } from "expo-router";
+import { useFocusEffect, useNavigation, useRouter, useSegments } from "expo-router";
 import { useTranslation } from 'react-i18next';
 
 import Square from "@/components/Square";
@@ -53,13 +53,11 @@ export default function Play() {
 
   const { playSound } = useGameSounds();
 
-  const {
-    setN,
-    N: defaultN,
-    termsAccepted: storedTermsAccepted,
-    dualMode: isDualMode,
-    silentMode: isSilentMode
-  } = useSettingsStore();
+  const setN = useSettingsStore(state => state.setN);
+  const defaultN = useSettingsStore(state => state.N);
+  const storedTermsAccepted = useSettingsStore(state => state.termsAccepted);
+  const isDualMode = useSettingsStore(state => state.dualMode);
+  const isSilentMode = useSettingsStore(state => state.silentMode);
 
   const [grid, setGrid] = useState<Grid>(fillBoard());
   const [shouldStartGame, startGame] = useState<boolean>(false);
@@ -67,7 +65,7 @@ export default function Play() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   // const [defaultN, setDefaultN] = useState<number>(2);
   // const [isDualMode, setDualMode] = useState<boolean>(dualMode);
-  // const [isSilentMode, setSilenMode] = useState<boolean>(silentMode);
+  // const [isSilentMode, setSilentMode] = useState<boolean>(silentMode);
   const [showScoreOverlay, setShowScoreOverlay] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [levelText, setLevelText] = useState<string>(t('play.level'));
@@ -390,7 +388,6 @@ export default function Play() {
   //   }, [isDualMode, isSilentMode])
   // );
 
-
   useFocusEffect(
     React.useCallback(() => {
       if (!storedTermsAccepted) {
@@ -412,6 +409,22 @@ export default function Play() {
       setLevelText(t('play.level'));
     }, [t])
   );
+
+  // useEffect(() => {
+  //   console.log("silent | dual", isSilentMode, isDualMode);
+  // }, [isSilentMode, isDualMode]);
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     console.log("silent | dual", isSilentMode, isDualMode, silentMode, dualMode);
+  //     if (silentMode != isSilentMode) {
+  //       setSilentMode(silentMode)
+  //     }
+
+  //     if (dualMode != isDualMode) {
+  //       setDualMode(dualMode);
+  //     }
+  //   }, [isSilentMode, isDualMode])
+  // );
 
   // Main Gameplay Loop
   useFocusEffect(

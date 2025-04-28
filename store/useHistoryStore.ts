@@ -22,6 +22,7 @@ type HistoryState = {
   setSingleLvl: (lvl: number) => void;
   setDualLvl: (lvl: number) => void;
   setSilentLvl: (lvl: number) => void;
+  reset: () => void;
 }
 
 export const useHistoryStore = create<HistoryState>()(
@@ -50,6 +51,14 @@ export const useHistoryStore = create<HistoryState>()(
         set({
           silentLvl: lvl
         })
+      },
+      reset: () => {
+        set({
+          records: {},
+          singleLvl: startingLevel,
+          dualLvl: startingLevel,
+          silentLvl: startingLevel,
+        });
       }
     }),
     {
@@ -58,3 +67,16 @@ export const useHistoryStore = create<HistoryState>()(
     }
   )
 );
+
+
+export const resetHistoryStore = async () => {
+  try {
+    // Clear AsyncStorage key manually
+    await AsyncStorage.removeItem('my-store');
+
+    // Reset Zustand store state
+    useHistoryStore.getState().reset();
+  } catch (error) {
+    console.error('Failed to reset store', error);
+  }
+};

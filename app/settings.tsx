@@ -18,8 +18,8 @@ import * as Updates from 'expo-updates';
 
 import Button from "@/components/Button";
 
-import { useSettingsStore } from "@/store/useSettingsStore";
-import { useHistoryStore } from "@/store/useHistoryStore";
+import { darkModeDefault, useSettingsStore } from "@/store/useSettingsStore";
+import { resetHistoryStore, useHistoryStore } from "@/store/useHistoryStore";
 
 import { useGlobalStyles } from "@/styles/globalStyles";
 import { useTheme } from "@/contexts/ThemeContext"
@@ -67,14 +67,18 @@ export default function Settings() {
     const clear = async () => {
       setN();
       saveDualMode(false);
-      saveDarkMode(false);
+      saveDarkMode(darkModeDefault);
       saveSilentMode(false);
       setTermsAccepted(false);
       setRecords({});
       
       setDefaultN(2);
       toggleDualMode(false);
+      toggleDarkMode(darkModeDefault);
       toggleSilentMode(false);
+
+      resetHistoryStore();
+
       router.push('/terms');
     }
 

@@ -8,6 +8,8 @@ export const BASEN = 2;
 
 const systemTheme = Appearance.getColorScheme();
 
+export const darkModeDefault: boolean = systemTheme === "dark";
+
 type SettingsState = {
   N: number;
   darkMode: boolean;
