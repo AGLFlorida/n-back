@@ -95,8 +95,6 @@ export default function History() {
     const dataSet12: DataPointType[] = [];
     const dataSet13: DataPointType[] = [];
 
-    console.log(JSON.stringify(records, null, 2));
-
     for (const [key, value] of Object.entries(records)) {
       // console.log("fo: ", value);
       // const idx = labels.indexOf(key);
@@ -261,9 +259,9 @@ export default function History() {
           </View>
         </>
       }
-      <View>
+      {/* <View>
         <Text style={{color: '#fff'}}>{JSON.stringify(records)}</Text>
-      </View>
+      </View> */}
     </ScrollView>
   );
 }

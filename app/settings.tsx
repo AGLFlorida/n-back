@@ -10,8 +10,6 @@ import {
   Pressable,
 } from "react-native";
 
-// TODO forcing light mode does not work.
-
 import { useRouter } from "expo-router";
 import { useTranslation } from 'react-i18next';
 import * as Updates from 'expo-updates';
@@ -40,11 +38,15 @@ export default function Settings() {
 
   const { 
     setN, N, 
-    saveDarkMode, darkMode: storedDarkMode, 
-    saveDualMode, dualMode: storedDualMode, 
-    saveSilentMode, silentMode: storedSilentMode, 
+    saveDarkMode, //darkMode: storedDarkMode, 
+    saveDualMode, //dualMode: storedDualMode, 
+    saveSilentMode, //silentMode: storedSilentMode, 
     setTermsAccepted
   } = useSettingsStore();
+
+  const storedDarkMode = useSettingsStore(state => state.darkMode);
+  const storedDualMode = useSettingsStore(state => state.dualMode);
+  const storedSilentMode = useSettingsStore(state => state.silentMode);
 
   const { setRecords } = useHistoryStore();
 
@@ -110,6 +112,10 @@ export default function Settings() {
   useEffect(() => {
     saveSilentMode(silentMode)
   }, [silentMode]);
+
+  useEffect(() => {
+    console.debug("dual | silent | dark > ", storedDualMode, storedSilentMode, storedDarkMode);
+  }, [storedDualMode, storedSilentMode, storedDarkMode])
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
