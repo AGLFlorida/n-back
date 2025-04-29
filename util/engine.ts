@@ -132,7 +132,7 @@ const calculateScore = ({ answers, guesses }: Score): Result => {
 const MAXTIME = (5 * 60);
 export const MAXN = 9;
 export const MINN = 2;
-const DEFAULT_GAMELEN = 30;
+const DEFAULT_GAMELEN = 5//30;
 interface Level {
   gameLen: number,
   matchRate: number,

@@ -1,11 +1,13 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { useFocusEffect } from "expo-router";
-import { ScrollView, View, Text } from "react-native";
+import { ScrollView, View, Text, Image, StyleSheet } from "react-native";
 import { useTranslation } from 'react-i18next';
 
 import { useGlobalStyles } from "@/styles/globalStyles";
 
 import { ScoresType } from '@/util/ScoreCard';
+
+import AchievementBar from '@/components/AchievementBar';
 
 
 import Chart, { DataPointType } from '@/components/Chart';
@@ -153,36 +155,36 @@ export default function History() {
       }
 
       // if (yValue10) {
-        const data10: DataPointType = {
-          x: idx,
-          y: yValue10
-        }
-        dataSet10.push(data10);
+      const data10: DataPointType = {
+        x: idx,
+        y: yValue10
+      }
+      dataSet10.push(data10);
       // }
 
 
       // if (yValue11) {
-        const data11: DataPointType = {
-          x: idx,
-          y: yValue11
-        }
-        dataSet11.push(data11);
+      const data11: DataPointType = {
+        x: idx,
+        y: yValue11
+      }
+      dataSet11.push(data11);
       // }
 
       // if (yValue12) {
-        const data12: DataPointType = {
-          x: idx,
-          y: yValue12
-        }
-        dataSet12.push(data12);
+      const data12: DataPointType = {
+        x: idx,
+        y: yValue12
+      }
+      dataSet12.push(data12);
       // }
 
       // if (yValue13) {
-        const data13: DataPointType = {
-          x: idx,
-          y: yValue13
-        }
-        dataSet13.push(data13);
+      const data13: DataPointType = {
+        x: idx,
+        y: yValue13
+      }
+      dataSet13.push(data13);
       // }
 
       dataSet1.push(data1);
@@ -221,6 +223,7 @@ export default function History() {
 
   return (
     <ScrollView style={styles.container}>
+      <AchievementBar />
       {showChart &&
         <>
           <View>
