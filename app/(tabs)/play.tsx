@@ -9,7 +9,10 @@ import StatusButton from "@/components/StatusButton";
 import { ScoreCard, SingleScoreType } from "@/util/ScoreCard";
 import useGameSounds, { SoundKey } from "@/hooks/sounds";
 
-// TODO | FIXME -- switching between game modes does not change player level or N
+// TODO | FIXME -- switching between game modes does not change player level or N -- actually, there are several weird bugs 
+// with state here. clearing data once didn't reset the player level but hitting it 3 or 4 times did. sometimes is gets the toggles
+// out of sync with the actualy settings. also saw an issue where the player leveled to 6 but when I tabbed away and back, the level
+// went back to 5.
 
 import { showCustomAlert } from "@/util/alert";
 import log from "@/util/logger";
