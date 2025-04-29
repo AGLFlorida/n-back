@@ -49,6 +49,8 @@ export default {
     notFound: "No Encontrado",
     play: "Jugar",
     history: "Historial",
+    awards: 'TRANSLATE ME [awards]',
+    charts: 'TRANSLATE ME [charts]'
   },
   play: {
     tryAgain: "¿Quieres jugar un nivel más fácil?",

@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { useFocusEffect } from "expo-router";
-import { ScrollView, View, Text, Image, StyleSheet } from "react-native";
+import { ScrollView, View, Text } from "react-native";
 import { useTranslation } from 'react-i18next';
 
 import { useGlobalStyles } from "@/styles/globalStyles";
@@ -8,6 +8,8 @@ import { useGlobalStyles } from "@/styles/globalStyles";
 import { ScoresType } from '@/util/ScoreCard';
 
 import AchievementBar from '@/components/AchievementBar';
+
+// TODO | FIXME -- still need to wire up the logic for 'streak'
 
 
 import Chart, { DataPointType } from '@/components/Chart';
@@ -219,23 +221,25 @@ export default function History() {
 
     dataLabels.current = labels;
     // }
-  }, [records])
+  }, [records]);
 
   return (
     <ScrollView style={styles.container}>
+      <Text style={styles.h1}>{t('titles.awards')}</Text>
       <AchievementBar />
       {showChart &&
         <>
+          <Text style={styles.h1}>{t('titles.charts')}</Text>
           <View>
-            <Text style={[styles.h1, { margin: 10 }]}>{t('history.single')}</Text>
+            <Text style={[styles.h2, { margin: 10 }]}>{t('history.single')}</Text>
             <Chart data={lineData} data2={lineData2} data3={lineData3} xLabels={dataLabels.current} />
           </View>
           <View>
-            <Text style={[styles.h1, { margin: 10 }]}>{t('history.dual')}</Text>
+            <Text style={[styles.h2, { margin: 10 }]}>{t('history.dual')}</Text>
             <Chart data={lineData4} data2={lineData5} data3={lineData6} data4={lineData10} data5={lineData11} xLabels={dataLabels.current} />
           </View>
           <View>
-            <Text style={[styles.h1, { margin: 10 }]}>{t('history.silent')}</Text>
+            <Text style={[styles.h2, { margin: 10 }]}>{t('history.silent')}</Text>
             <Chart data={lineData7} data2={lineData8} data3={lineData9} data4={lineData12} data5={lineData13} xLabels={dataLabels.current} />
           </View>
         </>

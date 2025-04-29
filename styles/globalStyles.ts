@@ -40,6 +40,12 @@ export const useGlobalStyles = () => {
       fontWeight: 700,
       marginTop: 20
     },
+    h2: {
+      color: theme.textColor,
+      fontSize: 18,
+      fontWeight: 700,
+      marginTop: 20
+    },
     heading: {
       color: theme.textColor,
       fontSize: 22,

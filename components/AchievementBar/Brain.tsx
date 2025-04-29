@@ -5,8 +5,8 @@ import styles from './styles';
 import type { BrainProps, Rank } from './types';
 
 export const brainRank = (n: number): Rank => {
-  if (n >= 4) return 'gold';
-  if (n >= 3) return 'silver';
+  if (n >= 6) return 'gold';
+  if (n >= 4) return 'silver';
   if (n >= 2) return 'bronze';
 
   return 'none'

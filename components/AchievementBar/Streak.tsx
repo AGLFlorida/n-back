@@ -6,7 +6,7 @@ import styles from './styles';
 export const streakRank = (t: number): Rank => {
   if (t >= 21) return 'gold';
   if (t >= 14) return 'silver';
-  if (t >= 7) return 'bronze';
+  if (t > 1) return 'bronze';
 
   return 'none'
 }

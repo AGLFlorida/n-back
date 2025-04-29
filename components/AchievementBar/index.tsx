@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { View } from 'react-native';
 
 import { useHistoryStore } from '@/store/useHistoryStore';
+import { useAchievementStore } from '@/store/useAchievementStore';
 
 import { getStartLevel } from '@/util/engine';
 
@@ -15,25 +16,15 @@ import { ScoreCard } from '@/util/ScoreCard';
 
 const AchievementBar = () => {
   const records = useHistoryStore(state => state.records) as Record<string, ScoreCard>;
-  const [streak, setStreak] = useState(0);
-  const [level, setLevel] = useState(1);
-  const [N, setN] = useState(2);
+  const { streak, setStreak } = useAchievementStore();
+  const { N } = useAchievementStore();
+  const { level } = useAchievementStore();
 
   useEffect(() => {
     const total: number = Object.keys(records).length || 0;
     setStreak(total);
+    console.log(total);
   }, [records]);
-
-  // useEffect(() => {
-  //   const l = getStartLevel(N)
-  //   setLevel(level)
-  // }, [level, N]);
-
-  useEffect(() => {
-    setN(N);
-    const l = getStartLevel(N);
-    setLevel(l);
-  }, [N]);
 
   return (
     <View style={styles.imgLayout}>

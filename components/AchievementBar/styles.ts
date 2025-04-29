@@ -44,8 +44,8 @@ const styles = StyleSheet.create({
   silver: {
     backgroundColor: '#C0C0C0',
     borderWidth: 4,
-    color: '#A9A9A9',
-    borderColor: '#A9A9A9'
+    color: '#676767',
+    borderColor: '#676767'
   },
   bronze: {
     backgroundColor: '#CD7F32',

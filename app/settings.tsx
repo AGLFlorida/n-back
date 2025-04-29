@@ -10,6 +10,8 @@ import {
   Pressable,
 } from "react-native";
 
+// TODO | FIXME -- toggling system display does not update settings / theme.
+
 import { useRouter } from "expo-router";
 import { useTranslation } from 'react-i18next';
 import * as Updates from 'expo-updates';

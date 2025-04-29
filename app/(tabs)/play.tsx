@@ -12,6 +12,8 @@ import useGameSounds, { SoundKey } from "@/hooks/sounds";
 import { showCustomAlert } from "@/util/alert";
 import log from "@/util/logger";
 
+import { useAchievementStore } from "@/store/useAchievementStore";
+
 import engine, {
   fillBoard,
   CustomTimer,
@@ -371,6 +373,21 @@ export default function Play() {
     // });
   }
 
+
+  const { N: highestN, setN: setHighestN } = useAchievementStore();
+  const { level: higestLevel, setLevel: setHighestLevel } = useAchievementStore();
+  // const { streak, setStreak = useAchievementStore(state => [state.streak, state.setStreak])
+  useEffect(() => {
+    if (highestN < defaultN) {
+      setHighestN(defaultN);
+    }
+
+    const currentGameMode = whichGameMode(isDualMode, isSilentMode);
+    if (higestLevel < playerLevel.current[currentGameMode as GameModeEnum]) {
+      setHighestLevel(playerLevel.current[currentGameMode as GameModeEnum]);
+    }
+  }, [playerLevel, defaultN, isDualMode, isSilentMode]);
+
   // useEffect(() => {
   //   console.log("Dual Mode: ", dualMode, isDualMode);
   //   console.log("Silent Mode: ", silentMode, isSilentMode);
@@ -614,7 +631,7 @@ export default function Play() {
         />
         <ProgressBar progress={winsToNextLevel / totalWinsNeeded} />
         <View style={styles.indexContainer}>
-          <Text style={[styles.label, {fontSize: 24}]}>Turns Left: {turnsLeft.current}</Text>
+          <Text style={[styles.label, { fontSize: 24 }]}>Turns Left: {turnsLeft.current}</Text>
         </View>
         {/* <View>
           <Text style={{ color: 'white' }}>Level: {getPlayerLevel()}</Text>

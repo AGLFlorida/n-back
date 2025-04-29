@@ -82,7 +82,9 @@ export default {
     settings: "Settings",
     notFound: "Not Found",
     play: "Play",
-    history: "History"
+    history: "History",
+    awards: 'Awards',
+    charts: 'Charts'
   },
   play: {
     tryAgain: "Try an easier level?",
