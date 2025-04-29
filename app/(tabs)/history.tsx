@@ -11,7 +11,6 @@ import AchievementBar from '@/components/AchievementBar';
 
 // TODO | FIXME -- still need to wire up the logic for 'streak'
 
-
 import Chart, { DataPointType } from '@/components/Chart';
 
 import { useHistoryStore } from "@/store/useHistoryStore";

@@ -9,6 +9,8 @@ import StatusButton from "@/components/StatusButton";
 import { ScoreCard, SingleScoreType } from "@/util/ScoreCard";
 import useGameSounds, { SoundKey } from "@/hooks/sounds";
 
+// TODO | FIXME -- switching between game modes does not change player level or N
+
 import { showCustomAlert } from "@/util/alert";
 import log from "@/util/logger";
 
