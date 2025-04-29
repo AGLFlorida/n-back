@@ -12,31 +12,33 @@ export const medalRank = (level: number): Rank => {
 }
 
 const Medal = ({ level }: MedalProps) => {
-  if (level >= 15) {
+  const rank = medalRank(level);
+  if (rank === 'gold') {
     return (<Image
       source={require('@/assets/images/achievements/medalGold.png')}
       style={styles.img}
       resizeMode="contain"
-    />)
-  } else if (level >= 10) {
+    />);
+  } else if (rank === 'silver') {
     return (<Image
       source={require('@/assets/images/achievements/medalSilver.png')}
       style={styles.img}
       resizeMode="contain"
-    />)
-  } else if (level >= 5) {
+    />);
+  } else if (rank === 'bronze') {
     return (<Image
       source={require('@/assets/images/achievements/medalBronze.png')}
       style={styles.img}
       resizeMode="contain"
-    />)
-  } else {
-    return (<Image
-      source={require('@/assets/images/achievements/medalEmpty.png')}
-      style={styles.img}
-      resizeMode="contain"
-    />)
+    />);
   }
+
+  return (<Image
+    source={require('@/assets/images/achievements/medalEmpty.png')}
+    style={styles.img}
+    resizeMode="contain"
+  />);
+
 }
 
 export default Medal;

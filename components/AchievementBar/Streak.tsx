@@ -12,31 +12,33 @@ export const streakRank = (t: number): Rank => {
 }
 
 const Streak = ({ streak }: StreakProps) => {
-  if (streak >= 21) {
+  const rank = streakRank(streak);
+  if (rank === 'gold') {
     return (<Image
       source={require('@/assets/images/achievements/streakGold.png')}
       style={styles.img}
       resizeMode="contain"
-    />)
-  } else if (streak >= 14) {
+    />);
+  } else if (rank === 'silver') {
     return (<Image
       source={require('@/assets/images/achievements/streakSilver.png')}
       style={styles.img}
       resizeMode="contain"
-    />)
-  } else if (streak >= 7) {
+    />);
+  } else if (rank === 'bronze') {
     return (<Image
       source={require('@/assets/images/achievements/streakBronze.png')}
       style={styles.img}
       resizeMode="contain"
-    />)
-  } else {
-    return (<Image
-      source={require('@/assets/images/achievements/streakEmpty.png')}
-      style={styles.img}
-      resizeMode="contain"
-    />)
+    />);
   }
+
+  return (<Image
+    source={require('@/assets/images/achievements/streakEmpty.png')}
+    style={styles.img}
+    resizeMode="contain"
+  />);
+
 }
 
 export default Streak;

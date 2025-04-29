@@ -11,6 +11,7 @@ const Banner = ({ t, rank }: BannerProps) => {
       ...localStyle,
       ...styles.gold
     }
+    return <Text style={localStyle}>{t}</Text>;
   }
 
   if (rank === 'silver') {
@@ -18,6 +19,7 @@ const Banner = ({ t, rank }: BannerProps) => {
       ...localStyle,
       ...styles.silver
     }
+    return <Text style={localStyle}>{t}</Text>;
   }
 
   if (rank === 'bronze') {
@@ -25,11 +27,10 @@ const Banner = ({ t, rank }: BannerProps) => {
       ...localStyle,
       ...styles.bronze
     }
+    return <Text style={localStyle}>{t}</Text>;
   }
 
-  return (
-    <Text style={localStyle}>{t}</Text>
-  );
+  return <></>;
 }
 
 

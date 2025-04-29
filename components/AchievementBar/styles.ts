@@ -30,9 +30,9 @@ const styles = StyleSheet.create({
     color: '#000',
     borderRadius: 50,
     padding: 2,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     width: '30%',
-    borderColor: '#CCCCCC',
+    borderColor: '#dddddd',
     borderWidth: 4,
   },
   gold: {

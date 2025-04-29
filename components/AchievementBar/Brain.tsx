@@ -13,31 +13,33 @@ export const brainRank = (n: number): Rank => {
 }
 
 const Brain = ({ n }: BrainProps) => {
-  if (n >= 4) {
+  const rank = brainRank(n);
+  if (rank === 'gold') {
     return (<Image
       source={require('@/assets/images/achievements/brainGold.png')}
       style={styles.img}
       resizeMode="contain"
-    />)
-  } else if (n >= 3) {
+    />);
+  } else if (rank === 'silver') {
     return (<Image
       source={require('@/assets/images/achievements/brainSilver.png')}
       style={styles.img}
       resizeMode="contain"
-    />)
-  } else if (n >= 2) {
+    />);
+  } else if (rank === 'bronze') {
     return (<Image
       source={require('@/assets/images/achievements/brainBronze.png')}
       style={styles.img}
       resizeMode="contain"
-    />)
-  } else {
-    return (<Image
-      source={require('@/assets/images/achievements/streakEmpty.png')}
-      style={styles.img}
-      resizeMode="contain"
-    />)
+    />);
   }
+
+  return (<Image
+    source={require('@/assets/images/achievements/brainEmpty.png')}
+    style={styles.img}
+    resizeMode="contain"
+  />);
+
 }
 
 export default Brain;
