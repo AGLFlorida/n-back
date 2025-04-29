@@ -250,7 +250,7 @@ describe('Engine Core Functions', () => {
         score: 90,
         errorRate: 10,
         score2: undefined,
-        errotRate2: undefined
+        errorRate2: undefined
       });
     });
 
@@ -264,7 +264,7 @@ describe('Engine Core Functions', () => {
         score: 90,
         errorRate: 10,
         score2: 85,
-        errotRate2: 15
+        errorRate2: 15
       });
     });
 
@@ -278,7 +278,7 @@ describe('Engine Core Functions', () => {
         score: 90,
         errorRate: 10,
         score2: 80,
-        errotRate2: 20
+        errorRate2: 20
       });
     });
   });

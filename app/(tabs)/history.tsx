@@ -7,18 +7,8 @@ import { useGlobalStyles } from "@/styles/globalStyles";
 
 import { ScoresType } from '@/util/ScoreCard';
 
-// import security from "@/util/security";
-
-// TODO / TO FIX
-/*
-- records are not displaying
--- we moved away from secure store and completely changed the storage mechanism
-
-*/
 
 import Chart, { DataPointType } from '@/components/Chart';
-import log from '@/util/logger';
-
 
 import { useHistoryStore } from "@/store/useHistoryStore";
 
@@ -45,7 +35,7 @@ export default function History() {
   const [lineData12, setLineData12] = useState<DataPointType[]>([]);
   const [lineData13, setLineData13] = useState<DataPointType[]>([]);
 
-  const { records, setRecords } = useHistoryStore();
+  const records: ScoresType = useHistoryStore(state => state.records);
 
   // const [playHistory, setPlayHistory] = useState<ScoresType>();
 
@@ -54,25 +44,15 @@ export default function History() {
   const dataLabels = useRef<string[]>([]);
 
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const loadRecords = async () => {
-  //       try {
-  //         const rec = await security.get("records");
-  //         setPlayHistory(rec as ScoresType);
-  //       } catch (e) {
-  //         log.error("Error retrieving past scores.", e);
-  //       }
-  //     }
+  useFocusEffect(
+    useCallback(() => {
+      setShowChart(true);
 
-  //     loadRecords();
-  //     setShowChart(true);
-
-  //     return () => {
-  //       setShowChart(false);
-  //     }
-  //   }, [])
-  // );
+      return () => {
+        setShowChart(false);
+      }
+    }, [])
+  );
 
   useEffect(() => {
     // if (playHistory) {
@@ -94,131 +74,128 @@ export default function History() {
     const dataSet12: DataPointType[] = [];
     const dataSet13: DataPointType[] = [];
 
-    console.log("History records", JSON.stringify(records, null, 2));
-
     for (const [key, value] of Object.entries(records)) {
-      // console.log("fo: ", value);
-      // const idx = labels.indexOf(key);
-      // const yValue1 = value.SingleN.score;
-      // const yValue2 = value.SingleN.errorRate;
-      // const yValue3 = value.SingleN.n;
+      const idx = labels.indexOf(key);
+      const yValue1 = value.SingleN.score;
+      const yValue2 = value.SingleN.errorRate;
+      const yValue3 = value.SingleN.n;
 
-      // const yValue4 = value.DualN?.score || 0;
-      // const yValue5 = value.DualN?.errorRate || 0;
-      // const yValue6 = value.DualN?.n || 0;
+      const yValue4 = value.DualN?.score || 0;
+      const yValue5 = value.DualN?.errorRate || 0;
+      const yValue6 = value.DualN?.n || 0;
 
-      // const yValue7 = value.SilentDualN?.score || 0;
-      // const yValue8 = value.SilentDualN?.errorRate || 0;
-      // const yValue9 = value.SilentDualN?.n || 0;
+      const yValue7 = value.SilentDualN?.score || 0;
+      const yValue8 = value.SilentDualN?.errorRate || 0;
+      const yValue9 = value.SilentDualN?.n || 0;
 
-      // let yValue10 = 0;
-      // if (value.DualN && value.DualN.score2) {
-      //   yValue10 = value.DualN.score2;
+      let yValue10 = 0;
+      if (value.DualN && value.DualN.score2) {
+        yValue10 = value.DualN.score2;
+      }
+      let yValue11 = 0;
+      if (value.DualN && value.DualN.errorRate2) {
+        yValue11 = value.DualN.errorRate2;
+      }
+
+      let yValue12 = 0;
+      if (value.DualN && value.SilentDualN.score2) {
+        yValue12 = value.SilentDualN.score2;
+      }
+
+      let yValue13 = 0;
+      if (value.SilentDualN && value.SilentDualN.errorRate2) {
+        yValue13 = value.SilentDualN.errorRate2;
+      }
+
+      const data1: DataPointType = {
+        x: idx,
+        y: yValue1
+      }
+
+      const data2: DataPointType = {
+        x: idx,
+        y: yValue2
+      }
+
+      const data3: DataPointType = {
+        x: idx,
+        y: yValue3
+      }
+
+      const data4: DataPointType = {
+        x: idx,
+        y: yValue4
+      }
+
+      const data5: DataPointType = {
+        x: idx,
+        y: yValue5
+      }
+
+      const data6: DataPointType = {
+        x: idx,
+        y: yValue6
+      }
+
+      const data7: DataPointType = {
+        x: idx,
+        y: yValue7
+      }
+
+      const data8: DataPointType = {
+        x: idx,
+        y: yValue8
+      }
+
+      const data9: DataPointType = {
+        x: idx,
+        y: yValue9
+      }
+
+      // if (yValue10) {
+        const data10: DataPointType = {
+          x: idx,
+          y: yValue10
+        }
+        dataSet10.push(data10);
       // }
-      // let yValue11 = 0;
-      // if (value.DualN && value.DualN.errotRate2) {
-      //   yValue11 = value.DualN.errotRate2;
+
+
+      // if (yValue11) {
+        const data11: DataPointType = {
+          x: idx,
+          y: yValue11
+        }
+        dataSet11.push(data11);
       // }
 
-      // let yValue12 = 0;
-      // if (value.DualN && value.SilentDualN.score2) {
-      //   yValue12 = value.SilentDualN.score2;
+      // if (yValue12) {
+        const data12: DataPointType = {
+          x: idx,
+          y: yValue12
+        }
+        dataSet12.push(data12);
       // }
 
-      // let yValue13 = 0;
-      // if (value.SilentDualN && value.SilentDualN.errotRate2) {
-      //   yValue13 = value.SilentDualN.errotRate2;
+      // if (yValue13) {
+        const data13: DataPointType = {
+          x: idx,
+          y: yValue13
+        }
+        dataSet13.push(data13);
       // }
 
-      // const data1: DataPointType = {
-      //   x: idx,
-      //   y: yValue1
-      // }
+      dataSet1.push(data1);
+      dataSet2.push(data2);
+      dataSet3.push(data3);
 
-      // const data2: DataPointType = {
-      //   x: idx,
-      //   y: yValue2
-      // }
+      dataSet4.push(data4);
+      dataSet5.push(data5);
+      dataSet6.push(data6);
 
-      // const data3: DataPointType = {
-      //   x: idx,
-      //   y: yValue3
-      // }
-
-      // const data4: DataPointType = {
-      //   x: idx,
-      //   y: yValue4
-      // }
-
-      // const data5: DataPointType = {
-      //   x: idx,
-      //   y: yValue5
-      // }
-
-      // const data6: DataPointType = {
-      //   x: idx,
-      //   y: yValue6
-      // }
-
-      // const data7: DataPointType = {
-      //   x: idx,
-      //   y: yValue7
-      // }
-
-      // const data8: DataPointType = {
-      //   x: idx,
-      //   y: yValue8
-      // }
-
-      // const data9: DataPointType = {
-      //   x: idx,
-      //   y: yValue9
-      // }
-
-      // // if (yValue10) {
-      //   const data10: DataPointType = {
-      //     x: idx,
-      //     y: yValue10
-      //   }
-      //   dataSet10.push(data10);
-      // // }
-
-
-      // // if (yValue11) {
-      //   const data11: DataPointType = {
-      //     x: idx,
-      //     y: yValue11
-      //   }
-      //   dataSet11.push(data11);
-      // // }
-
-      // // if (yValue12) {
-      //   const data12: DataPointType = {
-      //     x: idx,
-      //     y: yValue12
-      //   }
-      //   dataSet12.push(data12);
-      // // }
-
-      // // if (yValue13) {
-      //   const data13: DataPointType = {
-      //     x: idx,
-      //     y: yValue13
-      //   }
-      //   dataSet13.push(data13);
-      // // }
-
-      // dataSet1.push(data1);
-      // dataSet2.push(data2);
-      // dataSet3.push(data3);
-
-      // dataSet4.push(data4);
-      // dataSet5.push(data5);
-      // dataSet6.push(data6);
-
-      // dataSet7.push(data7);
-      // dataSet8.push(data8);
-      // dataSet9.push(data9);
+      dataSet7.push(data7);
+      dataSet8.push(data8);
+      dataSet9.push(data9);
     }
 
     setLineData(dataSet1);

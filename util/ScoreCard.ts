@@ -6,7 +6,7 @@ export type SingleScoreType = {
   score: number,
   score2?: number, // for DualN and SilentDualN modes
   errorRate: number,
-  errotRate2?: number,
+  errorRate2?: number,
   n: number,
 };
 export type ScoreBlock = Record<string, SingleScoreType>

@@ -37,7 +37,7 @@ export function gameModeScore(n: number, pScore: Result, sScore?: Result, bScore
   }
 
   card.score2 = accuracy;
-  card.errotRate2 = errorRate;
+  card.errorRate2 = errorRate;
 
   return card;
 }

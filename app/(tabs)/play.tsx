@@ -105,8 +105,6 @@ export default function Play() {
     return failCount.current || 0;
   }
 
-  // TODO -- FIXME -- N is no longer automagically incrementing.
-
   const engineRef = useRef<RunningEngine>();
   const getEngine = (): RunningEngine => {
     return engineRef.current || engine({
@@ -239,7 +237,7 @@ export default function Play() {
           score: 0,
           score2: 0,
           errorRate: 0,
-          errotRate2: 0,
+          errorRate2: 0,
           n: defaultN,
         }
         playHistory.setValue(GameModeEnum.SingleN, initSingleN);
