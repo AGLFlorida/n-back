@@ -10,12 +10,31 @@ const ProgressBar = ({ progress }: ProgressBarProps) => {
   const { theme } = useTheme();
   const animatedWidth = useRef(new Animated.Value(0)).current;
 
+  const prevProgress = useRef(0);
+  const setPrevProgress = (t: number) => prevProgress.current = t;
+
   useEffect(() => {
-    Animated.timing(animatedWidth, {
-      toValue: Math.min(100, Math.max(0, progress * 100)), 
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
+    if (prevProgress.current == (2/3)) {
+      Animated.sequence([
+        Animated.timing(animatedWidth, {
+          toValue: 100, 
+          duration: 500,
+          useNativeDriver: false,
+        }),
+        Animated.timing(animatedWidth, {
+          toValue: 0, 
+          duration: 0, 
+          useNativeDriver: false,
+        }),
+      ]).start();
+    } else {
+      Animated.timing(animatedWidth, {
+        toValue: Math.min(100, Math.max(0, progress * 100)), 
+        duration: 500,
+        useNativeDriver: false,
+      }).start();
+    }
+    setPrevProgress(progress);
   }, [progress]);
 
   return (
