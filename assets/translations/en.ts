@@ -113,6 +113,15 @@ export default {
     silentMode: "Silent Mode",
     silentModeDescription: "Silent mode changes the default \"letter\" sound to a pattern of vibrations. The standard celebratory sounds remain the same."
   },
+  scoreOverlay: {
+    results: "Results",
+    posScore: "Position Score",
+    posError: "Position Error",
+    hapScore: "Haptic Score",
+    hapError: "Haptic Error",
+    soundScore: "Sound Score",
+    soundError: "Sound Error"
+  },
   ok: "OK",
   cancel: "Cancel"
 }; 

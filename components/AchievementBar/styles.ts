@@ -1,57 +1,57 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
+  bronze: {
+    backgroundColor: '#CD7F32',
+    borderColor: '#8B4513',
+    borderWidth: 4,
+    color: '#8B4513'
+  },
+  floatingText: {
+    backgroundColor: '#ffffff',
+    borderColor: '#dddddd',
+    borderRadius: 50,
+    borderWidth: 4,
+    bottom: 5,
+    color: '#000',
+    fontSize: 24,
+    fontWeight: 'bold',
+    left: 0,
+    padding: 2,
+    position: 'absolute',
+    right: 0,
+    textAlign: 'center',
+    width: '30%',
+  },
+  gold: {
+    backgroundColor: '#FFD700',
+    borderColor: '#B8860B',
+    borderWidth: 4,
+    color: '#B8860B'
+  },
+  img: {
+    borderRadius: 15,
+    height: '100%',
+    width: '100%',
+  },
+  imgContainer: {
+    aspectRatio: 1,
+    borderRadius: 20,
+    overflow: 'hidden',
+    position: 'relative',
+    width: '32%',
+  },
   imgLayout: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 2,
     paddingTop: 10,
   },
-  imgContainer: {
-    width: '32%',
-    overflow: 'hidden',
-    aspectRatio: 1,
-    borderRadius: 20,
-    position: 'relative',
-  },
-  img: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 15,
-  },
-  floatingText: {
-    position: 'absolute',
-    bottom: 5,
-    left: 0,
-    right: 0,
-    textAlign: 'center',
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000',
-    borderRadius: 50,
-    padding: 2,
-    backgroundColor: '#ffffff',
-    width: '30%',
-    borderColor: '#dddddd',
-    borderWidth: 4,
-  },
-  gold: {
-    backgroundColor: '#FFD700',
-    borderWidth: 4,
-    color: '#B8860B',
-    borderColor: '#B8860B'
-  },
   silver: {
     backgroundColor: '#C0C0C0',
+    borderColor: '#676767',
     borderWidth: 4,
-    color: '#676767',
-    borderColor: '#676767'
-  },
-  bronze: {
-    backgroundColor: '#CD7F32',
-    borderWidth: 4,
-    color: '#8B4513',
-    borderColor: '#8B4513'
+    color: '#676767'
   }
 });
 

@@ -15,26 +15,26 @@ const Medal = ({ level }: MedalProps) => {
   const rank = medalRank(level);
   if (rank === 'gold') {
     return (<Image
-      source={require('@/assets/images/achievements/medalGold.png')}
+      source={require('@/assets/images/achievements/medalGold.png')} // eslint-disable-line
       style={styles.img}
       resizeMode="contain"
     />);
   } else if (rank === 'silver') {
     return (<Image
-      source={require('@/assets/images/achievements/medalSilver.png')}
+      source={require('@/assets/images/achievements/medalSilver.png')} // eslint-disable-line
       style={styles.img}
       resizeMode="contain"
     />);
   } else if (rank === 'bronze') {
     return (<Image
-      source={require('@/assets/images/achievements/medalBronze.png')}
+      source={require('@/assets/images/achievements/medalBronze.png')} // eslint-disable-line
       style={styles.img}
       resizeMode="contain"
     />);
   }
 
   return (<Image
-    source={require('@/assets/images/achievements/medalEmpty.png')}
+    source={require('@/assets/images/achievements/medalEmpty.png')} // eslint-disable-line
     style={styles.img}
     resizeMode="contain"
   />);

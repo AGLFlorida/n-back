@@ -15,26 +15,26 @@ const Streak = ({ streak }: StreakProps) => {
   const rank = streakRank(streak);
   if (rank === 'gold') {
     return (<Image
-      source={require('@/assets/images/achievements/streakGold.png')}
+      source={require('@/assets/images/achievements/streakGold.png')} // eslint-disable-line
       style={styles.img}
       resizeMode="contain"
     />);
   } else if (rank === 'silver') {
     return (<Image
-      source={require('@/assets/images/achievements/streakSilver.png')}
+      source={require('@/assets/images/achievements/streakSilver.png')} // eslint-disable-line
       style={styles.img}
       resizeMode="contain"
     />);
   } else if (rank === 'bronze') {
     return (<Image
-      source={require('@/assets/images/achievements/streakBronze.png')}
+      source={require('@/assets/images/achievements/streakBronze.png')} // eslint-disable-line
       style={styles.img}
       resizeMode="contain"
     />);
   }
 
   return (<Image
-    source={require('@/assets/images/achievements/streakEmpty.png')}
+    source={require('@/assets/images/achievements/streakEmpty.png')} // eslint-disable-line
     style={styles.img}
     resizeMode="contain"
   />);

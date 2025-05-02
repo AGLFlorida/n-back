@@ -16,26 +16,26 @@ const Brain = ({ n }: BrainProps) => {
   const rank = brainRank(n);
   if (rank === 'gold') {
     return (<Image
-      source={require('@/assets/images/achievements/brainGold.png')}
+      source={require('@/assets/images/achievements/brainGold.png')} // eslint-disable-line 
       style={styles.img}
       resizeMode="contain"
     />);
   } else if (rank === 'silver') {
     return (<Image
-      source={require('@/assets/images/achievements/brainSilver.png')}
+      source={require('@/assets/images/achievements/brainSilver.png')} // eslint-disable-line
       style={styles.img}
       resizeMode="contain"
     />);
   } else if (rank === 'bronze') {
     return (<Image
-      source={require('@/assets/images/achievements/brainBronze.png')}
+      source={require('@/assets/images/achievements/brainBronze.png')} // eslint-disable-line
       style={styles.img}
       resizeMode="contain"
     />);
   }
 
   return (<Image
-    source={require('@/assets/images/achievements/brainEmpty.png')}
+    source={require('@/assets/images/achievements/brainEmpty.png')} // eslint-disable-line
     style={styles.img}
     resizeMode="contain"
   />);

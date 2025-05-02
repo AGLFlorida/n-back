@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { useTheme } from "@/contexts/ThemeContext";
+import { useTranslation } from 'react-i18next';
 
 type ScoreOverlayProps = {
   isVisible: boolean;
@@ -18,6 +19,7 @@ type ScoreOverlayProps = {
 
 const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores, didLevelUp }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const slideAnim = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
 
@@ -83,40 +85,40 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores,
         ]}
       >
         <Text style={[styles.title, { color: theme.textColor }]}>
-          Results
+          {t('scoreOverlay.results')}
         </Text>
         {didLevelUp && (
           <Text style={[styles.levelUp, { color: theme.screenOptions.tabBarActiveTintColor }]}>
-            You leveled up!
+            {t('scoreOverlay.levelup')}
           </Text>
         )}
         <View style={styles.scoresContainer}>
           <Text style={[styles.score, { color: theme.textColor }]}>
-            Position Score: {scores.positions}%
+          {t('scoreOverlay.posScore')}: {scores.positions}%
           </Text>
           {scores.pError !== undefined && scores.pError > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
-              Position Error Rate: {scores.pError}%
+              {t('scoreOverlay.posError')}: {scores.pError}%
             </Text>
           )}
           {scores.sounds !== undefined && scores.sounds > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
-              Sound Score: {scores.sounds}% 
+               {t('scoreOverlay.soundScore')}: {scores.sounds}% 
             </Text>
           )}
           {scores.sError !== undefined && scores.sError > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
-              Sound Error Rate: {scores.sError}%
+               {t('scoreOverlay.soundError')}: {scores.sError}%
             </Text>
           )}
           {scores.buzz !== undefined && scores.buzz > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
-              Haptic Score: {scores.buzz}% 
+               {t('scoreOverlay.hapScore')}: {scores.buzz}% 
             </Text>
           )}
           {scores.bError !== undefined && scores.bError > 0 && (
             <Text style={[styles.score, { color: theme.textColor }]}>
-              Haptic Error Rate: {scores.bError}%
+               {t('scoreOverlay.hapError')}: {scores.bError}%
             </Text>
           )}
         </View>
@@ -124,7 +126,7 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores,
           style={[styles.button, { backgroundColor: theme.accentColor }]}
           onPress={onClose}
         >
-          <Text style={[styles.buttonText, { color: theme.textColor }]}>Close</Text>
+          <Text style={[styles.buttonText, { color: theme.textColor }]}> {t('text.close')}</Text>
         </TouchableOpacity>
       </Animated.View>
     </View>

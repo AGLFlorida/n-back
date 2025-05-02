@@ -6,6 +6,8 @@ import { useAchievementStore } from '@/store/useAchievementStore';
 
 import { getStartLevel } from '@/util/engine';
 
+// TODO | FIXME -- bar grows to 100% even on a failed game. (only tested at 2 wins, 1 loss.)
+
 import Streak, { streakRank } from './Streak';
 import Medal, { medalRank } from './Medal';
 import Brain, { brainRank } from './Brain';

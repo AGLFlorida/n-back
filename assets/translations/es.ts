@@ -57,6 +57,15 @@ export default {
     tryEasierMessage: "¿Quieres disminuir la dificultad? No hay penalización por tomar un momento para restablecer.",
     level: "Nivel"
   },
+  scoreOverlay: {
+    results: "Resultados",
+    posScore: "Puntuación de Posición",
+    posError: "Error de Posición",
+    hapScore: "Puntuación Háptica",
+    hapError: "Error Háptico",
+    soundScore: "Puntuación de Sonido",
+    soundError: "Error de Sonido"
+  },
   terms: {
     // terms popup
     title: "Términos y Condiciones",

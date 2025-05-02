@@ -243,9 +243,9 @@ export default function History() {
           </View>
         </>
       }
-      {/* <View>
+      <View>
         <Text style={{color: '#fff'}}>{JSON.stringify(records)}</Text>
-      </View> */}
+      </View> 
     </ScrollView>
   );
 }

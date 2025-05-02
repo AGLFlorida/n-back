@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, ReactNode } from "react";
 import { View, Text, Animated, Alert, ScrollView } from "react-native";
-import { useFocusEffect, useNavigation, useRouter, useSegments } from "expo-router";
+import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useTranslation } from 'react-i18next';
 
 import Square from "@/components/Square";
@@ -13,6 +13,9 @@ import useGameSounds, { SoundKey } from "@/hooks/sounds";
 // with state here. clearing data once didn't reset the player level but hitting it 3 or 4 times did. sometimes is gets the toggles
 // out of sync with the actualy settings. also saw an issue where the player leveled to 6 but when I tabbed away and back, the level
 // went back to 5.
+
+// TODO | FIXME -- I reproduced a bug twice. I am not sure if it occurs after level 3 or after the first "failed" game. If you hit one
+// of those two conditions, switch screens, then back, it resets to level 3 / N 2.
 
 import { showCustomAlert } from "@/util/alert";
 import log from "@/util/logger";
@@ -81,7 +84,7 @@ export default function Play() {
     singleLvl, setSingleLvl,
     dualLvl, setDualLvl,
     silentLvl, setSilentLvl,
-    records, setRecords,
+    records, //setRecords,
   } = useHistoryStore();
 
   type GameScores = {
