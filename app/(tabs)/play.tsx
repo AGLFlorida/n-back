@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, ReactNode } from "react";
-import { View, Text, Animated, Alert, ScrollView } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, Animated, Alert } from "react-native";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +8,8 @@ import PlayButton from "@/components/PlayButton";
 import StatusButton from "@/components/StatusButton";
 import { ScoreCard, SingleScoreType } from "@/util/ScoreCard";
 import useGameSounds, { SoundKey } from "@/hooks/sounds";
+
+import Display from "@/components/Display"
 
 // TODO | FIXME -- switching between game modes does not change player level or N -- actually, there are several weird bugs 
 // with state here. clearing data once didn't reset the player level but hitting it 3 or 4 times did. sometimes is gets the toggles
@@ -42,7 +44,7 @@ import engine, {
   getStartLevel
 } from "@/util/engine";
 
-import { height, useGlobalStyles } from "@/styles/globalStyles";
+import { useGlobalStyles } from "@/styles/globalStyles";
 import ScoreOverlay from '@/components/ScoreOverlay';
 import TutorialOverlay from '@/components/TutorialOverlay';
 import ProgressBar from '@/components/ProgressBar';
@@ -661,24 +663,4 @@ export default function Play() {
 }
 
 
-type DisplayProps = {
-  children: ReactNode;
-}
-function Display({ children }: DisplayProps) {
-  const makeScroll: boolean = height < 800;
 
-  return (
-    <>
-      {makeScroll &&
-        <ScrollView>
-          {children}
-        </ScrollView>
-      }
-      {!makeScroll &&
-        <>
-          {children}
-        </>
-      }
-    </>
-  )
-}
