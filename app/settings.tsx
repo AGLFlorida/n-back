@@ -119,6 +119,10 @@ export default function Settings() {
     saveSilentMode(silentMode)
   }, [silentMode]);
 
+  useEffect(() => {
+    setN(defaultN);
+  }, [defaultN]);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
