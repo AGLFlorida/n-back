@@ -72,7 +72,7 @@ export default function Play() {
   const setN = useSettingsStore(state => state.setN);
   const defaultN = useSettingsStore(state => state.N);
   const storedTermsAccepted = useSettingsStore(state => state.termsAccepted);
-  
+
   const isDualMode = useSettingsStore(state => state.dualMode);
   const isSilentMode = useSettingsStore(state => state.silentMode);
 
@@ -169,7 +169,6 @@ export default function Play() {
   };
 
   const getPlayerLevel = (mode: GameModeEnum): number => {
-    console.log(defaultN, getStartLevel(defaultN));
     return playerLevel.current[mode] || getStartLevel(defaultN);
   };
 
@@ -326,7 +325,7 @@ export default function Play() {
       bError: buzzError
     });
     setShowScoreOverlay(true);
-    
+
     const isWinner: boolean = playerWon(
       posResult,
       defaultN,
@@ -352,7 +351,7 @@ export default function Play() {
       const failures = getFailCount() + 1;
       setFailCount(failures);
       setSuccessCount(0);
-      if (failures > 3) {
+      if (failures > 3 && defaultN > MINN) {
         showCustomAlert(
           t('play.tryAgain'),
           t('play.tryEasierMessage'),
@@ -360,8 +359,24 @@ export default function Play() {
           true,
           { ok: t('ok'), cancel: t('cancel') }
         );
+        setWinsToNextLevel(0);
+        setShowScoreOverlay(false);
+      } else if (failures > 3 && defaultN == MINN) {
+        showCustomAlert(
+          t('play.showTutorial'),
+          t('play.showTutorialMessage'),
+          () => {
+            setShowTutorial(true)
+          },
+          true,
+          { ok: t('ok'), cancel: t('cancel') }
+        );
+        setPlayerLevel(currentGameMode as GameModeEnum, 1);
+        setFailCount(0);
+        setSuccessCount(0);
+        setWinsToNextLevel(0);
+        setShowScoreOverlay(false);
       }
-      setWinsToNextLevel(0);
     }
 
     const currentGameScore: SingleScoreType = gameModeScore(defaultN, posResult, soundResult, buzzResult);
@@ -371,7 +386,7 @@ export default function Play() {
 
   const { N: highestN, setN: setHighestN } = useAchievementStore();
   const { singleLvl: higestLevel, setSingleLvl: setHighestLevel } = useAchievementStore();
-  
+
   useEffect(() => {
     if (highestN < defaultN) {
       setHighestN(defaultN);

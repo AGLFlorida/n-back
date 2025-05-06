@@ -14,7 +14,7 @@ const ProgressBar = ({ progress }: ProgressBarProps) => {
   const setPrevProgress = (t: number) => prevProgress.current = t;
 
   useEffect(() => {
-    if (prevProgress.current == (2/3)) {
+    if (prevProgress.current == (2/3) && prevProgress.current < progress) {
       Animated.sequence([
         Animated.timing(animatedWidth, {
           toValue: 100, 
