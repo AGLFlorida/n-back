@@ -14,7 +14,7 @@ import {
 
 import DebugModal from "@/components/DebugModal";
 
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useTranslation } from 'react-i18next';
 import * as Updates from 'expo-updates';
 
@@ -54,8 +54,6 @@ export default function Settings() {
 
   const [showDebug, setShowDebug] = useState(false);
 
-  const { setRecords } = useHistoryStore();
-
   const [defaultN, setDefaultN] = useState<N>(N);
   const [dualMode, toggleDualMode] = useState<boolean>(storedDualMode);
   const [darkMode, toggleDarkMode] = useState<boolean>(storedDarkMode);
@@ -72,13 +70,14 @@ export default function Settings() {
   };
 
   const clearSettings = () => {
-    const clear = async () => {
+    const clear = () => {
+      console.log("clear!!");
       setN();
       saveDualMode(false);
       saveDarkMode(darkModeDefault);
       saveSilentMode(false);
       setTermsAccepted(false);
-      setRecords({});
+      // setRecords({});
 
       setDefaultN(2);
       toggleDualMode(false);
@@ -122,6 +121,10 @@ export default function Settings() {
   useEffect(() => {
     setN(defaultN);
   }, [defaultN]);
+
+  useEffect(() => {
+    console.log(dualMode, darkMode, silentMode, defaultN);
+  })
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

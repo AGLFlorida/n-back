@@ -460,22 +460,6 @@ export default function Play() {
     }, [t])
   );
 
-  // useEffect(() => {
-  //   console.log("silent | dual", isSilentMode, isDualMode);
-  // }, [isSilentMode, isDualMode]);
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     console.log("silent | dual", isSilentMode, isDualMode, silentMode, dualMode);
-  //     if (silentMode != isSilentMode) {
-  //       setSilentMode(silentMode)
-  //     }
-
-  //     if (dualMode != isDualMode) {
-  //       setDualMode(dualMode);
-  //     }
-  //   }, [isSilentMode, isDualMode])
-  // );
-
   // Main Gameplay Loop
   useFocusEffect(
     React.useCallback(() => {
@@ -622,10 +606,6 @@ export default function Play() {
       title: `${levelText} ${startingLevel} [N: ${defaultN}] ${GAME_MODE_NAMES[currentMode]}`
     });
   }, [defaultN]); // Run on mount to catch any settings changes
-
-  // useEffect(() => {
-  //   console.debug('[play] dual, silent - ', isDualMode, isSilentMode);
-  // }, [isDualMode, isSilentMode])
 
   return (
     <Display>

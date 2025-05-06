@@ -18,9 +18,9 @@ type SettingsState = {
   termsAccepted: boolean;
   setN: (n?: number) => void;
   setTermsAccepted: (t: boolean) => void;
-  saveDarkMode: (t?: boolean) => void;
-  saveDualMode: (t?: boolean) => void;
-  saveSilentMode: (t?: boolean) => void;
+  saveDarkMode: (t: boolean) => void;
+  saveDualMode: (t: boolean) => void;
+  saveSilentMode: (t: boolean) => void;
 }
 
 
@@ -45,21 +45,18 @@ export const useSettingsStore = create<SettingsState>()(
         });
       },
       saveDarkMode: (t) => {
-        const local = t ? t : !get().darkMode;
         set({
-          darkMode: local
+          darkMode: t
         });
       },
       saveDualMode: (t) => {
-        const local = t ? t : !get().dualMode;
         set({
-          dualMode: local
+          dualMode: t
         });
       },
       saveSilentMode: (t) => {
-        const local = t ? t : !get().silentMode;
         set({
-          silentMode: local
+          silentMode: t
         });
       },
     }),
