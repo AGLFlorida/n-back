@@ -58,6 +58,7 @@ export default {
     level: "Nivel"
   },
   scoreOverlay: {
+    levelup: "¡Has subido de nivel!",
     results: "Resultados",
     posScore: "Puntuación de Posición",
     posError: "Error de Posición",
@@ -123,5 +124,6 @@ export default {
     silentModeDescription: "El modo silencioso cambia el sonido predeterminado de la letra a un patrón de vibraciones. Los sonidos de celebración predeterminados permanecen iguales."
   },
   ok: "Aceptar",
-  cancel: "Cancelar"
+  cancel: "Cancelar",
+  close: "Cerrar"
 }; 

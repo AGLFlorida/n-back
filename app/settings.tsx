@@ -7,10 +7,12 @@ import {
   Keyboard,
   Text,
   Switch,
-  Pressable,
+  Pressable
 } from "react-native";
 
 // TODO | FIXME -- toggling system display does not update settings / theme.
+
+import DebugModal from "@/components/DebugModal";
 
 import { useRouter } from "expo-router";
 import { useTranslation } from 'react-i18next';
@@ -38,8 +40,8 @@ export default function Settings() {
   const router = useRouter();
   const { t } = useTranslation();
 
-  const { 
-    setN, N, 
+  const {
+    setN, N,
     saveDarkMode, //darkMode: storedDarkMode, 
     saveDualMode, //dualMode: storedDualMode, 
     saveSilentMode, //silentMode: storedSilentMode, 
@@ -49,6 +51,8 @@ export default function Settings() {
   const storedDarkMode = useSettingsStore(state => state.darkMode);
   const storedDualMode = useSettingsStore(state => state.dualMode);
   const storedSilentMode = useSettingsStore(state => state.silentMode);
+
+  const [showDebug, setShowDebug] = useState(false);
 
   const { setRecords } = useHistoryStore();
 
@@ -75,7 +79,7 @@ export default function Settings() {
       saveSilentMode(false);
       setTermsAccepted(false);
       setRecords({});
-      
+
       setDefaultN(2);
       toggleDualMode(false);
       toggleDarkMode(darkModeDefault);
@@ -114,10 +118,6 @@ export default function Settings() {
   useEffect(() => {
     saveSilentMode(silentMode)
   }, [silentMode]);
-
-  useEffect(() => {
-    console.debug("[settings] dual | silent | dark > ", storedDualMode, storedSilentMode, storedDarkMode);
-  }, [storedDualMode, storedSilentMode, storedDarkMode])
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -181,7 +181,6 @@ export default function Settings() {
               <Text style={styles.label}>{t('settings.darkMode')}</Text>
             </View>
           </View>
-          {/* <Button label={t('settings.save')} onPress={() => handleSaved()} /> */}
           <View style={[styles.row, { margin: 5 }]}>
             <View style={styles.settingsCell}>
               <Text style={styles.h1}>{t('settings.dangerZone')}</Text>
@@ -211,8 +210,11 @@ export default function Settings() {
         <Pressable style={{ alignSelf: 'flex-end', marginTop: 20, marginRight: 10 }} onPress={() => router.push('/learn')}>
           <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>{t('settings.learnMore')}</Text>
         </Pressable>
+        <Pressable style={{ alignSelf: 'flex-end', marginTop: 20, marginRight: 10 }} onPress={() => setShowDebug(true)}>
+          <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>{t('settings.debug')}</Text>
+        </Pressable>
+        <DebugModal show={showDebug} onClose={() => setShowDebug(false)} />
       </KeyboardAvoidingView>
-    </TouchableWithoutFeedback >
+    </TouchableWithoutFeedback>
   );
 }
-

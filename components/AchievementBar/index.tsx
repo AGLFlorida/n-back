@@ -25,7 +25,7 @@ const AchievementBar = () => {
   useEffect(() => {
     const total: number = Object.keys(records).length || 0;
     setStreak(total);
-    console.log(total);
+    // console.log(total);
   }, [records]);
 
   return (

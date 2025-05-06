@@ -114,6 +114,7 @@ export default {
     silentModeDescription: "Silent mode changes the default \"letter\" sound to a pattern of vibrations. The standard celebratory sounds remain the same."
   },
   scoreOverlay: {
+    levelup: "You leveled up!",
     results: "Results",
     posScore: "Position Score",
     posError: "Position Error",
@@ -123,5 +124,6 @@ export default {
     soundError: "Sound Error"
   },
   ok: "OK",
-  cancel: "Cancel"
+  cancel: "Cancel",
+  close: "Close"
 }; 

@@ -186,7 +186,7 @@ export default function Play() {
     setDidLevelUp(true);
     const currentLevel = getPlayerLevel(mode);
     const newLevel = currentLevel + 1;
-    console.error('doLevelUp > newLevel', currentLevel + 1);
+    // console.error('doLevelUp > newLevel', currentLevel + 1);
     setPlayerLevel(mode, newLevel);
     setFailCount(0);
     setSuccessCount(0);
@@ -375,8 +375,8 @@ export default function Play() {
 
     const currentGameScore: SingleScoreType = gameModeScore(defaultN, posResult, soundResult, buzzResult);
     playHistory.setValue(currentGameMode, currentGameScore);
-    console.log("current game score", currentGameScore);
-    console.log("play history", playHistory);
+    // console.log("current game score", currentGameScore);
+    // console.log("play history", playHistory);
     // setRecords({
     //   ...records,
     //   [currentGameMode]: currentGameScore // TODO this is some autocorrect/copilot BS. make sure to come back and look at it.
@@ -399,12 +399,26 @@ export default function Play() {
   }, [playerLevel, defaultN, isDualMode, isSilentMode]);
 
   // useEffect(() => {
-  //   console.log("Dual Mode: ", dualMode, isDualMode);
-  //   console.log("Silent Mode: ", silentMode, isSilentMode);
-  //   console.log("N: ", N, "================");
-  //   setDualMode(dualMode);
-  //   setSilenMode(silentMode);
-  // }, [dualMode, silentMode]);
+  //   console.log("========DEBUG=============");
+  //   console.log(JSON.stringify({
+  //     grid: grid,
+  //     shouldStartGame: shouldStartGame,
+  //     elapsedTime: elapsedTime,
+  //     isLoading: isLoading,
+  //     showScoreOverlay: showScoreOverlay,
+  //     showTutorial: showTutorial,
+  //     levelText: levelText,
+  //     playHistory: playHistory,
+  //     gameLoopRef: gameLoopRef,
+  //     successCount: successCount,
+  //     failCount: failCount,
+  //     gameLen: gameLen,
+  //     matchRate: matchRate,
+  //     turnsLeft: turnsLeft,
+  //     playerLevel: playerLevel
+  //   }, null, 2));
+  //   console.log("=======END=DEBUG=============");
+  // }, []);
 
   // useFocusEffect(
   //   React.useCallback(() => {
@@ -609,9 +623,9 @@ export default function Play() {
     });
   }, [defaultN]); // Run on mount to catch any settings changes
 
-  useEffect(() => {
-    console.debug('[play] dual, silent - ', isDualMode, isSilentMode);
-  }, [isDualMode, isSilentMode])
+  // useEffect(() => {
+  //   console.debug('[play] dual, silent - ', isDualMode, isSilentMode);
+  // }, [isDualMode, isSilentMode])
 
   return (
     <Display>

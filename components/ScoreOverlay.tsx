@@ -126,7 +126,7 @@ const ScoreOverlay: React.FC<ScoreOverlayProps> = ({ isVisible, onClose, scores,
           style={[styles.button, { backgroundColor: theme.accentColor }]}
           onPress={onClose}
         >
-          <Text style={[styles.buttonText, { color: theme.textColor }]}> {t('text.close')}</Text>
+          <Text style={[styles.buttonText, { color: theme.textColor }]}> {t('close')}</Text>
         </TouchableOpacity>
       </Animated.View>
     </View>

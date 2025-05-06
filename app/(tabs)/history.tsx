@@ -11,6 +11,8 @@ import AchievementBar from '@/components/AchievementBar';
 
 // TODO | FIXME -- still need to wire up the logic for 'streak'
 
+// TODO | ADDME -- need to add import and export of scores / history
+
 import Chart, { DataPointType } from '@/components/Chart';
 
 import { useHistoryStore } from "@/store/useHistoryStore";
@@ -18,6 +20,7 @@ import { useHistoryStore } from "@/store/useHistoryStore";
 export default function History() {
   const styles = useGlobalStyles();
   const { t } = useTranslation();
+  
   // Single Mode
   const [lineData, setLineData] = useState<DataPointType[]>([]);
   const [lineData2, setLineData2] = useState<DataPointType[]>([]);

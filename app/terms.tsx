@@ -172,6 +172,7 @@ const CustomLink: React.FC<CustomLinkProps> = ({ children, textToCopy }) => {
         await Clipboard.setStringAsync(textToCopy);
       }
 
+      // TODO | translate me
       toast.show("Copied to clipboard!", { duration: 2000 });
     } catch (error) {
       console.error("Clipboard copy failed:", error);
