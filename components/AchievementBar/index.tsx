@@ -19,20 +19,19 @@ import { ScoreCard } from '@/util/ScoreCard';
 const AchievementBar = () => {
   const records = useHistoryStore(state => state.records) as Record<string, ScoreCard>;
   const { streak, setStreak } = useAchievementStore();
-  const { N } = useAchievementStore();
-  const { level } = useAchievementStore();
+  const N = useAchievementStore(state => state.N);
+  const { singleLvl, silentLvl, dualLvl } = useAchievementStore();
 
   useEffect(() => {
     const total: number = Object.keys(records).length || 0;
-    setStreak(total);
-    // console.log(total);
+    setStreak(total); // TODO | ADDME -- this is not really a streak.
   }, [records]);
 
   return (
     <View style={styles.imgLayout}>
       <View style={styles.imgContainer}>
-        <Medal level={level} />
-        <Banner t={JSON.stringify(level)} rank={medalRank(level)} />
+        <Medal level={singleLvl} />
+        <Banner t={JSON.stringify(singleLvl)} rank={medalRank(singleLvl)} />
       </View>
       <View style={styles.imgContainer}>
         <Brain n={N} />

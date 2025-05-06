@@ -22,6 +22,7 @@ type HistoryState = {
   setSingleLvl: (lvl: number) => void;
   setDualLvl: (lvl: number) => void;
   setSilentLvl: (lvl: number) => void;
+  setStreak: (x: number) => void;
   reset: () => void;
 }
 
@@ -29,6 +30,7 @@ export const useHistoryStore = create<HistoryState>()(
   persist(
     (set, get) => ({
       records: {},
+      streak: {},
       singleLvl: startingLevel,
       dualLvl: startingLevel,
       silentLvl: startingLevel,

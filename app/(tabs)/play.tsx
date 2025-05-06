@@ -86,8 +86,9 @@ export default function Play() {
     singleLvl, setSingleLvl,
     dualLvl, setDualLvl,
     silentLvl, setSilentLvl,
-    records, //setRecords,
-  } = useHistoryStore();
+  } = useAchievementStore();
+
+  const records = useHistoryStore(state => state.records);
 
   type GameScores = {
     positions: number;
@@ -385,7 +386,7 @@ export default function Play() {
 
 
   const { N: highestN, setN: setHighestN } = useAchievementStore();
-  const { level: higestLevel, setLevel: setHighestLevel } = useAchievementStore();
+  const { singleLvl: higestLevel, setSingleLvl: setHighestLevel } = useAchievementStore();
   // const { streak, setStreak = useAchievementStore(state => [state.streak, state.setStreak])
   useEffect(() => {
     if (highestN < defaultN) {
