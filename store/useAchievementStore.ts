@@ -13,6 +13,7 @@ const startingLevel = getStartLevel(BASEN || MINN);
 
 export const darkModeDefault: boolean = systemTheme === "dark";
 
+
 type AchievementState = {
   N: number;
   streak: number;
@@ -24,11 +25,13 @@ type AchievementState = {
   setSingleLvl: (lvl: number) => void;
   setDualLvl: (lvl: number) => void;
   setSilentLvl: (lvl: number) => void;
+  reset: () => void;
+  resetPlayerLevels: (N?: number) => void;
 }
 
 export const useAchievementStore = create<AchievementState>()(
   persist(
-    (set, ) => ({
+    (set, get) => ({
       N: BASEN,
       singleLvl: startingLevel,
       dualLvl: startingLevel,
@@ -59,6 +62,23 @@ export const useAchievementStore = create<AchievementState>()(
           silentLvl: lvl
         })
       },
+      reset: () => {
+        set({
+          N: BASEN,
+          singleLvl: startingLevel,
+          dualLvl: startingLevel,
+          silentLvl: startingLevel,
+          streak: 0
+        });
+      },
+      resetPlayerLevels: (N = BASEN) => {
+        const l = getStartLevel(N);
+        set({
+          singleLvl: l,
+          dualLvl: l,
+          silentLvl: l,
+        })
+      }
     }),
     {
       name: 'achievement-storage',
@@ -66,3 +86,13 @@ export const useAchievementStore = create<AchievementState>()(
     }
   )
 );
+
+export const resetAchievementStore = async () => {
+  try {
+    await AsyncStorage.removeItem('achievement-storage');
+    useAchievementStore.persist.clearStorage();
+    useAchievementStore.getState().reset();
+  } catch (error) {
+    console.error('Failed to reset store', error);
+  }
+};

@@ -14,14 +14,15 @@ import {
 
 import DebugModal from "@/components/DebugModal";
 
-import { useFocusEffect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from 'react-i18next';
 import * as Updates from 'expo-updates';
 
 import Button from "@/components/Button";
 
-import { darkModeDefault, useSettingsStore } from "@/store/useSettingsStore";
-import { resetHistoryStore, useHistoryStore } from "@/store/useHistoryStore";
+import { darkModeDefault, resetSettingsStore, useSettingsStore, BASEN } from "@/store/useSettingsStore";
+import { resetHistoryStore } from "@/store/useHistoryStore";
+import { resetAchievementStore, useAchievementStore } from "@/store/useAchievementStore";
 
 import { useGlobalStyles } from "@/styles/globalStyles";
 import { useTheme } from "@/contexts/ThemeContext"
@@ -42,15 +43,16 @@ export default function Settings() {
 
   const {
     setN, N,
-    saveDarkMode, //darkMode: storedDarkMode, 
-    saveDualMode, //dualMode: storedDualMode, 
-    saveSilentMode, //silentMode: storedSilentMode, 
-    setTermsAccepted
+    saveDarkMode,
+    saveDualMode, 
+    saveSilentMode,
   } = useSettingsStore();
 
   const storedDarkMode = useSettingsStore(state => state.darkMode);
   const storedDualMode = useSettingsStore(state => state.dualMode);
   const storedSilentMode = useSettingsStore(state => state.silentMode);
+
+  const resetPlayerLevels = useAchievementStore(state => state.resetPlayerLevels);
 
   const [showDebug, setShowDebug] = useState(false);
 
@@ -71,21 +73,15 @@ export default function Settings() {
 
   const clearSettings = () => {
     const clear = () => {
-      console.log("clear!!");
-      setN();
-      saveDualMode(false);
-      saveDarkMode(darkModeDefault);
-      saveSilentMode(false);
-      setTermsAccepted(false);
-      // setRecords({});
+      resetSettingsStore();
+      resetHistoryStore();
+      resetAchievementStore();
 
-      setDefaultN(2);
+      setDefaultN(BASEN);
       toggleDualMode(false);
       toggleDarkMode(darkModeDefault);
       toggleSilentMode(false);
-
-      resetHistoryStore();
-
+      
       router.push('/terms');
     }
 
@@ -120,11 +116,11 @@ export default function Settings() {
 
   useEffect(() => {
     setN(defaultN);
-  }, [defaultN]);
 
-  useEffect(() => {
-    console.log(dualMode, darkMode, silentMode, defaultN);
-  })
+    // (re)set player level
+    resetPlayerLevels();
+
+  }, [defaultN]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

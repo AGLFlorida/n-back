@@ -9,6 +9,8 @@ import StatusButton from "@/components/StatusButton";
 import { ScoreCard, SingleScoreType } from "@/util/ScoreCard";
 import useGameSounds, { SoundKey } from "@/hooks/sounds";
 
+import type { ScoreCardInterface } from "@/util/ScoreCard";
+
 import Display from "@/components/Display"
 
 // TODO | FIXME -- switching between game modes does not change player level or N -- actually, there are several weird bugs 
@@ -58,7 +60,9 @@ const newCard = ScoreCard.getInstance();
 
 export default function Play() {
   const { t } = useTranslation();
+
   const GAME_MODE_NAMES = getGameModeNames(t);
+
   const styles = useGlobalStyles();
   const navigation = useNavigation();
   const router = useRouter();
@@ -68,6 +72,7 @@ export default function Play() {
   const setN = useSettingsStore(state => state.setN);
   const defaultN = useSettingsStore(state => state.N);
   const storedTermsAccepted = useSettingsStore(state => state.termsAccepted);
+  
   const isDualMode = useSettingsStore(state => state.dualMode);
   const isSilentMode = useSettingsStore(state => state.silentMode);
 
@@ -75,9 +80,7 @@ export default function Play() {
   const [shouldStartGame, startGame] = useState<boolean>(false);
   const [elapsedTime, setElapsedTime] = useState<number>(-1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  // const [defaultN, setDefaultN] = useState<number>(2);
-  // const [isDualMode, setDualMode] = useState<boolean>(dualMode);
-  // const [isSilentMode, setSilentMode] = useState<boolean>(silentMode);
+
   const [showScoreOverlay, setShowScoreOverlay] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [levelText, setLevelText] = useState<string>(t('play.level'));
@@ -151,12 +154,6 @@ export default function Play() {
   const decrementTurns = () => turnsLeft.current--;
   const resetTurns = () => turnsLeft.current = (gameLen.current || DEFAULT_GAMELEN);
 
-  if (matchRate == undefined || gameLen == undefined) {
-    const { gameLen: g, matchRate: m } = defaults();
-    setMatchRate(m);
-    setGameLen(g);
-  }
-
   const playerLevel = useRef<GameLevels>(DEFAULT_LEVELS);
   const setPlayerLevel = (mode: GameModeEnum, level: number) => {
     playerLevel.current = {
@@ -172,7 +169,8 @@ export default function Play() {
   };
 
   const getPlayerLevel = (mode: GameModeEnum): number => {
-    return playerLevel.current[mode] || 1;
+    console.log(defaultN, getStartLevel(defaultN));
+    return playerLevel.current[mode] || getStartLevel(defaultN);
   };
 
   const [didLevelUp, setDidLevelUp] = useState(false);
@@ -180,14 +178,12 @@ export default function Play() {
   const syncNWithLevel = (level: number) => {
     const newN = Math.min(MAXN, Math.max(MINN, Math.floor(level / 3) + 1));
     setN(newN);
-    // setDefaultN(newN);
   };
 
   const doLevelUp = (mode: GameModeEnum) => {
     setDidLevelUp(true);
     const currentLevel = getPlayerLevel(mode);
     const newLevel = currentLevel + 1;
-    // console.error('doLevelUp > newLevel', currentLevel + 1);
     setPlayerLevel(mode, newLevel);
     setFailCount(0);
     setSuccessCount(0);
@@ -293,18 +289,11 @@ export default function Play() {
     if (isDualMode) soundClickRef.current = fillGuessCard(getGameLen());
   }
 
-  interface ScoreCard {
-    soundGuesses?: boolean[];
-    posGuesses?: boolean[];
-    buzzGuesses?: boolean[];
-  }
-
   // Add state for tracking wins
   const [winsToNextLevel, setWinsToNextLevel] = useState(0);
   const [totalWinsNeeded,] = useState(3); // Adjust this value as needed
 
-  // TODO achievements
-  const scoreGame = ({ soundGuesses, posGuesses }: ScoreCard) => {
+  const scoreGame = ({ soundGuesses, posGuesses }: ScoreCardInterface) => {
     setDidLevelUp(false);
     const answers = getEngine().answers();
     const posResult = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
@@ -337,6 +326,7 @@ export default function Play() {
       bError: buzzError
     });
     setShowScoreOverlay(true);
+    
     const isWinner: boolean = playerWon(
       posResult,
       defaultN,
@@ -376,18 +366,12 @@ export default function Play() {
 
     const currentGameScore: SingleScoreType = gameModeScore(defaultN, posResult, soundResult, buzzResult);
     playHistory.setValue(currentGameMode, currentGameScore);
-    // console.log("current game score", currentGameScore);
-    // console.log("play history", playHistory);
-    // setRecords({
-    //   ...records,
-    //   [currentGameMode]: currentGameScore // TODO this is some autocorrect/copilot BS. make sure to come back and look at it.
-    // });
   }
 
 
   const { N: highestN, setN: setHighestN } = useAchievementStore();
   const { singleLvl: higestLevel, setSingleLvl: setHighestLevel } = useAchievementStore();
-  // const { streak, setStreak = useAchievementStore(state => [state.streak, state.setStreak])
+  
   useEffect(() => {
     if (highestN < defaultN) {
       setHighestN(defaultN);
@@ -398,46 +382,6 @@ export default function Play() {
       setHighestLevel(playerLevel.current[currentGameMode as GameModeEnum]);
     }
   }, [playerLevel, defaultN, isDualMode, isSilentMode]);
-
-  // useEffect(() => {
-  //   console.log("========DEBUG=============");
-  //   console.log(JSON.stringify({
-  //     grid: grid,
-  //     shouldStartGame: shouldStartGame,
-  //     elapsedTime: elapsedTime,
-  //     isLoading: isLoading,
-  //     showScoreOverlay: showScoreOverlay,
-  //     showTutorial: showTutorial,
-  //     levelText: levelText,
-  //     playHistory: playHistory,
-  //     gameLoopRef: gameLoopRef,
-  //     successCount: successCount,
-  //     failCount: failCount,
-  //     gameLen: gameLen,
-  //     matchRate: matchRate,
-  //     turnsLeft: turnsLeft,
-  //     playerLevel: playerLevel
-  //   }, null, 2));
-  //   console.log("=======END=DEBUG=============");
-  // }, []);
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     // reset win count when game mode changes.
-  //     setFailCount(0);
-  //     setSuccessCount(0);
-  //     setWinsToNextLevel(0);  // Reset progress bar
-
-
-
-  //     return () => {
-  //       setFailCount(0);
-  //       setSuccessCount(0);
-  //       setWinsToNextLevel(0);  // Reset progress bar on cleanup
-  //     }
-
-  //   }, [isDualMode, isSilentMode])
-  // );
 
   useFocusEffect(
     React.useCallback(() => {
@@ -466,11 +410,6 @@ export default function Play() {
     React.useCallback(() => {
       const initGame = async () => {
         try {
-          navigation.setOptions({
-            title: `${levelText} ${getPlayerLevel(whichGameMode(isDualMode, isSilentMode) as GameModeEnum)} [N: ${defaultN}] (${GAME_MODE_NAMES[whichGameMode(isDualMode, isSilentMode) as GameModeEnum]})`
-          });
-          // setDefaultN(N);
-
           setEngine(
             engine({
               n: defaultN,
@@ -501,9 +440,6 @@ export default function Play() {
             } else {
               playerLevel.current = DEFAULT_LEVELS;
             }
-            navigation.setOptions({
-              title: `${levelText} ${getPlayerLevel(whichGameMode(isDualMode, isSilentMode) as GameModeEnum)} [N: ${defaultN}] ${GAME_MODE_NAMES[whichGameMode(isDualMode, isSilentMode) as GameModeEnum]}`
-            });
           }
 
           setIsLoading(false);
@@ -589,6 +525,12 @@ export default function Play() {
 
   // Cleanup
   useEffect(() => {
+    if (matchRate == undefined || gameLen == undefined) {
+      const { gameLen: g, matchRate: m } = defaults();
+      setMatchRate(m);
+      setGameLen(g);
+    }
+
     return () => { // Cleanup on unmount
       resetGame();
     };
@@ -606,7 +548,7 @@ export default function Play() {
     navigation.setOptions({
       title: `${levelText} ${startingLevel} [N: ${defaultN}] ${GAME_MODE_NAMES[currentMode]}`
     });
-  }, [defaultN]); // Run on mount to catch any settings changes
+  }, [defaultN]);
 
   return (
     <Display>
@@ -638,10 +580,6 @@ export default function Play() {
         <View style={styles.indexContainer}>
           <Text style={[styles.label, { fontSize: 24 }]}>Turns Left: {turnsLeft.current}</Text>
         </View>
-        {/* <View>
-          <Text style={{ color: 'white' }}>Level: {getPlayerLevel()}</Text>
-          <Text style={{ color: 'white' }}>Wins: {getSuccessCount()}</Text>
-        </View> */}
         <ScoreOverlay
           isVisible={showScoreOverlay}
           onClose={() => setShowScoreOverlay(false)}

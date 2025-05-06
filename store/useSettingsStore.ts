@@ -21,6 +21,7 @@ type SettingsState = {
   saveDarkMode: (t: boolean) => void;
   saveDualMode: (t: boolean) => void;
   saveSilentMode: (t: boolean) => void;
+  reset: () => void;
 }
 
 
@@ -59,6 +60,15 @@ export const useSettingsStore = create<SettingsState>()(
           silentMode: t
         });
       },
+      reset: () => {
+        set({
+          N: BASEN,
+          darkMode: (systemTheme === "dark") ? true : false,
+          dualMode: false,
+          silentMode: false,
+          termsAccepted: false,
+        });
+      }
     }),
     {
       name: 'settings-storage',
@@ -66,3 +76,14 @@ export const useSettingsStore = create<SettingsState>()(
     }
   )
 );
+
+
+export const resetSettingsStore = async () => {
+  try {
+    await AsyncStorage.removeItem('settings-storage');
+    useSettingsStore.persist.clearStorage();
+    useSettingsStore.getState().reset();
+  } catch (error) {
+    console.error('Failed to reset store', error);
+  }
+}
