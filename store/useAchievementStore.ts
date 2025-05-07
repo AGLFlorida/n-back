@@ -4,12 +4,13 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-import { BASEN } from './useSettingsStore';
-import { MINN, getStartLevel } from "@/util/engine";
+import { getStartLevel } from '@/util/engine';
+
+import { MINN } from "@/util/engine/constants";
 
 const systemTheme = Appearance.getColorScheme();
 
-const startingLevel = getStartLevel(BASEN || MINN);
+const startingLevel = getStartLevel(MINN);
 
 export const darkModeDefault: boolean = systemTheme === "dark";
 
@@ -32,7 +33,7 @@ type AchievementState = {
 export const useAchievementStore = create<AchievementState>()(
   persist(
     (set, get) => ({
-      N: BASEN,
+      N: MINN,
       singleLvl: startingLevel,
       dualLvl: startingLevel,
       silentLvl: startingLevel,
@@ -64,14 +65,14 @@ export const useAchievementStore = create<AchievementState>()(
       },
       reset: () => {
         set({
-          N: BASEN,
+          N: MINN,
           singleLvl: startingLevel,
           dualLvl: startingLevel,
           silentLvl: startingLevel,
           streak: 0
         });
       },
-      resetPlayerLevels: (N = BASEN) => {
+      resetPlayerLevels: (N = MINN) => {
         const l = getStartLevel(N);
         set({
           singleLvl: l,

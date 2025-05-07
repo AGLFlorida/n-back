@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { View } from 'react-native';
 
 import { useHistoryStore } from '@/store/useHistoryStore';
 import { useAchievementStore } from '@/store/useAchievementStore';
-
-import { getStartLevel } from '@/util/engine';
 
 // TODO | FIXME -- bar grows to 100% even on a failed game. (only tested at 2 wins, 1 loss.)
 
@@ -14,7 +12,7 @@ import Brain, { brainRank } from './Brain';
 import Banner from './Banner';
 
 import styles from './styles';
-import { ScoreCard } from '@/util/ScoreCard';
+import { ScoreCard } from '@/util/engine/ScoreCard';
 
 const AchievementBar = () => {
   const records = useHistoryStore(state => state.records) as Record<string, ScoreCard>;

@@ -2,15 +2,6 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-/*
-        [GameModeEnum.SingleN]: startingLevel,
-        [GameModeEnum.DualN]: startingLevel,
-        [GameModeEnum.SilentDualN]: startingLevel,
-*/
-
-
-
-
 type HistoryState = {
   records: {};
   setRecords: (records: {}) => void;

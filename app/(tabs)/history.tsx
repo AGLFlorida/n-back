@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useGlobalStyles } from "@/styles/globalStyles";
 
-import { ScoresType } from '@/util/ScoreCard';
+import type { ScoresType } from '@/util/engine/ScoreCard';
 
 import AchievementBar from '@/components/AchievementBar';
 
@@ -20,7 +20,7 @@ import { useHistoryStore } from "@/store/useHistoryStore";
 export default function History() {
   const styles = useGlobalStyles();
   const { t } = useTranslation();
-  
+
   // Single Mode
   const [lineData, setLineData] = useState<DataPointType[]>([]);
   const [lineData2, setLineData2] = useState<DataPointType[]>([]);

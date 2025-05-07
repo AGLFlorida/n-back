@@ -20,7 +20,7 @@ import * as Updates from 'expo-updates';
 
 import Button from "@/components/Button";
 
-import { darkModeDefault, resetSettingsStore, useSettingsStore, BASEN } from "@/store/useSettingsStore";
+import { darkModeDefault, resetSettingsStore, useSettingsStore } from "@/store/useSettingsStore";
 import { resetHistoryStore } from "@/store/useHistoryStore";
 import { resetAchievementStore, useAchievementStore } from "@/store/useAchievementStore";
 
@@ -28,7 +28,7 @@ import { useGlobalStyles } from "@/styles/globalStyles";
 import { useTheme } from "@/contexts/ThemeContext"
 import { showCustomAlert } from "@/util/alert";
 
-import { MAXN, MINN } from "@/util/engine";
+import { MAXN, MINN } from "@/util/engine/constants";
 
 import log from "@/util/logger";
 import i18n from '@/util/i18n';
@@ -77,7 +77,7 @@ export default function Settings() {
       resetHistoryStore();
       resetAchievementStore();
 
-      setDefaultN(BASEN);
+      setDefaultN(MINN);
       toggleDualMode(false);
       toggleDarkMode(darkModeDefault);
       toggleSilentMode(false);

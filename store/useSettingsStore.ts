@@ -3,8 +3,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const BASEN = 2;
-
+import { MINN } from '@/util/engine/constants';
 
 const systemTheme = Appearance.getColorScheme();
 
@@ -29,13 +28,13 @@ type SettingsState = {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set, get) => ({
-      N: BASEN,
+      N: MINN,
       darkMode: (systemTheme === "dark") ? true : false,
       dualMode: false,
       silentMode: false,
       termsAccepted: false,
       setN: (n) => {
-        const localN = (!n || n < 2) ? BASEN : n;
+        const localN = (!n || n < 2) ? MINN : n;
         set({
           N: localN
         });
@@ -62,7 +61,7 @@ export const useSettingsStore = create<SettingsState>()(
       },
       reset: () => {
         set({
-          N: BASEN,
+          N: MINN,
           darkMode: (systemTheme === "dark") ? true : false,
           dualMode: false,
           silentMode: false,
