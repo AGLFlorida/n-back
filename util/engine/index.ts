@@ -43,17 +43,16 @@ export interface RunningEngineInterface {
   gameLen: number;
   matchRate: number;
   turn: number;
-  // createNewGame: () => void,
   nextRound: (arg0: number) => Round,
   answers: () => Answers;
   getGameLen: () => number;
-  // timeLimit: number;
   getGameMode: () => GameModeEnum
   reset: (x: number) => void;
   getTurn: (x: number) => number;
   turnsLeft: () => number;
   canLevelDown: () => boolean;
   gameOver: (x: number) => boolean;
+  resetTurn: () => void;
 }
 
 class RunningEngine implements RunningEngineInterface {
@@ -184,12 +183,15 @@ class RunningEngine implements RunningEngineInterface {
   gameOver(elapsedTime: number) {
     return this.getTurn(elapsedTime) >= this.getGameLen();
   }
+
+  resetTurn() {
+    this.turn = 0;
+  }
 }
 
 export {
   calculateScore,
   fillBoard,
-  // defaults,
   shouldLevelUp,
   playerWon,
   getStartLevel,

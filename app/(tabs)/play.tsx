@@ -116,7 +116,7 @@ export default function Play() {
 
   const doLevelUp = (mode: GameModeEnum) => {
     setDidLevelUp(true);
-    playerRef.current.levelDown(mode);
+    playerRef.current.levelUp(mode);
     dashRef.current.reset();
 
     navigation.setOptions({ // update navigation title
@@ -204,7 +204,7 @@ export default function Play() {
     });
 
     setShowScoreOverlay(true);
-
+    
     const isWinner: boolean = playerWon(
       posResult,
       defaultN,
@@ -246,7 +246,6 @@ export default function Play() {
             true,
             { ok: t('ok'), cancel: t('cancel') }
           );
-          // setPlayerLevel(currentGameMode as GameModeEnum, 1)
           playerRef.current.set(1, engineRef.current.getGameMode());
         }
 
@@ -254,6 +253,10 @@ export default function Play() {
         setShowScoreOverlay(false);
       }
     }
+
+    console.log("engine: ", JSON.stringify(engineRef.current));
+    console.log("player: ", JSON.stringify(playerRef.current));
+    console.log("dashboard: ", JSON.stringify(dashRef.current));
   }
 
 
@@ -285,73 +288,9 @@ export default function Play() {
     }, [router])
   );
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     setLevelText(t('play.level'));
-  //   }, [t])
-  // );
-
-  // Initialize the game...
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     // const initGame = async () => {
-  //     //   try {
-  //     //     setEngine(
-  //     //       engine({
-  //     //         n: defaultN,
-  //     //         gameLen: getGameLen(),
-  //     //         matchRate: getMatchRate(),
-  //     //         isDualMode
-  //     //       })
-  //     //     );
-
-  //     //     getEngine().createNewGame();
-
-  //     //     await loadRecords();
-
-  //     //     // Load saved game levels
-  //     //     const savedLevels = {
-  //     //       [GameModeEnum.SingleN]: singleLvl,
-  //     //       [GameModeEnum.DualN]: dualLvl,
-  //     //       [GameModeEnum.SilentDualN]: silentLvl
-  //     //     }
-  //     //     if (savedLevels && typeof savedLevels === 'object') {
-  //     //       const typedLevels = savedLevels as unknown as GameLevels;
-  //     //       if (
-  //     //         GameModeEnum.SingleN in typedLevels &&
-  //     //         GameModeEnum.DualN in typedLevels &&
-  //     //         GameModeEnum.SilentDualN in typedLevels
-  //     //       ) {
-  //     //         playerLevel.current = typedLevels;
-  //     //       } else {
-  //     //         playerLevel.current = DEFAULT_LEVELS;
-  //     //       }
-  //     //     }
-
-  //     //     setIsLoading(false);
-  //     //   } catch (e) {
-  //     //     log.error("Error initializing game.", e);
-  //     //   }
-  //     // }
-
-  //     // initGame();
-
-  //     Animated.timing(playButtonFadeAnim, {
-  //       toValue: 1,
-  //       duration: 500,
-  //       useNativeDriver: true,
-  //     }).start();
-
-  //     return () => {
-  //       resetGame()
-  //       hideButtons()
-  //     } // Cleanup on unmount
-  //   }, [isDualMode, isSilentMode, defaultN])
-  // );
-
   // Init the engine, reset the dashboard, and show the play buttons
   useEffect(() => {
-    console.log("foo")
+    console.log("init game");
     engineRef.current = new RunningEngine({ n: 2, gameMode: { isDual: isDualMode, isSilent: isSilentMode } });
     dashRef.current.reset();
     setIsLoading(false);
@@ -368,9 +307,10 @@ export default function Play() {
     }
   }, [isDualMode, isSilentMode, defaultN])
 
-  // Start the game.
+  // start the game.
   useEffect(() => {
     if (shouldStartGame) {
+      console.log("start game");
       startGameLoop();
 
       return () => {
@@ -379,6 +319,7 @@ export default function Play() {
     }
   }, [shouldStartGame]);
 
+  // play loop
   useEffect(() => {
     if (elapsedTime >= 0) {
       if (elapsedTime > MAXTIME) { // exit condition 1: game went too long.
@@ -404,7 +345,8 @@ export default function Play() {
           const round = engineRef.current.nextRound(engineRef.current.getTurn(elapsedTime));
           setGrid(fillBoard());
 
-          // fix for missing visual indicator when two turns have the same visible square.
+          // fix for missing visual indicator when two turns have the 
+          // same visible square.
           const redraw = setTimeout(() => {
             setGrid(round?.next as Grid);
           }, 200);
@@ -434,19 +376,15 @@ export default function Play() {
     };
   }, []);
 
-  // Add effect to handle N changes from settings
-  // useEffect(() => {
-  //   const startingLevel = getStartLevel(defaultN);
-  //   Object.values(GameModeEnum).forEach(mode => {
-  //     setPlayerLevel(mode, startingLevel);
-  //   });
-
-  //   // Update navigation title for current mode
-  //   const currentMode = whichGameMode(isDualMode, isSilentMode) as GameModeEnum;
-  //   navigation.setOptions({
-  //     title: `${levelText} ${startingLevel} [N: ${defaultN}] ${GAME_MODE_NAMES[currentMode]}`
-  //   });
-  // }, [defaultN]);
+  // Update title on first load.
+  useEffect(() => {
+    console.log("update title.")
+    const _mode = engineRef.current.getGameMode();
+    const level = playerRef.current.get(_mode)
+    navigation.setOptions({
+      title: `${levelText} ${level} [N: ${defaultN}] ${GAME_MODE_NAMES[_mode]}`
+    });
+  }, [defaultN]);
 
   return (
     <Display>

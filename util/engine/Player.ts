@@ -35,7 +35,9 @@ class Player implements PC {
   }
 
   levelDown(mode: GameModeEnum) {
-    this.set(this.get(mode) - 1, mode);
+    if (this.get(mode) > 1) {
+      this.set(this.get(mode) - 1, mode);
+    }
   }
 }
 

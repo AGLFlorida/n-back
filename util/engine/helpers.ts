@@ -95,7 +95,7 @@ export const defaults = (level: number = 1): Level => {
 }
 
 
-export const shouldLevelUp = (winStreak: number): boolean => (winStreak > WINSTOLEVEL);
+export const shouldLevelUp = (winStreak: number): boolean => (winStreak == WINSTOLEVEL);
 
 
 export const getGameModeNames = (t: (key: string) => string) => ({
