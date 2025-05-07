@@ -72,8 +72,6 @@ export default function Play() {
   const hideButtons = () => {
     playButtonFadeAnim.setValue(0);
   }
-  // const { N: highestN, setN: setHighestN } = useAchievementStore();
-  // const { singleLvl: higestLevel, setSingleLvl: setHighestLevel } = useAchievementStore();
 
   const { playSound } = useGameSounds();
   const GAME_MODE_NAMES = getGameModeNames(t);
@@ -83,15 +81,13 @@ export default function Play() {
   const isSilentMode = useSettingsStore(state => state.silentMode);
   const [showScoreOverlay, setShowScoreOverlay] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
-  const [levelText, setLevelText] = useState<string>(t('play.level'));
+  const [levelText, ] = useState<string>(t('play.level'));
 
-  // TODO: these should be in a 'useEffect' or possible 'useFocusEffect'
   const dashRef = useRef<DashboardInterface>(new Dashboard());
   const engineRef = useRef(new RunningEngine({ n: 2, gameMode: { isDual: isDualMode, isSilent: isSilentMode } }));
   const playerRef = useRef(new Player());
-  // const turnRef = useRef(0);
 
-  // game loop specific
+  // game loop
   const [shouldStartGame, startGame] = useState<boolean>(false);
   const [elapsedTime, setElapsedTime] = useState<number>(-1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -99,8 +95,6 @@ export default function Play() {
 
   // post game loop
   const [gameScores, setGameScores] = useState<GameScores>({ positions: 0, sounds: 0, buzz: 0, pError: 0, sError: 0, bError: 0 });
-  // const playHistory = useRef(newCard).current;
-  // const turnsLeft = useRef<number>(engineRef.current.getGameLen());
   const [didLevelUp, setDidLevelUp] = useState(false);
 
   // helper methods  
@@ -227,12 +221,13 @@ export default function Play() {
       dashRef.current.incrementFail();
       dashRef.current.resetSuccessCount();
 
-      if (dashRef.current.getFailCount() > 3) {
-        if (engineRef.current.canLevelDown()) {
+      if (dashRef.current.getFailCount() == 3) {
+        const _mode = engineRef.current.getGameMode();
+        if (playerRef.current.canLevelDown(_mode)) {
           showCustomAlert(
             t('play.tryAgain'),
             t('play.tryEasierMessage'),
-            () => doLevelDown(engineRef.current.getGameMode()),
+            () => doLevelDown(_mode),
             true,
             { ok: t('ok'), cancel: t('cancel') }
           );
@@ -246,7 +241,7 @@ export default function Play() {
             true,
             { ok: t('ok'), cancel: t('cancel') }
           );
-          playerRef.current.set(1, engineRef.current.getGameMode());
+          playerRef.current.set(1, _mode);
         }
 
         dashRef.current.reset();

@@ -50,7 +50,6 @@ export interface RunningEngineInterface {
   reset: (x: number) => void;
   getTurn: (x: number) => number;
   turnsLeft: () => number;
-  canLevelDown: () => boolean;
   gameOver: (x: number) => boolean;
   resetTurn: () => void;
 }
@@ -174,10 +173,6 @@ class RunningEngine implements RunningEngineInterface {
 
   turnsLeft() {
     return this.gameLen - this.turn;
-  }
-
-  canLevelDown() {
-    return this.currentN > MINN;
   }
 
   gameOver(elapsedTime: number) {

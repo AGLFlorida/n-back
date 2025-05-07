@@ -8,6 +8,7 @@ interface PC {
   set: (x: number, y?: GameModeEnum) => void;
   levelUp: (mode: GameModeEnum) => void;
   levelDown: (mode: GameModeEnum) => void;
+  canLevelDown: (mode: GameModeEnum) => boolean;
 }
 class Player implements PC {
   level: GameLevels;
@@ -38,6 +39,10 @@ class Player implements PC {
     if (this.get(mode) > 1) {
       this.set(this.get(mode) - 1, mode);
     }
+  }
+
+  canLevelDown(mode: GameModeEnum) {
+    return (this.get(mode) > 1)
   }
 }
 
