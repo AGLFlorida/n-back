@@ -254,21 +254,9 @@ export default function Play() {
     console.log("dashboard: ", JSON.stringify(dashRef.current));
   }
 
-
-  // useEffect(() => {
-  //   if (highestN < defaultN) {
-  //     setHighestN(defaultN);
-  //   }
-
-  //   const currentGameMode = whichGameMode(isDualMode, isSilentMode);
-  //   if (higestLevel < playerLevel.current[currentGameMode as GameModeEnum]) {
-  //     setHighestLevel(playerLevel.current[currentGameMode as GameModeEnum]);
-  //   }
-  // }, [playerLevel, defaultN, isDualMode, isSilentMode]);
-
-  // go back to terms if the terms are not accepted.
   useFocusEffect(
     React.useCallback(() => {
+      // go back to terms if the terms are not accepted.
       if (!storedTermsAccepted) {
         Alert.alert(
           t('terms.title'),
@@ -279,7 +267,10 @@ export default function Play() {
           { cancelable: false }
         );
       }
-
+      return () => { // stop the game if we tab away.
+        stopGameLoop();
+        resetGame();
+      }
     }, [router])
   );
 
@@ -340,8 +331,7 @@ export default function Play() {
           const round = engineRef.current.nextRound(engineRef.current.getTurn(elapsedTime));
           setGrid(fillBoard());
 
-          // fix for missing visual indicator when two turns have the 
-          // same visible square.
+          // fix for missing visual indicator when two turns have the same square.
           const redraw = setTimeout(() => {
             setGrid(round?.next as Grid);
           }, 200);
