@@ -112,8 +112,8 @@ export default function Play() {
   };
 
   const doLevelUp = (mode: GameModeEnum) => {
-    setDidLevelUp(true);
-    playerRef.current.levelUp(mode);
+    if (playerRef.current.canLevelUp(mode, defaultN)) setDidLevelUp(true);
+    playerRef.current.levelUp(mode, defaultN);
     dashRef.current.reset();
 
     navigation.setOptions({ // update navigation title
@@ -285,7 +285,7 @@ export default function Play() {
     setIsLoading(false);
 
     const _mode = engineRef.current.getGameMode();
-    const level = playerRef.current.get(_mode)
+    const level = playerRef.current.get(_mode);
     navigation.setOptions({
       title: `${levelText} ${level} [N: ${defaultN}] ${GAME_MODE_NAMES[_mode]}`
     });

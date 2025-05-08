@@ -74,7 +74,6 @@ export const useAchievementStore = create<AchievementState>()(
         })
       },
       reset: () => {
-        console.log("ach reset!")
         set({
           N: MINN,
           single: startingLevel,
