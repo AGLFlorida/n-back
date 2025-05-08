@@ -281,6 +281,13 @@ export default function Play() {
     dashRef.current.reset();
     setIsLoading(false);
 
+    console.log("update title.")
+    const _mode = engineRef.current.getGameMode();
+    const level = playerRef.current.get(_mode)
+    navigation.setOptions({
+      title: `${levelText} ${level} [N: ${defaultN}] ${GAME_MODE_NAMES[_mode]}`
+    });
+
     Animated.timing(playButtonFadeAnim, {
       toValue: 1,
       duration: 500,
@@ -290,6 +297,7 @@ export default function Play() {
     return () => {
       resetGame();
       hideButtons();
+      () => { console.log("persist levels here?") }
     }
   }, [isDualMode, isSilentMode, defaultN])
 
@@ -360,16 +368,6 @@ export default function Play() {
       resetGame();
     };
   }, []);
-
-  // Update title on first load.
-  useEffect(() => {
-    console.log("update title.")
-    const _mode = engineRef.current.getGameMode();
-    const level = playerRef.current.get(_mode)
-    navigation.setOptions({
-      title: `${levelText} ${level} [N: ${defaultN}] ${GAME_MODE_NAMES[_mode]}`
-    });
-  }, [defaultN]);
 
   return (
     <Display>
