@@ -2,6 +2,12 @@ import log from "@/util/logger";
 
 const ERROR_PREFIX = "Error in ScoreCard: ";
 
+export interface ScoreCardInterface {
+  soundGuesses?: boolean[];
+  posGuesses?: boolean[];
+  buzzGuesses?: boolean[];
+}
+
 export type SingleScoreType = {
   score: number,
   score2?: number, // for DualN and SilentDualN modes

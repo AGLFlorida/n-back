@@ -7,10 +7,12 @@ import {
   Keyboard,
   Text,
   Switch,
-  Pressable,
+  Pressable
 } from "react-native";
 
 // TODO | FIXME -- toggling system display does not update settings / theme.
+
+import DebugModal from "@/components/DebugModal";
 
 import { useRouter } from "expo-router";
 import { useTranslation } from 'react-i18next';
@@ -18,14 +20,15 @@ import * as Updates from 'expo-updates';
 
 import Button from "@/components/Button";
 
-import { darkModeDefault, useSettingsStore } from "@/store/useSettingsStore";
-import { resetHistoryStore, useHistoryStore } from "@/store/useHistoryStore";
+import { darkModeDefault, resetSettingsStore, useSettingsStore } from "@/store/useSettingsStore";
+import { resetHistoryStore } from "@/store/useHistoryStore";
+import { resetAchievementStore, useAchievementStore } from "@/store/useAchievementStore";
 
 import { useGlobalStyles } from "@/styles/globalStyles";
 import { useTheme } from "@/contexts/ThemeContext"
 import { showCustomAlert } from "@/util/alert";
 
-import { MAXN, MINN } from "@/util/engine";
+import { MAXN, MINN } from "@/util/engine/constants";
 
 import log from "@/util/logger";
 import i18n from '@/util/i18n';
@@ -38,24 +41,30 @@ export default function Settings() {
   const router = useRouter();
   const { t } = useTranslation();
 
-  const { 
-    setN, N, 
-    saveDarkMode, //darkMode: storedDarkMode, 
-    saveDualMode, //dualMode: storedDualMode, 
-    saveSilentMode, //silentMode: storedSilentMode, 
-    setTermsAccepted
+  const {
+    setN, N,
+    saveDarkMode,
+    saveDualMode, 
+    saveSilentMode,
+    saveShowMoveCounts
   } = useSettingsStore();
 
   const storedDarkMode = useSettingsStore(state => state.darkMode);
   const storedDualMode = useSettingsStore(state => state.dualMode);
   const storedSilentMode = useSettingsStore(state => state.silentMode);
+  const storedShowMoveCounts = useSettingsStore(state => state.showMoveCounts);
 
-  const { setRecords } = useHistoryStore();
+  // const resetPlayerLevels = useAchievementStore(state => state.resetPlayerLevels);
+
+  // const singleDebug  = useAchievementStore(state => state.single);
+
+  const [showDebug, setShowDebug] = useState(false);
 
   const [defaultN, setDefaultN] = useState<N>(N);
   const [dualMode, toggleDualMode] = useState<boolean>(storedDualMode);
   const [darkMode, toggleDarkMode] = useState<boolean>(storedDarkMode);
   const [silentMode, toggleSilentMode] = useState<boolean>(storedSilentMode);
+  const [showMoveCounts, toggleShowMoveCounts] = useState<boolean>(storedShowMoveCounts)
 
   const [error,] = useState<string>();
 
@@ -68,21 +77,16 @@ export default function Settings() {
   };
 
   const clearSettings = () => {
-    const clear = async () => {
-      setN();
-      saveDualMode(false);
-      saveDarkMode(darkModeDefault);
-      saveSilentMode(false);
-      setTermsAccepted(false);
-      setRecords({});
-      
-      setDefaultN(2);
+    const clear = () => {
+      resetSettingsStore();
+      resetHistoryStore();
+      resetAchievementStore();
+
+      setDefaultN(MINN);
       toggleDualMode(false);
       toggleDarkMode(darkModeDefault);
       toggleSilentMode(false);
-
-      resetHistoryStore();
-
+      
       router.push('/terms');
     }
 
@@ -116,8 +120,12 @@ export default function Settings() {
   }, [silentMode]);
 
   useEffect(() => {
-    console.debug("[settings] dual | silent | dark > ", storedDualMode, storedSilentMode, storedDarkMode);
-  }, [storedDualMode, storedSilentMode, storedDarkMode])
+    setN(defaultN);
+  }, [defaultN]);
+
+  useEffect(() => {
+    saveShowMoveCounts(showMoveCounts)
+  }, [showMoveCounts]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -181,7 +189,21 @@ export default function Settings() {
               <Text style={styles.label}>{t('settings.darkMode')}</Text>
             </View>
           </View>
-          {/* <Button label={t('settings.save')} onPress={() => handleSaved()} /> */}
+
+          <View style={[styles.row, { margin: 5 }]}>
+            <View style={styles.settingsCell}>
+              <Switch
+                trackColor={theme.toggle.trackColor}
+                thumbColor={theme.toggle.thumbColor(showMoveCounts)}
+                onValueChange={toggleShowMoveCounts}
+                value={showMoveCounts}
+              />
+            </View>
+            <View style={styles.settingsCell}>
+              <Text style={styles.label}>{t('settings.showMoveCounts')}</Text>
+            </View>
+          </View>
+
           <View style={[styles.row, { margin: 5 }]}>
             <View style={styles.settingsCell}>
               <Text style={styles.h1}>{t('settings.dangerZone')}</Text>
@@ -211,8 +233,11 @@ export default function Settings() {
         <Pressable style={{ alignSelf: 'flex-end', marginTop: 20, marginRight: 10 }} onPress={() => router.push('/learn')}>
           <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>{t('settings.learnMore')}</Text>
         </Pressable>
+        <Pressable style={{ alignSelf: 'flex-end', marginTop: 20, marginRight: 10 }} onPress={() => setShowDebug(true)}>
+          <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>{t('settings.debug')}</Text>
+        </Pressable>
+        <DebugModal show={showDebug} onClose={() => setShowDebug(false)} />
       </KeyboardAvoidingView>
-    </TouchableWithoutFeedback >
+    </TouchableWithoutFeedback>
   );
 }
-

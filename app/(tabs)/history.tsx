@@ -5,11 +5,15 @@ import { useTranslation } from 'react-i18next';
 
 import { useGlobalStyles } from "@/styles/globalStyles";
 
-import { ScoresType } from '@/util/ScoreCard';
+import type { ScoresType } from '@/util/engine/ScoreCard';
 
 import AchievementBar from '@/components/AchievementBar';
 
+import { Hr } from '@/components/hr';
+
 // TODO | FIXME -- still need to wire up the logic for 'streak'
+
+// TODO | ADDME -- need to add import and export of scores / history
 
 import Chart, { DataPointType } from '@/components/Chart';
 
@@ -18,6 +22,7 @@ import { useHistoryStore } from "@/store/useHistoryStore";
 export default function History() {
   const styles = useGlobalStyles();
   const { t } = useTranslation();
+
   // Single Mode
   const [lineData, setLineData] = useState<DataPointType[]>([]);
   const [lineData2, setLineData2] = useState<DataPointType[]>([]);
@@ -233,10 +238,12 @@ export default function History() {
             <Text style={[styles.h2, { margin: 10 }]}>{t('history.single')}</Text>
             <Chart data={lineData} data2={lineData2} data3={lineData3} xLabels={dataLabels.current} />
           </View>
+          <Hr />
           <View>
             <Text style={[styles.h2, { margin: 10 }]}>{t('history.dual')}</Text>
             <Chart data={lineData4} data2={lineData5} data3={lineData6} data4={lineData10} data5={lineData11} xLabels={dataLabels.current} />
           </View>
+          <Hr />
           <View>
             <Text style={[styles.h2, { margin: 10 }]}>{t('history.silent')}</Text>
             <Chart data={lineData7} data2={lineData8} data3={lineData9} data4={lineData12} data5={lineData13} xLabels={dataLabels.current} />

@@ -47,6 +47,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     paddingTop: 10,
   },
+  text: {
+    color: '#fff', 
+    fontSize: 18,
+  },
+  textContainer: {
+    width: '32%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  textLayout: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 10,
+  },
   silver: {
     backgroundColor: '#C0C0C0',
     borderColor: '#676767',

@@ -1,5 +1,5 @@
 import React from "react";
-import { useRouter, useNavigation } from "expo-router";
+import { useRouter, useNavigation, usePathname } from "expo-router";
 import { Pressable } from "react-native";
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -12,10 +12,14 @@ function BackButton({color}: BackButtonProps) {
   const router = useRouter();
   const navigation = useNavigation();
 
+  const path = usePathname();
+
   return (
     <Pressable
       onPress={() => {
-        if (navigation.canGoBack()) {
+        if (path === '/learn') {
+          router.push("/settings");
+        } else if (navigation.canGoBack()) {
           navigation.goBack();
         } else {
           router.push("/");

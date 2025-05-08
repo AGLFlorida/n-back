@@ -1,7 +1,9 @@
 import lightMode from "./light";
 
+export type ThemeType = typeof lightMode; // hacky workarounds ftl...
+
 export type ThemeContextType = {
-  theme: typeof lightMode; // type workaround
+  theme: ThemeType;
   themeMode: "light" | "dark"; 
   toggleTheme: (arg0: boolean) => void;
 };

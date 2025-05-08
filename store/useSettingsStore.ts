@@ -3,8 +3,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const BASEN = 2;
-
+import { MINN } from '@/util/engine/constants';
 
 const systemTheme = Appearance.getColorScheme();
 
@@ -16,11 +15,14 @@ type SettingsState = {
   dualMode: boolean;
   silentMode: boolean;
   termsAccepted: boolean;
+  showMoveCounts: boolean;
   setN: (n?: number) => void;
   setTermsAccepted: (t: boolean) => void;
-  saveDarkMode: (t?: boolean) => void;
-  saveDualMode: (t?: boolean) => void;
-  saveSilentMode: (t?: boolean) => void;
+  saveDarkMode: (t: boolean) => void;
+  saveDualMode: (t: boolean) => void;
+  saveSilentMode: (t: boolean) => void;
+  saveShowMoveCounts: (t: boolean) => void;
+  reset: () => void;
 }
 
 
@@ -28,13 +30,14 @@ type SettingsState = {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set, get) => ({
-      N: BASEN,
+      N: MINN,
       darkMode: (systemTheme === "dark") ? true : false,
       dualMode: false,
       silentMode: false,
       termsAccepted: false,
+      showMoveCounts: false,
       setN: (n) => {
-        const localN = (!n || n < 2) ? BASEN : n;
+        const localN = (!n || n < 2) ? MINN : n;
         set({
           N: localN
         });
@@ -45,23 +48,35 @@ export const useSettingsStore = create<SettingsState>()(
         });
       },
       saveDarkMode: (t) => {
-        const local = t ? t : !get().darkMode;
         set({
-          darkMode: local
+          darkMode: t
         });
       },
       saveDualMode: (t) => {
-        const local = t ? t : !get().dualMode;
         set({
-          dualMode: local
+          dualMode: t
         });
       },
       saveSilentMode: (t) => {
-        const local = t ? t : !get().silentMode;
         set({
-          silentMode: local
+          silentMode: t
         });
       },
+      saveShowMoveCounts: (t) => {
+        set({
+          showMoveCounts: t
+        })
+      },
+      reset: () => {
+        set({
+          N: MINN,
+          darkMode: (systemTheme === "dark") ? true : false,
+          dualMode: false,
+          silentMode: false,
+          termsAccepted: false,
+          showMoveCounts: false
+        });
+      }
     }),
     {
       name: 'settings-storage',
@@ -69,3 +84,14 @@ export const useSettingsStore = create<SettingsState>()(
     }
   )
 );
+
+
+export const resetSettingsStore = async () => {
+  try {
+    await AsyncStorage.removeItem('settings-storage');
+    useSettingsStore.persist.clearStorage();
+    useSettingsStore.getState().reset();
+  } catch (error) {
+    console.error('Failed to reset store', error);
+  }
+}

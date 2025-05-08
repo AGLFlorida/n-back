@@ -12,7 +12,9 @@ export default {
     resetDataMessage: "All data will be reset to defaults and you will need to re-accept the terms.",
     learnMore: "Learn More",
     unlock: "Unlock",
-    errorMessage: "Please correct all errors before saving."
+    errorMessage: "Please correct all errors before saving.",
+    showMoveCounts: "Show Moves Counts",
+    debug: "See stored data",
   },
   gameModes: {
     single: "Single",
@@ -83,13 +85,14 @@ export default {
     notFound: "Not Found",
     play: "Play",
     history: "History",
-    awards: 'Awards',
-    charts: 'Charts'
+    awards: "Awards",
+    charts: "Charts"
   },
   play: {
     tryAgain: "Try an easier level?",
     tryEasierMessage: "Would you like to decrease the difficulty? There's no penalty for taking a moment to reset.",
-    level: "Level"
+    level: "Level",
+    turnsLeft: "Remaining Turns"
   },
   buttons: {
     getStarted: "Get Started",
@@ -104,7 +107,10 @@ export default {
   history: {
     single: "Single",
     dual: "Dual",
-    silent: "Silent"
+    silent: "Silent",
+    highestn: "Highest N",
+    streak: "Streak",
+    level: "Level"
   },
   learn: {
     about: "About Settings",
@@ -114,6 +120,7 @@ export default {
     silentModeDescription: "Silent mode changes the default \"letter\" sound to a pattern of vibrations. The standard celebratory sounds remain the same."
   },
   scoreOverlay: {
+    levelup: "You leveled up!",
     results: "Results",
     posScore: "Position Score",
     posError: "Position Error",
@@ -123,5 +130,6 @@ export default {
     soundError: "Sound Error"
   },
   ok: "OK",
-  cancel: "Cancel"
+  cancel: "Cancel",
+  close: "Close"
 }; 

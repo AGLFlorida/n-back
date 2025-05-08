@@ -6,6 +6,33 @@ type ProgressBarProps = {
   progress: number; 
 };
 
+const styles = StyleSheet.create({
+  container: {
+    borderRadius: 8,
+    elevation: 5,
+    height: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    width: '80%',
+  },
+  fill: {
+    borderRadius: 8,
+    height: '100%',
+  },
+  wrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 15,
+    width: '100%',
+  }
+});
+
 const ProgressBar = ({ progress }: ProgressBarProps) => {
   const { theme } = useTheme();
   const animatedWidth = useRef(new Animated.Value(0)).current;
@@ -14,7 +41,7 @@ const ProgressBar = ({ progress }: ProgressBarProps) => {
   const setPrevProgress = (t: number) => prevProgress.current = t;
 
   useEffect(() => {
-    if (prevProgress.current == (2/3)) {
+    if (prevProgress.current == (2/3) && prevProgress.current > progress) {
       Animated.sequence([
         Animated.timing(animatedWidth, {
           toValue: 100, 
@@ -56,32 +83,5 @@ const ProgressBar = ({ progress }: ProgressBarProps) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 8,
-    elevation: 5,
-    height: 16,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    width: '80%',
-  },
-  fill: {
-    borderRadius: 8,
-    height: '100%',
-  },
-  wrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 15,
-    width: '100%',
-  }
-});
 
 export default ProgressBar;
