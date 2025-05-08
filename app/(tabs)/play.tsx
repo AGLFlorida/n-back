@@ -13,8 +13,8 @@ import { MAXTIME } from "@/util/engine/constants";
 
 import useGameSounds, { SoundKey } from "@/hooks/sounds";
 
-import type { ScoreCardInterface, SingleScoreType } from "@/util/engine/ScoreCard";
-import type { CustomTimer, Grid, GameLevels } from "@/util/engine/types";
+import type { ScoreCardInterface } from "@/util/engine/ScoreCard";
+import type { CustomTimer, Grid } from "@/util/engine/types";
 
 import Display from "@/components/Display";
 
@@ -397,8 +397,8 @@ export default function Play() {
         />
         <ProgressBar progress={dashRef.current.getProgress()} />
         <View style={styles.indexContainer}>
-          {showMoveCounts && <Text style={[styles.label, { fontSize: 24 }]}>{t('text.turnsLeft')} {engineRef.current.turnsLeft()}</Text>}
-          <Text style={{ color: '#ccc' }}>{defaultN} {JSON.stringify(playerRef.current)}</Text>
+          {showMoveCounts && <Text style={[styles.label, { fontSize: 24 }]}>{t('play.turnsLeft')}: {engineRef.current.turnsLeft()}</Text>}
+          {/* <Text style={{ color: '#ccc' }}>{defaultN} {JSON.stringify(playerRef.current)}</Text> */}
         </View>
         <ScoreOverlay
           isVisible={showScoreOverlay}

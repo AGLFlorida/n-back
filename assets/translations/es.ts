@@ -12,7 +12,9 @@ export default {
     resetDataMessage: "Todos los datos se restablecerán a los valores predeterminados y deberá volver a aceptar los términos.",
     learnMore: "Más Información",
     unlock: "Desbloquear",
-    errorMessage: "Por favor, corrija todos los errores antes de guardar."
+    errorMessage: "Por favor, corrija todos los errores antes de guardar.",
+    showMovesCounts: "Mostrar Número de Movimientos",
+    debug: "Ver datos almacenados",
   },
   gameModes: {
     single: "Simple",
@@ -49,13 +51,14 @@ export default {
     notFound: "No Encontrado",
     play: "Jugar",
     history: "Historial",
-    awards: 'TRANSLATE ME [awards]',
-    charts: 'TRANSLATE ME [charts]'
+    awards: "Premios",
+    charts: "Gráficas"
   },
   play: {
     tryAgain: "¿Quieres jugar un nivel más fácil?",
     tryEasierMessage: "¿Quieres disminuir la dificultad? No hay penalización por tomar un momento para restablecer.",
-    level: "Nivel"
+    level: "Nivel",
+    turnsLeft: "Turnos Restantes"
   },
   scoreOverlay: {
     levelup: "¡Has subido de nivel!",
@@ -115,6 +118,9 @@ export default {
     single: "Simple",
     dual: "Doble",
     silent: "Silencioso",
+    highestn: "N Más Alto",
+    streak: "Racha de Victorias",
+    level: "Nivel"
   },
   learn: {
     about: "Acerca de los Ajustes",

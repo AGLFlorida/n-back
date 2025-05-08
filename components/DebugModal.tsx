@@ -104,7 +104,7 @@ const DebugModal = ({ onClose, show = false }: DebugProps) => {
               <Text style={styles.debugText}>{JSON.stringify({settingState}, null, 2)}</Text>
 
               <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-                <Text style={styles.cancelButtonText}>{t('text.cancel')}</Text>
+                <Text style={styles.cancelButtonText}>{t('ok')}</Text>
               </TouchableOpacity>
 
             </View>
