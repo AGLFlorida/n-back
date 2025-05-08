@@ -73,18 +73,21 @@ export default function Play() {
     playButtonFadeAnim.setValue(0);
   }
 
+  // // DEBUG
+  // const achDebug = useAchievementStore();
+  // // DEBUG
+
   const { playSound } = useGameSounds();
   const GAME_MODE_NAMES = getGameModeNames(t);
   const [grid, setGrid] = useState<Grid>(fillBoard());
   const defaultN = useSettingsStore(state => state.N);
-  const isDualMode = useSettingsStore(state => state.dualMode);
-  const isSilentMode = useSettingsStore(state => state.silentMode);
+  const { dualMode: isDualMode, silentMode: isSilentMode, showMoveCounts} = useSettingsStore();
   const [showScoreOverlay, setShowScoreOverlay] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [levelText, ] = useState<string>(t('play.level'));
 
   const dashRef = useRef<DashboardInterface>(new Dashboard());
-  const engineRef = useRef(new RunningEngine({ n: 2, gameMode: { isDual: isDualMode, isSilent: isSilentMode } }));
+  const engineRef = useRef(new RunningEngine({ n: defaultN, gameMode: { isDual: isDualMode, isSilent: isSilentMode } }));
   const playerRef = useRef(new Player());
 
   // game loop
@@ -276,12 +279,11 @@ export default function Play() {
 
   // Init the engine, reset the dashboard, and show the play buttons
   useEffect(() => {
-    console.log("init game");
-    engineRef.current = new RunningEngine({ n: 2, gameMode: { isDual: isDualMode, isSilent: isSilentMode } });
+    engineRef.current = new RunningEngine({ n: defaultN, gameMode: { isDual: isDualMode, isSilent: isSilentMode } });
     dashRef.current.reset();
+    playerRef.current = new Player();
     setIsLoading(false);
 
-    console.log("update title.")
     const _mode = engineRef.current.getGameMode();
     const level = playerRef.current.get(_mode)
     navigation.setOptions({
@@ -297,14 +299,12 @@ export default function Play() {
     return () => {
       resetGame();
       hideButtons();
-      () => { console.log("persist levels here?") }
     }
   }, [isDualMode, isSilentMode, defaultN])
 
   // start the game.
   useEffect(() => {
     if (shouldStartGame) {
-      console.log("start game");
       startGameLoop();
 
       return () => {
@@ -397,7 +397,7 @@ export default function Play() {
         />
         <ProgressBar progress={dashRef.current.getProgress()} />
         <View style={styles.indexContainer}>
-          <Text style={[styles.label, { fontSize: 24 }]}>{t('text.turnsLeft')} {engineRef.current.turnsLeft()}</Text>
+          {showMoveCounts && <Text style={[styles.label, { fontSize: 24 }]}>{t('text.turnsLeft')} {engineRef.current.turnsLeft()}</Text>}
           <Text style={{ color: '#ccc' }}>{defaultN} {JSON.stringify(playerRef.current)}</Text>
         </View>
         <ScoreOverlay

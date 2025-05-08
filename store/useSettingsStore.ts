@@ -15,11 +15,13 @@ type SettingsState = {
   dualMode: boolean;
   silentMode: boolean;
   termsAccepted: boolean;
+  showMoveCounts: boolean;
   setN: (n?: number) => void;
   setTermsAccepted: (t: boolean) => void;
   saveDarkMode: (t: boolean) => void;
   saveDualMode: (t: boolean) => void;
   saveSilentMode: (t: boolean) => void;
+  saveShowMoveCounts: (t: boolean) => void;
   reset: () => void;
 }
 
@@ -33,6 +35,7 @@ export const useSettingsStore = create<SettingsState>()(
       dualMode: false,
       silentMode: false,
       termsAccepted: false,
+      showMoveCounts: false,
       setN: (n) => {
         const localN = (!n || n < 2) ? MINN : n;
         set({
@@ -59,6 +62,11 @@ export const useSettingsStore = create<SettingsState>()(
           silentMode: t
         });
       },
+      saveShowMoveCounts: (t) => {
+        set({
+          showMoveCounts: t
+        })
+      },
       reset: () => {
         set({
           N: MINN,
@@ -66,6 +74,7 @@ export const useSettingsStore = create<SettingsState>()(
           dualMode: false,
           silentMode: false,
           termsAccepted: false,
+          showMoveCounts: false
         });
       }
     }),

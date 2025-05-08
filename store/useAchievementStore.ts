@@ -4,6 +4,8 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
+import type { GameLevels } from "@/util/engine/types";
+
 import { getStartLevel } from '@/util/engine';
 
 import { MINN } from "@/util/engine/constants";
@@ -14,18 +16,18 @@ const startingLevel = getStartLevel(MINN);
 
 export const darkModeDefault: boolean = systemTheme === "dark";
 
-
 type AchievementState = {
   N: number;
   streak: number;
-  singleLvl: number;
-  dualLvl: number;
-  silentLvl: number;
+  single: number;
+  dual: number;
+  silent: number;
   setN: (x: number) => void;
   setStreak: (x: number) => void;
   setSingleLvl: (lvl: number) => void;
   setDualLvl: (lvl: number) => void;
   setSilentLvl: (lvl: number) => void;
+  setAllLvl: (lvls: GameLevels) => void;
   reset: () => void;
   resetPlayerLevels: (N?: number) => void;
 }
@@ -34,9 +36,9 @@ export const useAchievementStore = create<AchievementState>()(
   persist(
     (set, get) => ({
       N: MINN,
-      singleLvl: startingLevel,
-      dualLvl: startingLevel,
-      silentLvl: startingLevel,
+      single: startingLevel,
+      dual: startingLevel,
+      silent: startingLevel,
       streak: 0,
       setN: N => {
         set({
@@ -50,34 +52,43 @@ export const useAchievementStore = create<AchievementState>()(
       },
       setSingleLvl: (lvl) => {
         set({
-          singleLvl: lvl
+          single: lvl
         })
       },
       setDualLvl: (lvl) => {
         set({
-          dualLvl: lvl
+          dual: lvl
         })
       },
       setSilentLvl: (lvl) => {
         set({
-          silentLvl: lvl
+          silent: lvl
+        })
+      },
+      setAllLvl: (lvls: GameLevels) => {
+        const { SingleN, DualN, SilentDualN } = lvls;
+        set({
+          single: SingleN,
+          dual: DualN,
+          silent: SilentDualN
         })
       },
       reset: () => {
+        console.log("ach reset!")
         set({
           N: MINN,
-          singleLvl: startingLevel,
-          dualLvl: startingLevel,
-          silentLvl: startingLevel,
+          single: startingLevel,
+          dual: startingLevel,
+          silent: startingLevel,
           streak: 0
         });
       },
       resetPlayerLevels: (N = MINN) => {
         const l = getStartLevel(N);
         set({
-          singleLvl: l,
-          dualLvl: l,
-          silentLvl: l,
+          single: l,
+          dual: l,
+          silent: l,
         })
       }
     }),

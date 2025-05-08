@@ -1,6 +1,7 @@
 import type { GameLevels } from "./types";
-import { DEFAULT_LEVELS } from "./constants";
 import { GameModeEnum } from "./enums";
+
+import { useAchievementStore } from "@/store/useAchievementStore";
 
 interface PC {
   level: GameLevels;
@@ -14,9 +15,13 @@ class Player implements PC {
   level: GameLevels;
 
   constructor() {
-    this.level = DEFAULT_LEVELS;
-    // TODO: properly hydrate level from store.
-    // TODO: default levels should be based on N, not DEFAULT_LEVELS
+    // hydrate levels
+    const {single, dual, silent } = useAchievementStore.getState();
+    this.level = {
+      SingleN: single,
+      DualN: dual,
+      SilentDualN: silent
+    };
   }
 
   get(mode: GameModeEnum) {
@@ -28,11 +33,11 @@ class Player implements PC {
       ...this.level,
       [mode]: l
     };
+    useAchievementStore.getState().setAllLvl(this.level);
   }
 
   levelUp(mode: GameModeEnum) {
     this.set(this.get(mode) + 1, mode);
-
   }
 
   levelDown(mode: GameModeEnum) {

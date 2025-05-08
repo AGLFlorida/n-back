@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 
 import { useHistoryStore } from '@/store/useHistoryStore';
 import { useAchievementStore } from '@/store/useAchievementStore';
+
+import { Hr } from '../hr';
 
 // TODO | FIXME -- bar grows to 100% even on a failed game. (only tested at 2 wins, 1 loss.)
 
@@ -18,7 +20,9 @@ const AchievementBar = () => {
   const records = useHistoryStore(state => state.records) as Record<string, ScoreCard>;
   const { streak, setStreak } = useAchievementStore();
   const N = useAchievementStore(state => state.N);
-  const { singleLvl, silentLvl, dualLvl } = useAchievementStore();
+  const { single: singleLvl, dual: silentLvl, silent: dualLvl } = useAchievementStore();
+
+  const level = highest(singleLvl, dualLvl, silentLvl);
 
   useEffect(() => {
     const total: number = Object.keys(records).length || 0;
@@ -26,22 +30,46 @@ const AchievementBar = () => {
   }, [records]);
 
   return (
-    <View style={styles.imgLayout}>
-      <View style={styles.imgContainer}>
-        <Medal level={singleLvl} />
-        <Banner t={JSON.stringify(singleLvl)} rank={medalRank(singleLvl)} />
+    <>
+      <View style={styles.imgLayout}>
+        <View style={styles.imgContainer}>
+          <Medal level={singleLvl} />
+          <Banner t={JSON.stringify(singleLvl)} rank={medalRank(level.value)} />
+        </View>
+        <View style={styles.imgContainer}>
+          <Brain n={N} />
+          <Banner t={JSON.stringify(N)} rank={brainRank(N)} />
+        </View>
+        <View style={styles.imgContainer}>
+          <Streak streak={streak} />
+          <Banner t={JSON.stringify(streak)} rank={streakRank(streak)} />
+        </View>
       </View>
-      <View style={styles.imgContainer}>
-        <Brain n={N} />
-        <Banner t={JSON.stringify(N)} rank={brainRank(N)} />
+      <View style={styles.textLayout}>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>Level ({level.label})</Text>
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>Highest N</Text>
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>Streak</Text>
+        </View>
       </View>
-      <View style={styles.imgContainer}>
-        <Streak streak={streak} />
-        <Banner t={JSON.stringify(streak)} rank={streakRank(streak)} />
-      </View>
-    </View>
+      <Hr />
+    </>
   );
 };
+
+type HighestType = {
+  value: number,
+  label: string
+}
+const highest = (single: number, dual: number, silent: number): HighestType => {
+  if (single >= dual && single >= silent) return { label: 'single', value: single };
+  if (dual >= silent) return { label: 'dual', value: dual };
+  return { label: 'silent', value: silent };
+}
 
 
 export default AchievementBar;

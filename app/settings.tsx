@@ -46,13 +46,17 @@ export default function Settings() {
     saveDarkMode,
     saveDualMode, 
     saveSilentMode,
+    saveShowMoveCounts
   } = useSettingsStore();
 
   const storedDarkMode = useSettingsStore(state => state.darkMode);
   const storedDualMode = useSettingsStore(state => state.dualMode);
   const storedSilentMode = useSettingsStore(state => state.silentMode);
+  const storedShowMoveCounts = useSettingsStore(state => state.showMoveCounts);
 
-  const resetPlayerLevels = useAchievementStore(state => state.resetPlayerLevels);
+  // const resetPlayerLevels = useAchievementStore(state => state.resetPlayerLevels);
+
+  // const singleDebug  = useAchievementStore(state => state.single);
 
   const [showDebug, setShowDebug] = useState(false);
 
@@ -60,6 +64,7 @@ export default function Settings() {
   const [dualMode, toggleDualMode] = useState<boolean>(storedDualMode);
   const [darkMode, toggleDarkMode] = useState<boolean>(storedDarkMode);
   const [silentMode, toggleSilentMode] = useState<boolean>(storedSilentMode);
+  const [showMoveCounts, toggleShowMoveCounts] = useState<boolean>(storedShowMoveCounts)
 
   const [error,] = useState<string>();
 
@@ -116,11 +121,11 @@ export default function Settings() {
 
   useEffect(() => {
     setN(defaultN);
-
-    // (re)set player level
-    resetPlayerLevels();
-
   }, [defaultN]);
+
+  useEffect(() => {
+    saveShowMoveCounts(showMoveCounts)
+  }, [showMoveCounts]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -184,6 +189,21 @@ export default function Settings() {
               <Text style={styles.label}>{t('settings.darkMode')}</Text>
             </View>
           </View>
+
+          <View style={[styles.row, { margin: 5 }]}>
+            <View style={styles.settingsCell}>
+              <Switch
+                trackColor={theme.toggle.trackColor}
+                thumbColor={theme.toggle.thumbColor(showMoveCounts)}
+                onValueChange={toggleShowMoveCounts}
+                value={showMoveCounts}
+              />
+            </View>
+            <View style={styles.settingsCell}>
+              <Text style={styles.label}>{t('settings.showMoveCounts')}</Text>
+            </View>
+          </View>
+
           <View style={[styles.row, { margin: 5 }]}>
             <View style={styles.settingsCell}>
               <Text style={styles.h1}>{t('settings.dangerZone')}</Text>
