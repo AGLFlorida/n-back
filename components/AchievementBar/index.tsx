@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native';
 
 import { useAchievementStore } from '@/store/useAchievementStore';
+import { useHistoryStore } from '@/store/useHistoryStore';
 import { useTheme } from '@/contexts/ThemeContext';
 
 import { useTranslation } from 'react-i18next';
@@ -19,6 +20,10 @@ const AchievementBar = () => {
   const N = useAchievementStore(state => state.N);
   const { single: singleLvl, dual: silentLvl, silent: dualLvl } = useAchievementStore();
 
+  const { hasRecords } = useHistoryStore();
+  const hideN = !!!hasRecords();
+
+
   const level = highest(singleLvl, dualLvl, silentLvl);
 
   const { t } = useTranslation();
@@ -34,8 +39,8 @@ const AchievementBar = () => {
           <Banner t={JSON.stringify(singleLvl)} rank={medalRank(level.value)} />
         </View>
         <View style={styles.imgContainer}>
-          <Brain n={N} />
-          <Banner t={JSON.stringify(N)} rank={brainRank(N)} />
+          <Brain n={(hideN) ? 0 : N} />
+          <Banner t={JSON.stringify(N)} rank={(hideN) ? 'none' : brainRank(N)} />
         </View>
         <View style={styles.imgContainer}>
           <Streak streak={streak} />

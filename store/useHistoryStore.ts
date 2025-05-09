@@ -21,6 +21,7 @@ type HistoryState = {
   getTodaysRecord: () => PersistedScoreBlock;
   getRecordByDate: (date: DateString) => PersistedScoreBlock;
   reset: () => void;
+  hasRecords: () => boolean;
 }
 
 export const useHistoryStore = create<HistoryState>()(
@@ -57,6 +58,10 @@ export const useHistoryStore = create<HistoryState>()(
         set({
           records: {},
         });
+      },
+      hasRecords: () => {
+        for (const _ in get().records) return true;
+        return false;
       }
     }),
     {
