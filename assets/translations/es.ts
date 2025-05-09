@@ -120,7 +120,8 @@ export default {
     silent: "Silencioso",
     highestn: "N Más Alto",
     streak: "Racha de Victorias",
-    level: "Nivel"
+    level: "Nivel",
+    scoreHelpBody: "TRANSLATE ME [scoreHelpBody]",
   },
   learn: {
     about: "Acerca de los Ajustes",

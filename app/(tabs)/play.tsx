@@ -202,6 +202,7 @@ export default function Play() {
       dashRef.current.incrementSuccess();
       if (shouldLevelUp(dashRef.current.getSuccessCount())) {
         doLevelUp(engineRef.current.getGameMode());
+        // persist high score.
         dashRef.current.reset();
       } else {
         dashRef.current.resetFailCount();

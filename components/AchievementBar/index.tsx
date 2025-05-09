@@ -19,7 +19,7 @@ import styles from './styles';
 import { ScoreCard } from '@/util/engine/ScoreCard';
 
 const AchievementBar = () => {
-  const records = useHistoryStore(state => state.records) as Record<string, ScoreCard>;
+  // const records = useHistoryStore(state => state.records) as ScoresType;
   const { streak, setStreak } = useAchievementStore();
   const N = useAchievementStore(state => state.N);
   const { single: singleLvl, dual: silentLvl, silent: dualLvl } = useAchievementStore();
@@ -28,10 +28,10 @@ const AchievementBar = () => {
 
   const { t } = useTranslation();
 
-  useEffect(() => {
-    const total: number = Object.keys(records).length || 0;
-    setStreak(total); // TODO | ADDME -- this is not really a streak.
-  }, [records]);
+  // useEffect(() => {
+  //   const total: number = Object.keys(records).length || 0;
+  //   setStreak(total); // TODO | ADDME -- this is not really a streak.
+  // }, [records]);
 
   return (
     <>

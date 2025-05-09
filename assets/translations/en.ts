@@ -110,7 +110,8 @@ export default {
     silent: "Silent",
     highestn: "Highest N",
     streak: "Streak",
-    level: "Level"
+    level: "Level",
+    scoreHelpBody: "The high scores are calculated using the formula: (N * GameScore) - ErrorRate",
   },
   learn: {
     about: "About Settings",

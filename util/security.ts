@@ -28,7 +28,7 @@ const storage = Platform.select({
   default: SecureStore
 });
 
-import { ScoresType } from './ScoreCard';
+import { ScoresType } from '@/util/engine/ScoreCard';
 
 type N = number | undefined
 

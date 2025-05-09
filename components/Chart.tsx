@@ -46,7 +46,7 @@ const Chart = ({ data, data2, data3, data4, data5, xLabels = [] }: Props) => {
     ((chartWidth - yAxisX - xOffset) / (limitedData.length - 1)) : 0;
 
   const yLabels = Array.from({ length: 6 }, (_, i) => ({
-    label: (i * 20).toString(),
+    label: (i * 200).toString(),
     yPos: chartHeight - ((i * 20) / maxY) * chartHeight,
   }));
 
@@ -97,7 +97,7 @@ const Chart = ({ data, data2, data3, data4, data5, xLabels = [] }: Props) => {
     <View style={{ alignItems: "center" }}>
       <Svg 
         width={chartWidth + 100} 
-        height={chartHeight + labelHeight}  // Only add what we need for labels
+        height={chartHeight + labelHeight}
         viewBox={`-30 0 ${chartWidth + 100} ${chartHeight + labelHeight}`}
       >
         {/* Y-Axis */}

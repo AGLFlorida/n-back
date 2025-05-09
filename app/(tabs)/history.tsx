@@ -1,13 +1,17 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { useFocusEffect } from "expo-router";
-import { ScrollView, View, Text } from "react-native";
+import { ScrollView, View, Text, Pressable } from "react-native";
 import { useTranslation } from 'react-i18next';
+
+import ScoreHelpModal from "@/components/ScoreHelpModal";
 
 import { useGlobalStyles } from "@/styles/globalStyles";
 
 import type { ScoresType } from '@/util/engine/ScoreCard';
 
 import AchievementBar from '@/components/AchievementBar';
+
+import { useTheme } from "@/contexts/ThemeContext"
 
 import { Hr } from '@/components/hr';
 
@@ -22,6 +26,7 @@ import { useHistoryStore } from "@/store/useHistoryStore";
 export default function History() {
   const styles = useGlobalStyles();
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   // Single Mode
   const [lineData, setLineData] = useState<DataPointType[]>([]);
@@ -48,6 +53,7 @@ export default function History() {
   // const [playHistory, setPlayHistory] = useState<ScoresType>();
 
   const [showChart, setShowChart] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   const dataLabels = useRef<string[]>([]);
 
@@ -250,9 +256,10 @@ export default function History() {
           </View>
         </>
       }
-      <View>
-        <Text style={{color: '#fff'}}>{JSON.stringify(records)}</Text>
-      </View> 
+      <Pressable style={{ alignSelf: 'flex-end', margin: 20 }} onPress={() => setShowHelp(true)}>
+        <Text style={{ color: theme.screenOptions.tabBarActiveTintColor, fontSize: 16 }}>{t('settings.learnMore')}</Text>
+      </Pressable>
+      <ScoreHelpModal show={showHelp} onClose={() => setShowHelp(false)} />
     </ScrollView>
   );
 }

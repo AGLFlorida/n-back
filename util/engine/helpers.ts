@@ -103,3 +103,8 @@ export const getGameModeNames = (t: (key: string) => string) => ({
   [GameModeEnum.DualN]: t('gameModes.dual'),
   [GameModeEnum.SilentDualN]: t('gameModes.silent')
 });
+
+
+export const calculateHighScore = (ErrorRate: number, GameScore: number, n: number): number => {
+  return (n * GameScore) - ErrorRate;
+}
