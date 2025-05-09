@@ -120,7 +120,8 @@ export default {
     silent: "Silencioso",
     highestn: "N Más Alto",
     streak: "Racha de Victorias",
-    level: "Nivel"
+    level: "Nivel",
+    scoreHelpBody: "TRANSLATE ME [scoreHelpBody]. Obtienes 10 puntos extra por usar el modo silencioso doble.",
   },
   learn: {
     about: "Acerca de los Ajustes",
@@ -131,5 +132,10 @@ export default {
   },
   ok: "Aceptar",
   cancel: "Cancelar",
-  close: "Cerrar"
+  close: "Cerrar",
+  text: {
+    copiedToClipboard: "¡Copiado al portapapeles!",
+    clipboardCopyFailed: "Error al copiar al portapapeles:",
+    failedToCopyText: "No se pudo copiar el texto"
+  }
 }; 

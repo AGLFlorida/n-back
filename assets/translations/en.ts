@@ -110,7 +110,8 @@ export default {
     silent: "Silent",
     highestn: "Highest N",
     streak: "Streak",
-    level: "Level"
+    level: "Level",
+    scoreHelpBody: "The high scores are calculated using the formula: (N * GameScore) - ErrorRate. You get 10 bonus points for dual silent mode.",
   },
   learn: {
     about: "About Settings",
@@ -131,5 +132,10 @@ export default {
   },
   ok: "OK",
   cancel: "Cancel",
-  close: "Close"
+  close: "Close",
+  text: {
+    copiedToClipboard: "Copied to clipboard!",
+    clipboardCopyFailed: "Clipboard copy failed:",
+    failedToCopyText: "Failed to copy text"
+  }
 }; 

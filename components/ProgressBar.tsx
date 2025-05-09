@@ -3,7 +3,7 @@ import { View, StyleSheet, Animated } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 
 type ProgressBarProps = {
-  progress: number; 
+  onProgress: () => number; 
 };
 
 const styles = StyleSheet.create({
@@ -33,12 +33,23 @@ const styles = StyleSheet.create({
   }
 });
 
-const ProgressBar = ({ progress }: ProgressBarProps) => {
+// TODO: if the player gets to a high level, then lowers N (say to 2)
+// the game correctly blocks leveling up. we should to update the status bar
+// so that is only increments by the actual number of "wins" needed to get
+// back to the correct level.
+
+// TODO: there is a bug where 2 wins then a fail causes the bar to grow to 100%
+// it should actually shrink
+
+const ProgressBar = ({ onProgress }: ProgressBarProps) => {
   const { theme } = useTheme();
   const animatedWidth = useRef(new Animated.Value(0)).current;
+  const progress = onProgress();
 
   const prevProgress = useRef(0);
   const setPrevProgress = (t: number) => prevProgress.current = t;
+
+  console.log("new progress: ", progress)
 
   useEffect(() => {
     if (prevProgress.current == (2/3) && prevProgress.current > progress) {

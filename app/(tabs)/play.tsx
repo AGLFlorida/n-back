@@ -13,7 +13,7 @@ import { MAXTIME } from "@/util/engine/constants";
 
 import useGameSounds, { SoundKey } from "@/hooks/sounds";
 
-import type { ScoreCardInterface } from "@/util/engine/ScoreCard";
+import type { ScoreCardType, SingleScoreType} from "@/util/engine/ScoreCard";
 import type { CustomTimer, Grid } from "@/util/engine/types";
 
 import Display from "@/components/Display";
@@ -24,8 +24,6 @@ import { GameModeEnum } from "@/util/engine/enums";
 
 import { showCustomAlert } from "@/util/alert";
 import log from "@/util/logger";
-
-// TODO persist player and scores after each round
 
 import RunningEngine, {
   getGameModeNames,
@@ -45,6 +43,7 @@ import TutorialOverlay from '@/components/TutorialOverlay';
 import ProgressBar from '@/components/ProgressBar';
 
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { useAchievementStore } from "@/store/useAchievementStore";
 
 
 const fillGuessCard = (len: number): boolean[] => Array(len).fill(false);
@@ -85,6 +84,7 @@ export default function Play() {
   // post game loop
   const [gameScores, setGameScores] = useState<GameScores>({ positions: 0, sounds: 0, buzz: 0, pError: 0, sError: 0, bError: 0 });
   const [didLevelUp, setDidLevelUp] = useState(false);
+  const { incrementStreak, setN: setAchievementN } = useAchievementStore();
 
   // helper methods  
   const soundClickRef = useRef<boolean[]>([]);
@@ -150,8 +150,10 @@ export default function Play() {
     if (isDualMode) soundClickRef.current = fillGuessCard(gameLen);
   }
 
-  const scoreGame = ({ soundGuesses, posGuesses }: ScoreCardInterface) => {
+  const scoreGame = ({ soundGuesses, posGuesses }: ScoreCardType) => {
     setDidLevelUp(false);
+    incrementStreak();
+    setAchievementN(defaultN)
 
     const answers = engineRef.current.answers();
     const posResult = calculateScore({ answers: answers?.pos as boolean[], guesses: posGuesses as boolean[] });
@@ -166,17 +168,39 @@ export default function Play() {
     let buzzError: number = 0;
     let buzzResult;
 
+    let gameMode: GameModeEnum = 'SingleN' as GameModeEnum;
+    let scoreCard: SingleScoreType = {
+      n: defaultN,
+      mode: gameMode,
+      score: posScore,
+      errorRate: posError
+    };
     if (isDualMode) {
       if (isSilentMode) {
+        gameMode = 'SilentDualN' as GameModeEnum;
         buzzResult = calculateScore({ answers: answers?.buzz as boolean[], guesses: soundGuesses as boolean[] });
         ({ accuracy: buzzScore, errorRate: buzzError } = buzzResult);
+
+        scoreCard = {
+          ...scoreCard,
+          mode: gameMode,
+          score2: buzzScore,
+          errorRate2: buzzError
+        }
       } else {
+        gameMode = 'DualN' as GameModeEnum;
         soundResult = calculateScore({ answers: answers?.sounds as boolean[], guesses: soundGuesses as boolean[] });
         ({ accuracy: soundScore, errorRate: soundError } = soundResult);
+
+        scoreCard = {
+          ...scoreCard,
+          mode: gameMode,
+          score2: soundScore,
+          errorRate2: soundError
+        }
       }
     }
-
-    // TODO move this to scorecard?
+    
     setGameScores({
       positions: posScore,
       sounds: soundScore,
@@ -185,6 +209,7 @@ export default function Play() {
       sError: soundError,
       bError: buzzError
     });
+    newCard.setSingle(gameMode, scoreCard);
 
     setShowScoreOverlay(true);
     
@@ -200,7 +225,8 @@ export default function Play() {
 
     if (isWinner) {
       dashRef.current.incrementSuccess();
-      if (shouldLevelUp(dashRef.current.getSuccessCount())) {
+      if (shouldLevelUp(dashRef.current.successCount)) {
+        newCard.save();
         doLevelUp(engineRef.current.getGameMode());
         dashRef.current.reset();
       } else {
@@ -210,7 +236,7 @@ export default function Play() {
       dashRef.current.incrementFail();
       dashRef.current.resetSuccessCount();
 
-      if (dashRef.current.getFailCount() == 3) {
+      if (dashRef.current.failCount == 3) {
         const _mode = engineRef.current.getGameMode();
         if (playerRef.current.canLevelDown(_mode)) {
           showCustomAlert(
@@ -291,6 +317,7 @@ export default function Play() {
   // start the game.
   useEffect(() => {
     if (shouldStartGame) {
+      engineRef.current.newGame();
       startGameLoop();
 
       return () => {
@@ -379,10 +406,9 @@ export default function Play() {
           playing={shouldStartGame}
           onTutorial={() => setShowTutorial(!showTutorial)}
         />
-        <ProgressBar progress={dashRef.current.getProgress()} />
+        <ProgressBar onProgress={() => dashRef.current.getProgress()} />
         <View style={styles.indexContainer}>
           {showMoveCounts && <Text style={[styles.label, { fontSize: 24 }]}>{t('play.turnsLeft')}: {engineRef.current.turnsLeft()}</Text>}
-          {/* <Text style={{ color: '#ccc' }}>{defaultN} {JSON.stringify(playerRef.current)}</Text> */}
         </View>
         <ScoreOverlay
           isVisible={showScoreOverlay}

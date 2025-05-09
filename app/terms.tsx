@@ -10,6 +10,8 @@ import { useGlobalStyles } from '@/styles/globalStyles';
 import { useTheme } from '@/contexts/ThemeContext';
 import Button from '@/components/Button';
 
+import log from '@/util/logger';
+
 import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function Terms() {
@@ -163,6 +165,7 @@ type CustomLinkProps = {
 
 const CustomLink: React.FC<CustomLinkProps> = ({ children, textToCopy }) => {
   const toast = useToast();
+  const { t } = useTranslation();
 
   const handleCopyToClipboard = async () => {
     try {
@@ -172,11 +175,10 @@ const CustomLink: React.FC<CustomLinkProps> = ({ children, textToCopy }) => {
         await Clipboard.setStringAsync(textToCopy);
       }
 
-      // TODO | translate me
-      toast.show("Copied to clipboard!", { duration: 2000 });
+      toast.show(t("text.copiedToClipboard"), { duration: 2000 });
     } catch (error) {
-      console.error("Clipboard copy failed:", error);
-      toast.show("Failed to copy text.", { duration: 2000 });
+      log.error(t("text.clipboardCopyFailed"), error);
+      toast.show(t("text.failedToCopyText"), { duration: 2000 });
     }
   };
 

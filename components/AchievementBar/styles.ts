@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+import { ThemeType } from "@/contexts/types";
+
 const styles = StyleSheet.create({
   bronze: {
     backgroundColor: '#CD7F32',
@@ -7,21 +9,11 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     color: '#8B4513'
   },
-  floatingText: {
-    backgroundColor: '#ffffff',
-    borderColor: '#dddddd',
-    borderRadius: 50,
+  silver: {
+    backgroundColor: '#C0C0C0',
+    borderColor: '#676767',
     borderWidth: 4,
-    bottom: 5,
-    color: '#000',
-    fontSize: 24,
-    fontWeight: 'bold',
-    left: 0,
-    padding: 2,
-    position: 'absolute',
-    right: 0,
-    textAlign: 'center',
-    width: '30%',
+    color: '#676767'
   },
   gold: {
     backgroundColor: '#FFD700',
@@ -47,8 +39,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     paddingTop: 10,
   },
+  floatingText: {
+    backgroundColor: '#ffffff',
+    borderColor: '#dddddd',
+    borderRadius: 50,
+    borderWidth: 4,
+    bottom: 5,
+    color: '#000',
+    fontSize: 24,
+    fontWeight: 'bold',
+    left: 0,
+    padding: 2,
+    position: 'absolute',
+    right: 0,
+    textAlign: 'center',
+    width: '30%',
+  },
+});
+
+export default styles;
+
+export const createStyles = (theme: ThemeType) => StyleSheet.create({
   text: {
-    color: '#fff', 
+    color: theme.textColor, 
     fontSize: 18,
   },
   textContainer: {
@@ -62,13 +75,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 10,
   },
-  silver: {
-    backgroundColor: '#C0C0C0',
-    borderColor: '#676767',
-    borderWidth: 4,
-    color: '#676767'
-  }
 });
-
-
-export default styles;
