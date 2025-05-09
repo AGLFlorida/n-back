@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
 });
 
 // TODO: if the player gets to a high level, then lowers N (say to 2)
-// the game correctly blocks leveling up. we need to update the status bar
+// the game correctly blocks leveling up. we should to update the status bar
 // so that is only increments by the actual number of "wins" needed to get
 // back to the correct level.
 

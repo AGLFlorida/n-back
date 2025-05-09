@@ -1,17 +1,18 @@
 import { View, Text } from 'react-native';
 
 import { useAchievementStore } from '@/store/useAchievementStore';
+import { useTheme } from '@/contexts/ThemeContext';
 
 import { useTranslation } from 'react-i18next';
 
-import { Hr } from '../hr';
+import { Hr } from "@/components/Hr";
 
 import Streak, { streakRank } from './Streak';
 import Medal, { medalRank } from './Medal';
 import Brain, { brainRank } from './Brain';
 import Banner from './Banner';
 
-import styles from './styles';
+import styles, { createStyles } from './styles';
 
 const AchievementBar = () => {
   const { streak } = useAchievementStore();
@@ -21,6 +22,9 @@ const AchievementBar = () => {
   const level = highest(singleLvl, dualLvl, silentLvl);
 
   const { t } = useTranslation();
+
+  const { theme } = useTheme();
+  const dynamicStyles = createStyles(theme)
 
   return (
     <>
@@ -38,15 +42,15 @@ const AchievementBar = () => {
           <Banner t={JSON.stringify(streak)} rank={streakRank(streak)} />
         </View>
       </View>
-      <View style={styles.textLayout}>
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>{t("history.level")} ({t(level.label)})</Text>
+      <View style={dynamicStyles.textLayout}>
+        <View style={dynamicStyles.textContainer}>
+          <Text style={dynamicStyles.text}>{t("history.level")} ({t(level.label)})</Text>
         </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>{t("history.highestn")}</Text>
+        <View style={dynamicStyles.textContainer}>
+          <Text style={dynamicStyles.text}>{t("history.highestn")}</Text>
         </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>{t("history.streak")}</Text>
+        <View style={dynamicStyles.textContainer}>
+          <Text style={dynamicStyles.text}>{t("history.streak")}</Text>
         </View>
       </View>
       <Hr />

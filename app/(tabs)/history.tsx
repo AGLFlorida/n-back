@@ -15,7 +15,7 @@ import AchievementBar from '@/components/AchievementBar';
 
 import { useTheme } from "@/contexts/ThemeContext"
 
-import { Hr } from '@/components/hr';
+import { Hr } from '@/components/Hr';
 
 import Chart, { DataPointType } from '@/components/Chart';
 
