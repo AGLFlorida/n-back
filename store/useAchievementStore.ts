@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { todayHelper, isYesterday } from './util';
 
 import type { GameLevels } from "@/util/engine/types";
 
@@ -22,8 +23,10 @@ type AchievementState = {
   single: number;
   dual: number;
   silent: number;
+  streakLastUpdate: string | undefined;
   setN: (x: number) => void;
   setStreak: (x: number) => void;
+  incrementStreak: () => void;
   setSingleLvl: (lvl: number) => void;
   setDualLvl: (lvl: number) => void;
   setSilentLvl: (lvl: number) => void;
@@ -35,20 +38,43 @@ type AchievementState = {
 export const useAchievementStore = create<AchievementState>()(
   persist(
     (set, get) => ({
-      N: MINN,
+      N: 0,
       single: startingLevel,
       dual: startingLevel,
       silent: startingLevel,
       streak: 0,
+      streakLastUpdate: undefined,
       setN: N => {
-        set({
-          N
-        });
+        const oldN = get().N;
+        if (oldN === undefined || N > oldN) {
+          set({
+            N
+          });
+        }
       },
       setStreak: streak => {
+        const today = todayHelper();
         set({
-          streak
+          streak,
+          streakLastUpdate: today
         })
+      },
+      incrementStreak: () => {
+        const today = todayHelper();
+        const lu = get().streakLastUpdate || '1971-01-01';
+        if (today > lu) {
+          if (!isYesterday(lu)) {
+            set({
+              streak: 1,
+              streakLastUpdate: today
+            });
+          } else {
+            set({
+              streak: get().streak + 1,
+              streakLastUpdate: today
+            });
+          }
+        }
       },
       setSingleLvl: (lvl) => {
         set({

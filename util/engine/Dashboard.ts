@@ -5,8 +5,6 @@ type HUD = {
   failCount: number;
 }
 export interface DashboardInterface {
-  successCount: number;
-  failCount: number;
   incrementSuccess: (x?: number) => void;
   incrementFail: (x?: number) => void;
   decrementSuccess: (x?: number) => void;
@@ -14,35 +12,35 @@ export interface DashboardInterface {
   reset: () => void;
   resetFailCount: () => void;
   resetSuccessCount: () => void;
-  getSuccessCount: () => number;
-  getFailCount: () => number;
+  get successCount(): number;
+  get failCount(): number;
   getValues: () => HUD;
   getProgress: () => number;
 }
 
 export class Dashboard implements DashboardInterface {
-  successCount: number;
-  failCount: number;
+  private _successCount: number = 0;
+  private _failCount: number = 0;
 
   constructor(successCount = 0, failCount = 0) {
-    this.successCount = successCount;
-    this.failCount = failCount;
+    this._successCount = successCount;
+    this._failCount = failCount;
   }
 
   incrementSuccess(amount = 1) {
-    this.successCount += amount;
+    this._successCount += amount;
   }
 
   incrementFail(amount = 1) {
-    this.failCount += amount;
+    this._failCount += amount;
   }
 
   decrementSuccess(amount = 1) {
-    this.successCount -= amount;
+    this._successCount -= amount;
   }
 
   decrementFail(amount = 1) {
-    this.failCount -= amount;
+    this._failCount -= amount;
   }
 
   reset() {
@@ -58,12 +56,20 @@ export class Dashboard implements DashboardInterface {
     this.successCount = 0;
   }
 
-  getSuccessCount(): number {
-    return this.successCount;
+  get successCount(): number {
+    return this._successCount;
   }
 
-  getFailCount(): number {
-    return this.failCount;
+  set successCount(n: number) {
+    this._successCount = n;
+  }
+
+  get failCount(): number {
+    return this._failCount;
+  }
+
+  set failCount(n: number) {
+    this._failCount = n;
   }
 
   getValues(): HUD {

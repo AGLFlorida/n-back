@@ -33,6 +33,14 @@ const styles = StyleSheet.create({
   }
 });
 
+// TODO: if the player gets to a high level, then lowers N (say to 2)
+// the game correctly blocks leveling up. we need to update the status bar
+// so that is only increments by the actual number of "wins" needed to get
+// back to the correct level.
+
+// TODO: there is a bug where 2 wins then a fail causes the bar to grow to 100%
+// it should actually shrink
+
 const ProgressBar = ({ progress }: ProgressBarProps) => {
   const { theme } = useTheme();
   const animatedWidth = useRef(new Animated.Value(0)).current;

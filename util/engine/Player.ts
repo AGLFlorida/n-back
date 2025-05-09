@@ -7,7 +7,6 @@ import { useAchievementStore } from "@/store/useAchievementStore";
 import { getStartLevel } from "./helpers";
 
 interface PC {
-  level: GameLevels;
   get: (mode: GameModeEnum) => number;
   set: (x: number, y?: GameModeEnum) => void;
   levelUp: (mode: GameModeEnum, n?: number) => void;
@@ -16,7 +15,7 @@ interface PC {
   canLevelUp: (mode: GameModeEnum, n?: number) => boolean;
 }
 class Player implements PC {
-  level: GameLevels;
+  private level: GameLevels;
 
   constructor() {
     // hydrate levels

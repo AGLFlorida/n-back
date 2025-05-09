@@ -1,14 +1,10 @@
-import { useEffect } from 'react';
 import { View, Text } from 'react-native';
 
-import { useHistoryStore } from '@/store/useHistoryStore';
 import { useAchievementStore } from '@/store/useAchievementStore';
 
 import { useTranslation } from 'react-i18next';
 
 import { Hr } from '../hr';
-
-// TODO | FIXME -- bar grows to 100% even on a failed game. (only tested at 2 wins, 1 loss.)
 
 import Streak, { streakRank } from './Streak';
 import Medal, { medalRank } from './Medal';
@@ -16,22 +12,15 @@ import Brain, { brainRank } from './Brain';
 import Banner from './Banner';
 
 import styles from './styles';
-import { ScoreCard } from '@/util/engine/ScoreCard';
 
 const AchievementBar = () => {
-  // const records = useHistoryStore(state => state.records) as ScoresType;
-  const { streak, setStreak } = useAchievementStore();
+  const { streak } = useAchievementStore();
   const N = useAchievementStore(state => state.N);
   const { single: singleLvl, dual: silentLvl, silent: dualLvl } = useAchievementStore();
 
   const level = highest(singleLvl, dualLvl, silentLvl);
 
   const { t } = useTranslation();
-
-  // useEffect(() => {
-  //   const total: number = Object.keys(records).length || 0;
-  //   setStreak(total); // TODO | ADDME -- this is not really a streak.
-  // }, [records]);
 
   return (
     <>

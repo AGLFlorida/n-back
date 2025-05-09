@@ -1,6 +1,6 @@
 import { GameModeEnum } from "./enums";
 import type { Result, Grid, Score, Level } from "./types";
-import type { SingleScoreType } from "./ScoreCard";
+import type { ScoreBlock, SingleScoreType } from "./ScoreCard";
 import { DEFAULT_GAMELEN, MINN, MAXN } from "./constants";
 
 import log from "@/util/logger";
@@ -12,19 +12,25 @@ export const getStartLevel = (n: number) => Math.max(1, ((n - 2) * 4 + 1));
 
 export function gameModeScore(n: number, pScore: Result, sScore?: Result, bScore?: Result): SingleScoreType {
   const { accuracy: pAcc, errorRate: pErr } = pScore;
+  let mode = GameModeEnum.SingleN;
+  
+  let accuracy;
+  let errorRate;
+  if (sScore !== undefined) {
+    ({ accuracy, errorRate } = sScore);
+    mode = GameModeEnum.DualN;
+  } else if (bScore !== undefined) {
+    ({ accuracy, errorRate } = bScore);
+    mode = GameModeEnum.SilentDualN;
+  }
+  
   const card: SingleScoreType = {
+    mode: mode,
     n: n,
     score: pAcc,
     errorRate: pErr
   }
 
-  let accuracy;
-  let errorRate;
-  if (sScore !== undefined) {
-    ({ accuracy, errorRate } = sScore);
-  } else if (bScore !== undefined) {
-    ({ accuracy, errorRate } = bScore);
-  }
 
   card.score2 = accuracy;
   card.errorRate2 = errorRate;
@@ -105,6 +111,17 @@ export const getGameModeNames = (t: (key: string) => string) => ({
 });
 
 
-export const calculateHighScore = (ErrorRate: number, GameScore: number, n: number): number => {
-  return (n * GameScore) - ErrorRate;
+export const calculateHighScore = (mode: GameModeEnum, block: SingleScoreType): number => {
+  const score1 = (block.n * block.score) - block.errorRate;
+  let score2 = 0;
+
+  if (mode != 'SingleN' && block.score2) {
+    score2 = (block.n * block.score2) - (block?.errorRate2 || 0);
+
+    if (mode == 'SilentDualN') {
+      score2 = score2 + 10; // Silent Mode is harder.
+    }
+  }
+
+  return score1 + score2;
 }

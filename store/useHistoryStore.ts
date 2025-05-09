@@ -2,35 +2,57 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { calculateHighScore } from '@/util/engine/helpers';
 
-import type { ScoresType } from '@/util/engine/ScoreCard';
+import { todayHelper } from './util';
+
+import type { ScoreBlock, SingleScoreType } from '@/util/engine/ScoreCard';
+import { GameModeEnum } from '@/util/engine/enums';
+
+type DateString = string; // 'YYYY-MM-DD'
+type PersistedScoreBlock = Record<GameModeEnum, SingleScoreType>
+type PersistedScoresType = Record<DateString, PersistedScoreBlock>
 
 
 type HistoryState = {
-  records: ScoresType;
+  lastPlayed: DateString | undefined;
+  records: PersistedScoresType;
   setRecords: (records: {}) => void;
-  setTodaysRecord: () => void;
-  getTodaysRecord: () => ScoresType
+  setTodaysRecord: (score: ScoreBlock) => void;
+  getTodaysRecord: () => PersistedScoreBlock;
+  getRecordByDate: (date: DateString) => PersistedScoreBlock;
   reset: () => void;
 }
 
 export const useHistoryStore = create<HistoryState>()(
   persist(
-    (set, ) => ({
+    (set, get) => ({
       records: {},
-      setTodaysRecord: () => {
-
+      lastPlayed: undefined,
+      setTodaysRecord: (s: ScoreBlock) => {
+        const lp = get().lastPlayed;
+        const today = todayHelper();
+        console.log("saving today. new lp? ", lp !== today)
+        const rec = get().records;
+        set({
+          records: {
+            ...rec,
+            [todayHelper()]: {
+              ...s,
+            }
+          },
+          ...(lp !== today && { lastPlayed: today })
+        })
       },
       getTodaysRecord: () => {
-        return {
-
-        } as ScoresType
+        return get().getRecordByDate(todayHelper());
       },
       setRecords: (records) => {
         set({
           records
         });
+      },
+      getRecordByDate: (date) => {
+        return get().records[date];
       },
       reset: () => {
         set({

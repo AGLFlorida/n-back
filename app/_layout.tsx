@@ -9,9 +9,12 @@ import BackButton from "@/components/BackButton";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import i18n from '@/util/i18n';
 
+import { useReloadIfInactiveTooLong } from "@/hooks/reload"
+
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function RootLayout() {
+  useReloadIfInactiveTooLong();
   const [isI18nInitialized, setIsI18nInitialized] = useState(false);
 
   useEffect(() => {

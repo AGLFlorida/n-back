@@ -10,8 +10,6 @@ import {
   Pressable
 } from "react-native";
 
-// TODO | FIXME -- toggling system display does not update settings / theme.
-
 import DebugModal from "@/components/DebugModal";
 
 import { useRouter } from "expo-router";
@@ -22,7 +20,7 @@ import Button from "@/components/Button";
 
 import { darkModeDefault, resetSettingsStore, useSettingsStore } from "@/store/useSettingsStore";
 import { resetHistoryStore } from "@/store/useHistoryStore";
-import { resetAchievementStore, useAchievementStore } from "@/store/useAchievementStore";
+import { resetAchievementStore } from "@/store/useAchievementStore";
 
 import { useGlobalStyles } from "@/styles/globalStyles";
 import { useTheme } from "@/contexts/ThemeContext"
@@ -53,10 +51,6 @@ export default function Settings() {
   const storedDualMode = useSettingsStore(state => state.dualMode);
   const storedSilentMode = useSettingsStore(state => state.silentMode);
   const storedShowMoveCounts = useSettingsStore(state => state.showMoveCounts);
-
-  // const resetPlayerLevels = useAchievementStore(state => state.resetPlayerLevels);
-
-  // const singleDebug  = useAchievementStore(state => state.single);
 
   const [showDebug, setShowDebug] = useState(false);
 
