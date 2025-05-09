@@ -52,6 +52,7 @@ export interface RunningEngineInterface {
   turnsLeft: () => number;
   gameOver: (x: number) => boolean;
   resetTurn: () => void;
+  newGame: () => void;
 }
 
 class RunningEngine implements RunningEngineInterface {
@@ -78,6 +79,22 @@ class RunningEngine implements RunningEngineInterface {
     this.gameLen = gameLen;
     this.matchRate = matchRate;
 
+    try {
+      const patterns = generatePattern(this.matchRate, this.gameLen, this.currentN);
+      
+      this.gridPositions = patterns.gridPositions;
+      this.letterSounds = patterns.letterSounds;
+      this.buzzPatterns = patterns.buzzPattern;
+      this.gridMatches = patterns.gridMatches;
+      this.soundMatches = patterns.soundMatches;
+      this.buzzMatches = patterns.buzzMatches;
+    } catch (e) {
+      log.error("Error in [createNewGame]", e);
+      throw e;
+    }
+  }
+
+  newGame() { // this is gross but Typescript was unhappy.
     try {
       const patterns = generatePattern(this.matchRate, this.gameLen, this.currentN);
       

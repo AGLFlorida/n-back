@@ -317,6 +317,7 @@ export default function Play() {
   // start the game.
   useEffect(() => {
     if (shouldStartGame) {
+      engineRef.current.newGame();
       startGameLoop();
 
       return () => {
