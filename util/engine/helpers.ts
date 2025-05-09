@@ -13,7 +13,7 @@ export const getStartLevel = (n: number) => Math.max(1, ((n - 2) * 4 + 1));
 export function gameModeScore(n: number, pScore: Result, sScore?: Result, bScore?: Result): SingleScoreType {
   const { accuracy: pAcc, errorRate: pErr } = pScore;
   let mode = GameModeEnum.SingleN;
-  
+
   let accuracy;
   let errorRate;
   if (sScore !== undefined) {
@@ -23,7 +23,7 @@ export function gameModeScore(n: number, pScore: Result, sScore?: Result, bScore
     ({ accuracy, errorRate } = bScore);
     mode = GameModeEnum.SilentDualN;
   }
-  
+
   const card: SingleScoreType = {
     mode: mode,
     n: n,
@@ -112,15 +112,21 @@ export const getGameModeNames = (t: (key: string) => string) => ({
 
 
 export const calculateHighScore = (mode: GameModeEnum, block: SingleScoreType): number => {
-  const score1 = (block.n * block.score) - block.errorRate;
+  let score1 = 0;
   let score2 = 0;
 
-  if (mode != 'SingleN' && block.score2) {
-    score2 = (block.n * block.score2) - (block?.errorRate2 || 0);
+  try {
+    score1 = (block.n * block.score) - block.errorRate;
 
-    if (mode == 'SilentDualN') {
-      score2 = score2 + 10; // Silent Mode is harder.
+    if (mode != 'SingleN' && block.score2) {
+      score2 = (block.n * block.score2) - (block?.errorRate2 || 0);
+
+      if (mode == 'SilentDualN') {
+        score2 = score2 + 10; // Silent Mode is harder.
+      }
     }
+  } catch (e) {
+    console.info("error calculating scores:", mode, JSON.stringify(block));
   }
 
   return score1 + score2;

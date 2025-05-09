@@ -405,10 +405,9 @@ export default function Play() {
           playing={shouldStartGame}
           onTutorial={() => setShowTutorial(!showTutorial)}
         />
-        <ProgressBar progress={dashRef.current.getProgress()} />
+        <ProgressBar onProgress={() => dashRef.current.getProgress()} />
         <View style={styles.indexContainer}>
           {showMoveCounts && <Text style={[styles.label, { fontSize: 24 }]}>{t('play.turnsLeft')}: {engineRef.current.turnsLeft()}</Text>}
-          {/* <Text style={{ color: '#ccc' }}>{defaultN} {JSON.stringify(playerRef.current)}</Text> */}
         </View>
         <ScoreOverlay
           isVisible={showScoreOverlay}

@@ -152,15 +152,15 @@ export class ScoreCard implements ScoreCardInterface {
     let isHighScore: boolean = storedBlock === undefined;
 
     if (storedBlock !== undefined) {
-      const { 
-        SingleN: StoredSingleN, 
-        DualN: StoredDualN, 
+      const {
+        SingleN: StoredSingleN,
+        DualN: StoredDualN,
         SilentDualN: StoredSilentDualN
       } = storedBlock;
 
       const {
-        SingleN, 
-        DualN, 
+        SingleN,
+        DualN,
         SilentDualN
       } = newBlock;
 
@@ -171,16 +171,20 @@ export class ScoreCard implements ScoreCardInterface {
         rev1 = true;
       }
 
-      if (!compareBlock(DualN, StoredDualN)) {
-        newBlock.DualN = StoredDualN; // revert to stored DualN block
-        rev2 = true;
+      if (DualN !== undefined) {
+        if (!compareBlock(DualN, StoredDualN)) {
+          newBlock.DualN = StoredDualN; // revert to stored DualN block
+          rev2 = true;
+        }
       }
 
-      if (!compareBlock(SilentDualN, StoredSilentDualN)) {
-        newBlock.DualN = StoredDualN; // revert to stored SilentDualN block
-        rev3 = true;
+      if (SilentDualN !== undefined) {
+        if (!compareBlock(SilentDualN, StoredSilentDualN)) {
+          newBlock.DualN = StoredDualN; // revert to stored SilentDualN block
+          rev3 = true;
+        }
       }
-      
+
       isHighScore = rev1 || rev2 || rev3;
     }
 
@@ -197,8 +201,15 @@ export class ScoreCard implements ScoreCardInterface {
  * @returns boolean
  */
 const compareBlock = (b1: SingleScoreType, b2: SingleScoreType): boolean => {
-  const score1 = calculateHighScore(b1.mode, b1);
-  const score2 = calculateHighScore(b1.mode, b2);
+  let score1 = 0;
+  let score2 = 0;
+
+  try {
+    score1 = calculateHighScore(b1.mode, b1);
+    score2 = calculateHighScore(b1.mode, b2);
+  } catch (e) {
+    console.info("error in compare block: ", b1, b2);
+  }
 
   return score1 > score2;
 }

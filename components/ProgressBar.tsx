@@ -3,7 +3,7 @@ import { View, StyleSheet, Animated } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 
 type ProgressBarProps = {
-  progress: number; 
+  onProgress: () => number; 
 };
 
 const styles = StyleSheet.create({
@@ -41,12 +41,15 @@ const styles = StyleSheet.create({
 // TODO: there is a bug where 2 wins then a fail causes the bar to grow to 100%
 // it should actually shrink
 
-const ProgressBar = ({ progress }: ProgressBarProps) => {
+const ProgressBar = ({ onProgress }: ProgressBarProps) => {
   const { theme } = useTheme();
   const animatedWidth = useRef(new Animated.Value(0)).current;
+  const progress = onProgress();
 
   const prevProgress = useRef(0);
   const setPrevProgress = (t: number) => prevProgress.current = t;
+
+  console.log("new progress: ", progress)
 
   useEffect(() => {
     if (prevProgress.current == (2/3) && prevProgress.current > progress) {
