@@ -31,7 +31,6 @@ export const useHistoryStore = create<HistoryState>()(
       setTodaysRecord: (s: ScoreBlock) => {
         const lp = get().lastPlayed;
         const today = todayHelper();
-        console.log("saving today. new lp? ", lp !== today)
         const rec = get().records;
         set({
           records: {

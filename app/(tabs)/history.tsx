@@ -55,10 +55,6 @@ export default function History() {
   );
 
   useEffect(() => {
-    console.log("records: ", records)
-  }, [])
-
-  useEffect(() => {
     // if (playHistory) {
     const labels = Object.keys(records);
     const dataSet1: DataPointType[] = [];
@@ -95,13 +91,9 @@ export default function History() {
       dataSet7.push(data7);
     }
 
-    console.log("data1:", dataSet1)
-
     setLineData(dataSet1);
     setLineData4(dataSet4);
     setLineData7(dataSet7);
-
-    console.log("lineData1: ", lineData)
 
     dataLabels.current = labels;
 

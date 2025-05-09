@@ -41,7 +41,6 @@ class Player implements PC {
 
   levelUp(mode: GameModeEnum, n: number = MINN) {
     if (this.canLevelUp(mode, n)) {
-      console.log("can level up!")
       const baseLevel = getStartLevel(n);
       const nextLevel = this.get(mode) + 1;
 

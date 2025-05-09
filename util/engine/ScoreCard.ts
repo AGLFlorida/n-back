@@ -184,7 +184,6 @@ export class ScoreCard implements ScoreCardInterface {
       isHighScore = rev1 || rev2 || rev3;
     }
 
-    console.log("saving scores:", isHighScore);
     if (isHighScore) {
       useHistoryStore.getState().setTodaysRecord(newBlock);
     }
